@@ -21,3 +21,4 @@ Routine checks, audits, and tests.
 - 2026-02-18 — checked mobile layouts
 - 2026-02-18 — routine maintenance
 - 2026-02-18 — reviewed env and config
+- 2026-02-18 — audited dependencies, no advisories
