@@ -25,3 +25,4 @@ Routine checks, audits, and tests.
 - 2026-02-18 — ran regression pass, no regressions
 - 2026-02-18 — e2e sanity check passed
 - 2026-02-18 — checked mobile layouts
+- 2026-02-18 — audited dependencies, no advisories
