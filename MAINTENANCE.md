@@ -30,3 +30,4 @@ Routine checks, audits, and tests.
 - 2026-02-18 — audited dependencies, no advisories
 - 2026-02-18 — e2e sanity check passed
 - 2026-02-18 — verified production build output
+- 2026-02-18 — reviewed env and config
