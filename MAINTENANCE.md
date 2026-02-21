@@ -46,3 +46,4 @@ Routine checks, audits, and tests.
 - 2026-02-19 — smoke-tested core user flows, all green
 - 2026-02-19 — verified production build output
 - 2026-02-21 — checked mobile layouts
+- 2026-02-21 — reviewed env and config
