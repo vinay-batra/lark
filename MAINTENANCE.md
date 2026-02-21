@@ -52,3 +52,4 @@ Routine checks, audits, and tests.
 - 2026-02-21 — verified production build output
 - 2026-02-21 — accessibility pass, minor notes
 - 2026-02-21 — reviewed env and config
+- 2026-02-21 — audited dependencies, no advisories
