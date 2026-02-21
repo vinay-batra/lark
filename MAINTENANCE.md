@@ -54,3 +54,4 @@ Routine checks, audits, and tests.
 - 2026-02-21 — reviewed env and config
 - 2026-02-21 — audited dependencies, no advisories
 - 2026-02-21 — verified API responses
+- 2026-02-21 — lint + format clean
