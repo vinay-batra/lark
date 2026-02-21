@@ -50,3 +50,4 @@ Routine checks, audits, and tests.
 - 2026-02-21 — checked mobile layouts
 - 2026-02-21 — audited dependencies, no advisories
 - 2026-02-21 — verified production build output
+- 2026-02-21 — accessibility pass, minor notes
