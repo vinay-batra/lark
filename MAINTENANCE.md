@@ -56,3 +56,4 @@ Routine checks, audits, and tests.
 - 2026-02-21 — verified API responses
 - 2026-02-21 — lint + format clean
 - 2026-02-21 — ran regression pass, no regressions
+- 2026-02-21 — audited dependencies, no advisories
