@@ -58,3 +58,4 @@ Routine checks, audits, and tests.
 - 2026-02-21 — ran regression pass, no regressions
 - 2026-02-21 — audited dependencies, no advisories
 - 2026-02-21 — audited dependencies, no advisories
+- 2026-02-21 — checked mobile layouts
