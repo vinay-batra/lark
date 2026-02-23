@@ -62,3 +62,4 @@ Routine checks, audits, and tests.
 - 2026-02-21 — general housekeeping
 - 2026-02-23 — reviewed error logging
 - 2026-02-23 — reviewed env and config
+- 2026-02-23 — reviewed error logging
