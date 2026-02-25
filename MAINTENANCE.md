@@ -84,3 +84,4 @@ Routine checks, audits, and tests.
 - 2026-02-25 — checked auth and session handling
 - 2026-02-25 — checked auth and session handling
 - 2026-02-25 — reviewed dependency updates
+- 2026-02-25 — reviewed env and config
