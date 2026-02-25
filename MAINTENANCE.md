@@ -77,3 +77,4 @@ Routine checks, audits, and tests.
 - 2026-02-25 — accessibility pass, minor notes
 - 2026-02-25 — reviewed error logging
 - 2026-02-25 — audited dependencies, no advisories
+- 2026-02-25 — checked auth and session handling
