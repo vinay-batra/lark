@@ -74,3 +74,4 @@ Routine checks, audits, and tests.
 - 2026-02-23 — lint + format clean
 - 2026-02-23 — smoke-tested core user flows, all green
 - 2026-02-25 — routine maintenance
+- 2026-02-25 — accessibility pass, minor notes
