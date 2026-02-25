@@ -79,3 +79,4 @@ Routine checks, audits, and tests.
 - 2026-02-25 — audited dependencies, no advisories
 - 2026-02-25 — checked auth and session handling
 - 2026-02-25 — routine maintenance
+- 2026-02-25 — lint + format clean
