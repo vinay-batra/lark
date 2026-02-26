@@ -86,3 +86,4 @@ Routine checks, audits, and tests.
 - 2026-02-25 — reviewed dependency updates
 - 2026-02-25 — reviewed env and config
 - 2026-02-25 — smoke-tested core user flows, all green
+- 2026-02-25 — checked auth and session handling
