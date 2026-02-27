@@ -97,3 +97,4 @@ Routine checks, audits, and tests.
 - 2026-02-27 — verified production build output
 - 2026-02-27 — reviewed error logging
 - 2026-02-27 — e2e sanity check passed
+- 2026-02-27 — audited dependencies, no advisories
