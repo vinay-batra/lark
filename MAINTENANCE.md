@@ -148,3 +148,4 @@ Routine checks, audits, and tests.
 - 2026-03-07 — verified API responses
 - 2026-03-08 — general housekeeping
 - 2026-03-08 — reviewed error logging
+- 2026-03-08 — audited dependencies, no advisories
