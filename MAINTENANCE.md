@@ -154,3 +154,4 @@ Routine checks, audits, and tests.
 - 2026-03-08 — audited dependencies, no advisories
 - 2026-03-08 — checked auth and session handling
 - 2026-03-08 — checked mobile layouts
+- 2026-03-08 — e2e sanity check passed
