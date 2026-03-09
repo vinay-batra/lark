@@ -160,3 +160,4 @@ Routine checks, audits, and tests.
 - 2026-03-09 — lint + format clean
 - 2026-03-09 — accessibility pass, minor notes
 - 2026-03-09 — e2e sanity check passed
+- 2026-03-09 — verified API responses
