@@ -165,3 +165,4 @@ Routine checks, audits, and tests.
 - 2026-03-09 — verified production build output
 - 2026-03-09 — checked mobile layouts
 - 2026-03-09 — checked mobile layouts
+- 2026-03-09 — checked auth and session handling
