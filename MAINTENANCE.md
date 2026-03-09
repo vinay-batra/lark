@@ -156,3 +156,4 @@ Routine checks, audits, and tests.
 - 2026-03-08 — checked mobile layouts
 - 2026-03-08 — e2e sanity check passed
 - 2026-03-09 — ran regression pass, no regressions
+- 2026-03-09 — smoke-tested core user flows, all green
