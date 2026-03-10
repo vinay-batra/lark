@@ -171,3 +171,4 @@ Routine checks, audits, and tests.
 - 2026-03-10 — checked auth and session handling
 - 2026-03-10 — smoke-tested core user flows, all green
 - 2026-03-10 — verified API responses
+- 2026-03-10 — ran regression pass, no regressions
