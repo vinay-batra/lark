@@ -182,3 +182,4 @@ Routine checks, audits, and tests.
 - 2026-03-10 — routine maintenance
 - 2026-03-11 — audited dependencies, no advisories
 - 2026-03-11 — verified production build output
+- 2026-03-11 — smoke-tested core user flows, all green
