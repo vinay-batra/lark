@@ -192,3 +192,4 @@ Routine checks, audits, and tests.
 - 2026-03-11 — accessibility pass, minor notes
 - 2026-03-11 — checked auth and session handling
 - 2026-03-12 — checked mobile layouts
+- 2026-03-12 — lint + format clean
