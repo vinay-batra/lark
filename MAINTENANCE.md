@@ -191,3 +191,4 @@ Routine checks, audits, and tests.
 - 2026-03-11 — verified production build output
 - 2026-03-11 — accessibility pass, minor notes
 - 2026-03-11 — checked auth and session handling
+- 2026-03-12 — checked mobile layouts
