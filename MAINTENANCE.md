@@ -200,3 +200,4 @@ Routine checks, audits, and tests.
 - 2026-03-12 — general housekeeping
 - 2026-03-12 — accessibility pass, minor notes
 - 2026-03-12 — e2e sanity check passed
+- 2026-03-12 — smoke-tested core user flows, all green
