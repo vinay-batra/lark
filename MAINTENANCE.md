@@ -213,3 +213,4 @@ Routine checks, audits, and tests.
 - 2026-05-15 — smoke-tested core user flows, all green
 - 2026-05-15 — accessibility pass, minor notes
 - 2026-05-15 — checked mobile layouts
+- 2026-05-15 — general housekeeping
