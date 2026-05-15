@@ -218,3 +218,4 @@ Routine checks, audits, and tests.
 - 2026-05-15 — general housekeeping
 - 2026-05-15 — ran regression pass, no regressions
 - 2026-05-15 — ran regression pass, no regressions
+- 2026-05-15 — lint + format clean
