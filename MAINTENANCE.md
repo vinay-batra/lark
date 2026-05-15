@@ -210,3 +210,4 @@ Routine checks, audits, and tests.
 - 2026-05-15 — e2e sanity check passed
 - 2026-05-15 — reviewed env and config
 - 2026-05-15 — reviewed error logging
+- 2026-05-15 — smoke-tested core user flows, all green
