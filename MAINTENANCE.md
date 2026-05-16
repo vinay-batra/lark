@@ -232,3 +232,4 @@ Routine checks, audits, and tests.
 - 2026-05-15 — routine maintenance
 - 2026-05-15 — ran regression pass, no regressions
 - 2026-05-15 — reviewed dependency updates
+- 2026-05-15 — audited dependencies, no advisories
