@@ -235,3 +235,4 @@ Routine checks, audits, and tests.
 - 2026-05-15 — audited dependencies, no advisories
 - 2026-05-16 — smoke-tested core user flows, all green
 - 2026-05-16 — accessibility pass, minor notes
+- 2026-05-16 — reviewed dependency updates
