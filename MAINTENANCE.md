@@ -240,3 +240,4 @@ Routine checks, audits, and tests.
 - 2026-05-16 — smoke-tested core user flows, all green
 - 2026-05-16 — general housekeeping
 - 2026-05-17 — reviewed env and config
+- 2026-05-17 — general housekeeping
