@@ -243,3 +243,4 @@ Routine checks, audits, and tests.
 - 2026-05-17 — general housekeeping
 - 2026-05-17 — general housekeeping
 - 2026-05-17 — smoke-tested core user flows, all green
+- 2026-05-17 — checked auth and session handling
