@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lark
 
-## Getting Started
+**The guitar tutor that listens.**
 
-First, run the development server:
+Lark hears every note you play. Tune your guitar, detect chords, follow songs in real time, and get coaching feedback that actually means something. All in your browser.
+
+Live: [lark-git-main-vinay-batras-projects.vercel.app](https://lark-git-main-vinay-batras-projects.vercel.app)
+
+---
+
+## Stack
+
+- **Framework:** Next.js 16 (App Router, Turbopack)
+- **Audio:** Web Audio API + Pitchy v4 (pitch detection) + @tonaljs/chord-detect (chords)
+- **Auth:** Supabase (browser client + SSR middleware)
+- **Animations:** framer-motion
+- **Deploy:** Vercel (frontend), Supabase (auth + DB)
+
+## Setup
 
 ```bash
+git clone https://github.com/vinay-batra/lark.git
+cd lark
+npm install
+cp .env.local.example .env.local
+# fill in Supabase keys, then:
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Env vars
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR-ANON-KEY
+```
 
-## Learn More
+## Routes
 
-To learn more about Next.js, take a look at the following resources:
+| Route | Description |
+|-------|-------------|
+| `/` | Landing page |
+| `/tuner` | Public tuner (no auth) |
+| `/chords` | Public chord detector (no auth) |
+| `/pricing` | Pricing page |
+| `/changelog` | Changelog |
+| `/faq` | FAQ |
+| `/auth` | Sign in / sign up / magic link |
+| `/app` | Authenticated dashboard |
+| `/app/tuner` | Tuner inside app shell |
+| `/app/chords` | Chord detector inside app shell |
+| `/app/settings` | Settings |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Frontend auto-deploys on push to `main` via Vercel.
 
-## Deploy on Vercel
+Database migrations live in `supabase/migrations/`. Run them manually in the Supabase SQL editor.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Version
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+v0.3

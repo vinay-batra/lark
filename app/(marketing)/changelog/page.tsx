@@ -16,6 +16,28 @@ interface Entry {
 
 const ENTRIES: Entry[] = [
   {
+    version: 'v0.3',
+    date: 'May 18, 2026',
+    headline: 'Mobile pass, security headers, UI polish, logo.',
+    type: 'release',
+    changes: [
+      { kind: 'NEW', text: 'Lark logo shipped (bird with guitar string tail). Favicon, apple-touch-icon, og-image all generated from single source.' },
+      { kind: 'NEW', text: 'Security headers on every route: X-Frame-Options DENY, X-Content-Type-Options nosniff, Referrer-Policy, and Permissions-Policy restricting mic access to same origin only.' },
+      { kind: 'NEW', text: 'Email waitlist with Supabase insert + AnimatePresence transition between form and success state.' },
+      { kind: 'NEW', text: 'Light/dark theme system via data-theme attribute. SSR-safe inline script prevents FOUC. Persists to localStorage.' },
+      { kind: 'POLISH', text: 'Landing page: single OPEN APP CTA, 2x2 feature grid, green glows via CSS multi-gradient background on main (no section boundary cutoff), email capture section at bottom.' },
+      { kind: 'POLISH', text: 'Auth page redesigned: centered logo, green glow card, mode tabs, Google + GitHub OAuth buttons.' },
+      { kind: 'POLISH', text: 'Color system: uniform near-black background, midnight blue cards (#0d1a2d), green glow accents throughout.' },
+      { kind: 'POLISH', text: 'Footer links now have green hover states. Footer uses VERSION constant from lib/version.ts.' },
+      { kind: 'POLISH', text: 'Nav restructured: Features / Pricing / Changelog / FAQ. Centered links via CSS grid (1fr auto 1fr). Hide-on-scroll, mobile drawer.' },
+      { kind: 'FIX', text: 'TunerView + ChordsView: note display font uses clamp(64px, 20vw, 112px). Meter width is min(100%, 320px). String chips flex-wrap on narrow screens.' },
+      { kind: 'FIX', text: 'getUserMedia errors now differentiated: NotAllowedError, NotFoundError, NotReadableError each show a specific message.' },
+      { kind: 'FIX', text: 'Removed overflow: hidden from sections so green orbs bleed continuously between sections without hard cutoff lines.' },
+      { kind: 'INFRA', text: 'VERSION constant in lib/version.ts used by Footer, Settings, and changelog. Single source of truth.' },
+      { kind: 'INFRA', text: 'Cleaned public/: removed source logo PNG, 5 Next.js default SVGs, Mac Icon file.' },
+    ],
+  },
+  {
     version: 'v0.2',
     date: 'May 18, 2026',
     headline: 'Full app shell, themes, auth, marketing site.',

@@ -6,23 +6,29 @@ Guitar AI tutor. Hears you play, shows you what to play, gives feedback.
 
 ## Current Focus
 
-**Last shipped: v0.2 — Full app shell, light/dark mode, auth, marketing site.**
+**Last shipped: v0.3 (May 18, 2026) — Mobile pass, security headers, UI polish, logo, email waitlist.**
 
-10 routes shipped:
-- `/` — Cinematic landing (marketing route group)
-- `/about` — Story + principles
-- `/pricing` — 3-tier (Free now, Pro + Studio coming soon)
-- `/faq` — Accordion FAQ across 4 categories
-- `/auth` — Sign in / sign up / magic link / reset password
-- `/tuner` — Real-time pitch detection (v0.1)
-- `/chords` — Chromagram chord detection (v0.1)
-- `/app` — Authenticated dashboard with sidebar shell
-- `/app/settings` — Theme, audio prefs, account
-- Middleware handles SSR auth refresh
+Live at: `https://lark-git-main-vinay-batras-projects.vercel.app`
+Supabase project: `ebsddbpbvjbcdwfldubx` (auth live, waitlist table needs migration)
+
+12 routes:
+- `/` — Cinematic landing. Single OPEN APP CTA. Green CSS multi-gradient bg. Email waitlist.
+- `/pricing` — 3-tier (Free / Pro $8 / Studio $24, paid coming soon)
+- `/changelog` — Timeline with v0.1 / v0.2 / v0.3 entries
+- `/faq` — Accordion FAQ, 4 sections
+- `/auth` — Sign in / sign up / magic link / reset. Google + GitHub OAuth live.
+- `/tuner` — Public tuner (no auth)
+- `/chords` — Public chord detector (no auth)
+- `/app` — Auth-gated dashboard (redirects to /auth if not signed in)
+- `/app/tuner` — Tuner inside AppShell
+- `/app/chords` — Chords inside AppShell
+- `/app/settings` — Theme, audio prefs, account, version
 
 ### Next up
-1. Set up Supabase project + add env vars (auth becomes live)
-2. Chord detection accuracy improvements
+1. Run waitlist migration in Supabase SQL editor (`supabase/migrations/20260518000000_waitlist.sql`)
+2. Song follow-along (Dynamic Time Warping)
+3. AI feedback on playing (Claude API + Railway backend)
+4. Stripe for Pro tier (needs parent for under-18 TOS)
 3. Song follow-along (Dynamic Time Warping)
 4. AI feedback on playing (Claude API)
 5. Backend (Railway + FastAPI) when AI ships
