@@ -70,7 +70,7 @@ const STEPS = [
 
 export default function LandingPage() {
   return (
-    <main>
+    <main style={{ overflowX: 'hidden' }}>
       {/* HERO */}
       <section style={{
         position: 'relative',
