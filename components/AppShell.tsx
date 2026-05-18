@@ -61,7 +61,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar */}
       <aside style={{
-        background: 'var(--bg2)',
+        background: 'var(--card-bg)',
         borderRight: '0.5px solid var(--border)',
         padding: '20px 16px',
         display: 'flex',
@@ -229,7 +229,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             onClick={e => e.stopPropagation()}
             style={{
               width: 260,
-              background: 'var(--bg2)',
+              background: 'var(--card-bg)',
               padding: '20px 16px',
               display: 'flex',
               flexDirection: 'column',

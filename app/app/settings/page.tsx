@@ -147,7 +147,7 @@ export default function SettingsPage() {
 
       <Section eyebrow="APPEARANCE" title="Theme">
         <Row label="Color mode" hint="Choose how Lark looks. Synced across the whole app.">
-          <div style={{ display: 'flex', gap: 6, padding: 4, background: 'var(--bg2)', borderRadius: 10, border: '0.5px solid var(--border)' }}>
+          <div style={{ display: 'flex', gap: 6, padding: 4, background: 'var(--bg3)', borderRadius: 10, border: '0.5px solid var(--border)' }}>
             {(['dark', 'light'] as const).map(t => (
               <button
                 key={t}

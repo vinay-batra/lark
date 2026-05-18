@@ -30,7 +30,7 @@ export function Footer() {
   return (
     <footer style={{
       borderTop: '0.5px solid var(--border)',
-      background: 'var(--bg2)',
+      background: 'var(--card-bg)',
       padding: '64px 28px 40px',
       marginTop: 64,
     }}>

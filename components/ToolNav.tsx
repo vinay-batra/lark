@@ -34,7 +34,7 @@ export function ToolNav({ active }: { active: 'tuner' | 'chords' }) {
         display: 'flex',
         gap: 4,
         padding: 4,
-        background: 'var(--bg2)',
+        background: 'var(--bg3)',
         borderRadius: 10,
         border: '0.5px solid var(--border)',
       }}>

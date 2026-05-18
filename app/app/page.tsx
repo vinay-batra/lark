@@ -167,7 +167,7 @@ export default function AppPage() {
           <Reveal key={s.eyebrow} delay={i * 0.06}>
             <div style={{
               padding: '22px 20px',
-              background: 'var(--bg2)',
+              background: 'var(--card-bg)',
               border: '0.5px dashed var(--border2)',
               borderRadius: 14,
               opacity: 0.8,
