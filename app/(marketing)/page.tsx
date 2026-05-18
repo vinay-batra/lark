@@ -134,7 +134,7 @@ export default function LandingPage() {
       </section>
 
       {/* FEATURES */}
-      <section style={{ padding: '80px 24px', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ padding: '80px 24px', position: 'relative' }}>
         <div style={{ position: 'absolute', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%)', top: '10%', left: '-15%', pointerEvents: 'none' }} />
         <div style={{ maxWidth: 960, margin: '0 auto', position: 'relative' }}>
           <Reveal>
@@ -186,7 +186,7 @@ export default function LandingPage() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section style={{ padding: '80px 24px', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ padding: '80px 24px', position: 'relative' }}>
         <div style={{ position: 'absolute', width: 460, height: 460, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.09) 0%, transparent 70%)', top: '0%', right: '-12%', pointerEvents: 'none' }} />
         <div style={{ maxWidth: 960, margin: '0 auto', position: 'relative' }}>
           <Reveal>
@@ -207,10 +207,7 @@ export default function LandingPage() {
                   border: '0.5px solid var(--border)',
                   borderRadius: 16,
                   height: '100%',
-                  position: 'relative',
-                  overflow: 'hidden',
                 }}>
-                  <div style={{ position: 'absolute', bottom: -20, right: -20, width: 100, height: 100, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
                   <p style={{ fontFamily: 'var(--font-mono)', fontSize: 38, fontWeight: 700, color: 'var(--accent)', lineHeight: 1, marginBottom: 18, letterSpacing: '-0.02em', textShadow: '0 0 20px rgba(34,197,94,0.4)' }}>
                     {step.num}
                   </p>
@@ -255,7 +252,7 @@ export default function LandingPage() {
       </section>
 
       {/* EMAIL CAPTURE */}
-      <section style={{ padding: '80px 24px 120px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ padding: '80px 24px 120px', textAlign: 'center', position: 'relative' }}>
         <div style={{ position: 'absolute', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.1) 0%, transparent 70%)', top: '-20%', left: '50%', transform: 'translateX(-50%)', pointerEvents: 'none' }} />
         <Reveal>
           <p className="eyebrow" style={{ marginBottom: 18, position: 'relative' }}>STAY IN THE LOOP</p>
