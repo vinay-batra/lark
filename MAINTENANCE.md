@@ -264,3 +264,4 @@ Routine checks, audits, and tests.
 - 2026-05-18 — e2e sanity check passed
 - 2026-05-18 — lint + format clean
 - 2026-05-18 — accessibility pass, minor notes
+- 2026-05-18 — general housekeeping
