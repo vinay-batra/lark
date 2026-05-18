@@ -14,14 +14,18 @@ const STRINGS = [
   { label: 'e', note: 'E', octave: 4, freq: 329.63, num: 1 },
 ];
 
-function freqToMidi(freq: number) {
-  return Math.round(12 * Math.log2(freq / 440) + 69);
-}
-function midiToFreq(midi: number) {
-  return 440 * Math.pow(2, (midi - 69) / 12);
-}
-function getCents(freq: number, midi: number) {
-  return Math.round(1200 * Math.log2(freq / midiToFreq(midi)));
+function freqToMidi(freq: number) { return Math.round(12 * Math.log2(freq / 440) + 69); }
+function midiToFreq(midi: number) { return 440 * Math.pow(2, (midi - 69) / 12); }
+function getCents(freq: number, midi: number) { return Math.round(1200 * Math.log2(freq / midiToFreq(midi))); }
+
+function getMicError(err: unknown): string {
+  if (err instanceof DOMException) {
+    if (err.name === 'NotAllowedError') return 'Microphone access denied. Allow permission in your browser settings.';
+    if (err.name === 'NotFoundError') return 'No microphone found. Plug one in and try again.';
+    if (err.name === 'NotReadableError') return 'Microphone is in use by another app. Close it and retry.';
+    if (err.name === 'OverconstrainedError') return 'Microphone does not meet requirements.';
+  }
+  return 'Could not access microphone. Try a different browser.';
 }
 
 interface Detected { note: string; octave: number; cents: number; freq: number; }
@@ -78,8 +82,8 @@ export function TunerView() {
       inputRef.current = new Float32Array(detectorRef.current.inputLength);
       setListening(true);
       rafRef.current = requestAnimationFrame(detect);
-    } catch {
-      setError('Microphone access denied. Allow mic permission and try again.');
+    } catch (err) {
+      setError(getMicError(err));
     }
   };
 
@@ -96,19 +100,19 @@ export function TunerView() {
     : [];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', minHeight: '60vh' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 20px', minHeight: '60vh' }}>
       {/* Note */}
       <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: noteColor, lineHeight: 1, marginBottom: 8, transition: 'color 0.1s', display: 'flex', alignItems: 'flex-start', gap: 4 }}>
-        <span style={{ fontSize: 112 }}>{detected?.note ?? '--'}</span>
-        {detected && <span style={{ fontSize: 40, marginTop: 18, color: noteColor, opacity: 0.7 }}>{detected.octave}</span>}
+        <span style={{ fontSize: 'clamp(64px, 20vw, 112px)' }}>{detected?.note ?? '--'}</span>
+        {detected && <span style={{ fontSize: 'clamp(24px, 8vw, 40px)', marginTop: '16%', color: noteColor, opacity: 0.7 }}>{detected.octave}</span>}
       </div>
 
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--text3)', marginBottom: 52, letterSpacing: '0.04em' }}>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--text3)', marginBottom: 44, letterSpacing: '0.04em' }}>
         {detected ? `${detected.freq} Hz` : '--- Hz'}
       </div>
 
       {/* Meter */}
-      <div style={{ width: 320, marginBottom: 10 }}>
+      <div style={{ width: 'min(100%, 320px)', marginBottom: 10, padding: '0 4px' }}>
         <div style={{ position: 'relative', height: 4, background: 'var(--bg3)', borderRadius: 2 }}>
           <div style={{ position: 'absolute', left: '50%', top: -3, transform: 'translateX(-50%)', width: 18, height: 10, background: 'var(--accent-border)', borderRadius: 2 }} />
           {detected && (
@@ -124,17 +128,17 @@ export function TunerView() {
         </div>
       </div>
 
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.18em', color: inTune ? 'var(--accent)' : 'transparent', marginBottom: 52, height: 16, transition: 'color 0.2s' }}>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.18em', color: inTune ? 'var(--accent)' : 'transparent', marginBottom: 44, height: 16, transition: 'color 0.2s' }}>
         IN TUNE
       </div>
 
       {/* Strings */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 52 }}>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 44, flexWrap: 'wrap', justifyContent: 'center', maxWidth: 320 }}>
         {STRINGS.map(s => {
           const isActive = activeStrings.some(a => a.num === s.num);
           return (
-            <div key={s.num} style={{ width: 48, height: 60, borderRadius: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, border: isActive ? `1px solid ${noteColor}` : '1px solid var(--border)', background: isActive ? (inTune ? 'var(--accent-dim)' : close ? 'var(--sharp-dim)' : 'var(--danger-dim)') : 'var(--bg2)', transition: 'all 0.12s' }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 700, color: isActive ? noteColor : 'var(--text2)', transition: 'color 0.12s' }}>{s.label}</span>
+            <div key={s.num} style={{ width: 46, height: 58, borderRadius: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, border: isActive ? `1px solid ${noteColor}` : '1px solid var(--border)', background: isActive ? (inTune ? 'var(--accent-dim)' : close ? 'var(--sharp-dim)' : 'var(--danger-dim)') : 'var(--card-bg)', transition: 'all 0.12s' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 700, color: isActive ? noteColor : 'var(--text2)', transition: 'color 0.12s' }}>{s.label}</span>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)' }}>{s.note}{s.octave}</span>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)' }}>str {s.num}</span>
             </div>
@@ -142,11 +146,11 @@ export function TunerView() {
         })}
       </div>
 
-      {error && <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--danger)', marginBottom: 20, textAlign: 'center', maxWidth: 320 }}>{error}</p>}
+      {error && <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--danger)', marginBottom: 20, textAlign: 'center', maxWidth: 'min(100%, 320px)', lineHeight: 1.55 }}>{error}</p>}
 
       <button
         onClick={listening ? stop : start}
-        style={{ padding: '14px 52px', borderRadius: 9999, border: listening ? '1px solid var(--border2)' : 'none', background: listening ? 'var(--bg3)' : 'var(--accent)', color: listening ? 'var(--text2)' : '#000', fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', transition: 'all 0.15s' }}
+        style={{ padding: '14px 52px', borderRadius: 9999, border: listening ? '1px solid var(--border2)' : 'none', background: listening ? 'var(--card-bg)' : 'var(--accent)', color: listening ? 'var(--text2)' : '#061b0e', fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', transition: 'all 0.15s' }}
       >
         {listening ? 'STOP' : 'START TUNER'}
       </button>

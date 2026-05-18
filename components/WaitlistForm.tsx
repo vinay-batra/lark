@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 
 export function WaitlistForm() {
@@ -27,53 +28,65 @@ export function WaitlistForm() {
     setEmail('');
   };
 
-  if (status === 'success') {
-    return (
-      <div style={{ textAlign: 'center', padding: '24px 0' }}>
-        <div style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 10,
-          padding: '14px 28px',
-          background: 'var(--accent-dim)',
-          border: '0.5px solid var(--accent-border)',
-          borderRadius: 12,
-        }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--accent)', letterSpacing: '0.06em' }}>
-            You are on the list.
-          </span>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <form onSubmit={submit} style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-      <input
-        type="email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        required
-        placeholder="your@email.com"
-        className="input-field"
-        style={{ maxWidth: 300, flex: '1 1 220px' }}
-      />
-      <button
-        type="submit"
-        disabled={status === 'loading'}
-        className="btn btn-accent"
-        style={{ flexShrink: 0 }}
-      >
-        {status === 'loading' ? 'JOINING...' : 'JOIN WAITLIST'}
-      </button>
-      {msg && (
-        <p style={{ width: '100%', textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--danger)' }}>
-          {msg}
-        </p>
+    <AnimatePresence mode="wait">
+      {status === 'success' ? (
+        <motion.div
+          key="success"
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          style={{ textAlign: 'center', padding: '24px 0' }}
+        >
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 10,
+            padding: '14px 28px',
+            background: 'var(--accent-dim)',
+            border: '0.5px solid var(--accent-border)',
+            borderRadius: 12,
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--accent)', letterSpacing: '0.06em' }}>
+              You are on the list.
+            </span>
+          </div>
+        </motion.div>
+      ) : (
+        <motion.form
+          key="form"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0, scale: 0.96 }}
+          transition={{ duration: 0.25 }}
+          onSubmit={submit}
+          style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}
+        >
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+            placeholder="your@email.com"
+            className="input-field"
+            style={{ maxWidth: 300, flex: '1 1 200px' }}
+          />
+          <button
+            type="submit"
+            disabled={status === 'loading'}
+            className="btn btn-accent"
+            style={{ flexShrink: 0 }}
+          >
+            {status === 'loading' ? 'JOINING...' : 'JOIN WAITLIST'}
+          </button>
+          {msg && (
+            <p style={{ width: '100%', textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--danger)' }}>
+              {msg}
+            </p>
+          )}
+        </motion.form>
       )}
-    </form>
+    </AnimatePresence>
   );
 }

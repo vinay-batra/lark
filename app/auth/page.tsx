@@ -122,7 +122,7 @@ function AuthInner() {
           </p>
         </div>
 
-        <div style={{ padding: '28px 40px 36px' }}>
+        <div style={{ padding: 'clamp(24px, 6vw, 40px) clamp(20px, 7vw, 40px) clamp(28px, 6vw, 36px)' }}>
           {/* Mode tabs */}
           {(mode === 'signin' || mode === 'signup') && (
             <div style={{ display: 'flex', gap: 3, padding: 4, background: 'var(--bg3)', borderRadius: 12, marginBottom: 24, border: '0.5px solid var(--border)' }}>

@@ -257,9 +257,28 @@ button, a, [role="button"] { touch-action: pan-y; }
   box-shadow: var(--shadow-md);
 }
 
+/* ── Footer links ── */
+.footer-link {
+  font-size: 13px;
+  color: var(--text2);
+  transition: color 0.15s;
+  display: inline-block;
+}
+.footer-link:hover { color: var(--accent); }
+
 /* ── Mobile ── */
 @media (max-width: 768px) {
   .public-nav { height: 56px; }
   .btn-lg { padding: 12px 24px; }
   .features-grid { grid-template-columns: 1fr !important; }
+  .pricing-grid { grid-template-columns: 1fr !important; }
+  .auth-card-padding { padding: 28px 24px 32px !important; }
+  .settings-row { flex-wrap: wrap; gap: 12px !important; }
+}
+
+/* ── Focus accessibility ── */
+.hover-lift:focus-visible {
+  outline: 2px solid rgba(var(--accent-rgb), 0.7);
+  outline-offset: 3px;
+  border-radius: 16px;
 }

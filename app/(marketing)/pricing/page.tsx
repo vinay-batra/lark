@@ -128,7 +128,7 @@ export default function PricingPage() {
           maxWidth: 1120,
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
           gap: 18,
         }}>
           {PLANS.map((plan, i) => (
@@ -176,7 +176,7 @@ export default function PricingPage() {
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 14 }}>
                   <span style={{
                     fontFamily: 'var(--font-mono)',
-                    fontSize: 42,
+                    fontSize: 'clamp(32px, 7vw, 42px)',
                     fontWeight: 700,
                     color: 'var(--text)',
                     letterSpacing: '-0.02em',

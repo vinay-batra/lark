@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { VERSION } from '@/lib/version';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/components/ThemeProvider';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
@@ -48,7 +49,7 @@ function Section({ eyebrow, title, children }: SectionProps) {
 
 function Row({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
-    <div style={{
+    <div className="settings-row" style={{
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -226,7 +227,7 @@ export default function SettingsPage() {
 
       <Section eyebrow="ABOUT" title="Lark">
         <Row label="Version" hint="Latest build deployed.">
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text3)' }}>v0.2</span>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text3)' }}>{VERSION}</span>
         </Row>
         <Row label="Feedback" hint="Tell us what is broken or missing.">
           <a href="mailto:hello@lark.fm" className="btn btn-ghost btn-sm">EMAIL US</a>

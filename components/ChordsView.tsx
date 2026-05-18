@@ -29,9 +29,7 @@ function avgChromagram(history: number[][]): number[] {
   return history[0].map((_, i) => history.reduce((s, h) => s + h[i], 0) / len);
 }
 
-function formatChord(raw: string): string {
-  return raw.replace(/^([A-G][#b]?)M$/, '$1');
-}
+function formatChord(raw: string): string { return raw.replace(/^([A-G][#b]?)M$/, '$1'); }
 
 function chordQuality(raw: string): string {
   if (/^[A-G][#b]?M$/.test(raw)) return 'major';
@@ -42,6 +40,15 @@ function chordQuality(raw: string): string {
   if (raw.includes('aug')) return 'augmented';
   if (raw.includes('sus')) return 'suspended';
   return '';
+}
+
+function getMicError(err: unknown): string {
+  if (err instanceof DOMException) {
+    if (err.name === 'NotAllowedError') return 'Microphone access denied. Allow permission in your browser settings.';
+    if (err.name === 'NotFoundError') return 'No microphone found. Plug one in and try again.';
+    if (err.name === 'NotReadableError') return 'Microphone is in use by another app. Close it and retry.';
+  }
+  return 'Could not access microphone. Try a different browser.';
 }
 
 interface ChordResult { name: string; quality: string; alternatives: string[]; notes: string[]; }
@@ -73,7 +80,6 @@ export function ChordsView() {
     const freqData = freqDataRef.current;
     const ctx = ctxRef.current;
     if (!analyser || !freqData || !ctx) return;
-
     analyser.getFloatFrequencyData(freqData as Float32Array<ArrayBuffer>);
     const frame = buildChromagram(freqData, ctx.sampleRate, analyser.fftSize);
     historyRef.current.push(frame);
@@ -108,8 +114,8 @@ export function ChordsView() {
       freqDataRef.current = new Float32Array(analyser.frequencyBinCount);
       setListening(true);
       rafRef.current = requestAnimationFrame(analyze);
-    } catch {
-      setError('Microphone access denied. Allow mic permission and try again.');
+    } catch (err) {
+      setError(getMicError(err));
     }
   };
 
@@ -119,10 +125,10 @@ export function ChordsView() {
   const chordColor = !hasChord ? 'var(--text-muted)' : result.alternatives.length === 0 ? 'var(--accent)' : 'var(--sharp)';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', minHeight: '60vh' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 20px', minHeight: '60vh' }}>
       {/* Chord name */}
       <div style={{ textAlign: 'center', marginBottom: 6 }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 112, fontWeight: 700, color: chordColor, lineHeight: 1, transition: 'color 0.15s', minWidth: 200, letterSpacing: '-2px' }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(64px, 20vw, 112px)', fontWeight: 700, color: chordColor, lineHeight: 1, transition: 'color 0.15s', letterSpacing: '-2px' }}>
           {result?.name ?? '--'}
         </div>
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, letterSpacing: '0.15em', color: hasChord ? 'var(--text3)' : 'transparent', marginTop: 6, height: 16, transition: 'color 0.15s' }}>
@@ -131,7 +137,7 @@ export function ChordsView() {
       </div>
 
       {/* Notes */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 40, minHeight: 32, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 36, minHeight: 32, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', maxWidth: 'min(100%, 480px)' }}>
         {(result?.notes ?? []).map(note => (
           <span key={note} style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--accent)', background: 'var(--accent-dim)', border: '0.5px solid var(--accent-border)', borderRadius: 6, padding: '3px 9px', letterSpacing: '0.08em' }}>
             {note}
@@ -140,16 +146,16 @@ export function ChordsView() {
       </div>
 
       {/* Chromagram */}
-      <div style={{ width: '100%', maxWidth: 480, marginBottom: 40 }}>
+      <div style={{ width: 'min(100%, 480px)', marginBottom: 36, padding: '0 4px' }}>
         <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.2em', color: 'var(--text-muted)', marginBottom: 10, textAlign: 'center' }}>CHROMAGRAM</p>
-        <div style={{ display: 'flex', gap: 4, alignItems: 'flex-end', height: 64 }}>
+        <div style={{ display: 'flex', gap: 3, alignItems: 'flex-end', height: 56 }}>
           {NOTE_NAMES.map((note, i) => {
             const val = chroma[i];
             const active = val >= ACTIVE_THRESHOLD;
             return (
               <div key={note} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                <div style={{ width: '100%', height: Math.max(2, Math.round(val * 48)), background: active ? 'var(--accent)' : 'var(--bg3)', borderRadius: '3px 3px 0 0', transition: 'height 0.08s, background 0.15s', boxShadow: active ? `0 0 8px rgba(var(--accent-rgb), 0.4)` : 'none', marginTop: 'auto' }} />
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: note.includes('#') ? 7 : 8, color: active ? 'var(--accent)' : 'var(--text-muted)', transition: 'color 0.15s', lineHeight: 1 }}>{note}</span>
+                <div style={{ width: '100%', height: Math.max(2, Math.round(val * 44)), background: active ? 'var(--accent)' : 'var(--bg3)', borderRadius: '3px 3px 0 0', transition: 'height 0.08s, background 0.15s', boxShadow: active ? `0 0 8px rgba(var(--accent-rgb), 0.4)` : 'none', marginTop: 'auto' }} />
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: note.includes('#') ? 6 : 7, color: active ? 'var(--accent)' : 'var(--text-muted)', transition: 'color 0.15s', lineHeight: 1 }}>{note}</span>
               </div>
             );
           })}
@@ -157,18 +163,18 @@ export function ChordsView() {
       </div>
 
       {/* Alternatives */}
-      <div style={{ minHeight: 28, display: 'flex', gap: 8, alignItems: 'center', marginBottom: 40, flexWrap: 'wrap', justifyContent: 'center' }}>
+      <div style={{ minHeight: 28, display: 'flex', gap: 8, alignItems: 'center', marginBottom: 36, flexWrap: 'wrap', justifyContent: 'center' }}>
         {(result?.alternatives ?? []).length > 0 && (
           <>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', letterSpacing: '0.1em' }}>ALSO</span>
             {result!.alternatives.map(alt => (
-              <span key={alt} style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text3)', background: 'var(--bg3)', border: '0.5px solid var(--border)', borderRadius: 6, padding: '3px 9px' }}>{alt}</span>
+              <span key={alt} style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text3)', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 6, padding: '3px 9px' }}>{alt}</span>
             ))}
           </>
         )}
       </div>
 
-      {error && <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--danger)', marginBottom: 20, textAlign: 'center', maxWidth: 320 }}>{error}</p>}
+      {error && <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--danger)', marginBottom: 20, textAlign: 'center', maxWidth: 'min(100%, 320px)', lineHeight: 1.55 }}>{error}</p>}
 
       <button onClick={listening ? stop : start} className={`btn ${listening ? 'btn-ghost' : 'btn-accent'}`} style={{ fontSize: 13, padding: '14px 52px' }}>
         <span className="btn-text">{listening ? 'STOP' : 'START LISTENING'}</span>
