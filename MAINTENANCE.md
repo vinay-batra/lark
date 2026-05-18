@@ -251,3 +251,4 @@ Routine checks, audits, and tests.
 - 2026-05-18 — checked mobile layouts
 - 2026-05-18 — general housekeeping
 - 2026-05-18 — general housekeeping
+- 2026-05-18 — ran regression pass, no regressions
