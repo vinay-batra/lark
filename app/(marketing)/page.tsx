@@ -70,22 +70,25 @@ const STEPS = [
 
 export default function LandingPage() {
   return (
-    <main style={{ overflowX: 'hidden' }}>
+    <main style={{
+      overflowX: 'hidden',
+      backgroundImage: `
+        radial-gradient(ellipse 700px 600px at 92% 4%, rgba(34,197,94,0.2) 0%, transparent 70%),
+        radial-gradient(ellipse 500px 500px at 5% 16%, rgba(34,197,94,0.13) 0%, transparent 65%),
+        radial-gradient(ellipse 360px 360px at 8% 32%, rgba(34,197,94,0.08) 0%, transparent 65%),
+        radial-gradient(ellipse 520px 480px at 10% 50%, rgba(34,197,94,0.08) 0%, transparent 65%),
+        radial-gradient(ellipse 480px 480px at 90% 64%, rgba(34,197,94,0.09) 0%, transparent 65%),
+        radial-gradient(ellipse 560px 500px at 50% 90%, rgba(34,197,94,0.1) 0%, transparent 65%)
+      `,
+    }}>
       {/* HERO */}
       <section style={{
-        position: 'relative',
         minHeight: 'calc(100vh - 64px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         padding: '48px 24px 80px',
-        overflow: 'hidden',
       }}>
-        {/* Orbs — more vibrant */}
-        <div style={{ position: 'absolute', width: 640, height: 640, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.22) 0%, transparent 65%)', top: '-28%', right: '-14%', animation: 'float 8s ease-in-out infinite', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', width: 420, height: 420, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.14) 0%, transparent 65%)', bottom: '-18%', left: '-10%', animation: 'float 11s ease-in-out infinite reverse', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', width: 280, height: 280, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.1) 0%, transparent 70%)', top: '30%', left: '5%', animation: 'float 14s ease-in-out infinite', pointerEvents: 'none' }} />
-
         <div style={{ maxWidth: 860, textAlign: 'center', position: 'relative', zIndex: 1 }}>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
@@ -134,9 +137,8 @@ export default function LandingPage() {
       </section>
 
       {/* FEATURES */}
-      <section style={{ padding: '80px 24px', position: 'relative' }}>
-        <div style={{ position: 'absolute', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%)', top: '10%', left: '-15%', pointerEvents: 'none' }} />
-        <div style={{ maxWidth: 960, margin: '0 auto', position: 'relative' }}>
+      <section style={{ padding: '80px 24px' }}>
+        <div style={{ maxWidth: 960, margin: '0 auto' }}>
           <Reveal>
             <div style={{ textAlign: 'center', marginBottom: 56 }}>
               <p className="eyebrow" style={{ marginBottom: 14 }}>BUILT FOR GUITARISTS</p>
@@ -186,9 +188,8 @@ export default function LandingPage() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section style={{ padding: '80px 24px', position: 'relative' }}>
-        <div style={{ position: 'absolute', width: 460, height: 460, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.09) 0%, transparent 70%)', top: '0%', right: '-12%', pointerEvents: 'none' }} />
-        <div style={{ maxWidth: 960, margin: '0 auto', position: 'relative' }}>
+      <section style={{ padding: '80px 24px' }}>
+        <div style={{ maxWidth: 960, margin: '0 auto' }}>
           <Reveal>
             <div style={{ textAlign: 'center', marginBottom: 52 }}>
               <p className="eyebrow" style={{ marginBottom: 14 }}>HOW IT WORKS</p>
@@ -201,13 +202,7 @@ export default function LandingPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
             {STEPS.map((step, i) => (
               <Reveal key={step.num} delay={i * 0.09}>
-                <div style={{
-                  padding: '28px 24px',
-                  background: 'var(--card-bg)',
-                  border: '0.5px solid var(--border)',
-                  borderRadius: 16,
-                  height: '100%',
-                }}>
+                <div style={{ padding: '28px 24px', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 16, height: '100%' }}>
                   <p style={{ fontFamily: 'var(--font-mono)', fontSize: 38, fontWeight: 700, color: 'var(--accent)', lineHeight: 1, marginBottom: 18, letterSpacing: '-0.02em', textShadow: '0 0 20px rgba(34,197,94,0.4)' }}>
                     {step.num}
                   </p>
@@ -222,7 +217,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* TRUST STRIP */}
+      {/* TRUST */}
       <section style={{ padding: '80px 24px' }}>
         <div style={{ maxWidth: 860, margin: '0 auto' }}>
           <Reveal>
@@ -237,8 +232,7 @@ export default function LandingPage() {
               boxShadow: '0 0 40px rgba(34,197,94,0.08), 0 8px 32px rgba(0,0,0,0.4)',
             }}>
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(34,197,94,0.5), transparent)' }} />
-              <div style={{ position: 'absolute', top: '-30%', right: '-10%', width: 480, height: 480, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.1) 0%, transparent 65%)', pointerEvents: 'none' }} />
-              <div style={{ position: 'absolute', bottom: '-30%', left: '-10%', width: 360, height: 360, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.07) 0%, transparent 65%)', pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', top: '-40%', right: '-10%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 65%)', pointerEvents: 'none' }} />
               <p className="eyebrow" style={{ marginBottom: 16, position: 'relative' }}>POWERED BY YOUR BROWSER</p>
               <h2 style={{ fontSize: 'clamp(22px, 3.5vw, 32px)', fontWeight: 700, color: 'var(--text)', lineHeight: 1.25, marginBottom: 14, position: 'relative', letterSpacing: '-0.01em' }}>
                 No downloads. No cables. No paywalls to try it.
@@ -251,20 +245,17 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* EMAIL CAPTURE */}
-      <section style={{ padding: '80px 24px 120px', textAlign: 'center', position: 'relative' }}>
-        <div style={{ position: 'absolute', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.1) 0%, transparent 70%)', top: '-20%', left: '50%', transform: 'translateX(-50%)', pointerEvents: 'none' }} />
+      {/* EMAIL */}
+      <section style={{ padding: '80px 24px 120px', textAlign: 'center' }}>
         <Reveal>
-          <p className="eyebrow" style={{ marginBottom: 18, position: 'relative' }}>STAY IN THE LOOP</p>
-          <h2 style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(26px, 5vw, 44px)', fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.1, maxWidth: 600, margin: '0 auto 14px', position: 'relative' }}>
+          <p className="eyebrow" style={{ marginBottom: 18 }}>STAY IN THE LOOP</p>
+          <h2 style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(26px, 5vw, 44px)', fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.1, maxWidth: 600, margin: '0 auto 14px' }}>
             Be first when Song Mode ships.
           </h2>
-          <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 420, margin: '0 auto 32px', lineHeight: 1.6, position: 'relative' }}>
+          <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 420, margin: '0 auto 32px', lineHeight: 1.6 }}>
             Drop your email. We will let you know when follow-along and AI coaching go live. No spam.
           </p>
-          <div style={{ position: 'relative' }}>
-            <WaitlistForm />
-          </div>
+          <WaitlistForm />
         </Reveal>
       </section>
     </main>
