@@ -50,12 +50,13 @@ export function PublicNav() {
         }}>
           {/* Logo (left column) */}
           <div style={{ justifySelf: 'start' }}>
-            <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 9 }}>
+              <img src="/lark-logo.png" alt="Lark" width={30} height={30} style={{ display: 'block' }} />
               <span style={{
                 fontFamily: 'var(--font-mono)',
                 fontWeight: 700,
-                fontSize: 18,
-                color: 'var(--accent)',
+                fontSize: 17,
+                color: 'var(--text)',
                 letterSpacing: '0.04em',
               }}>
                 Lark

@@ -42,16 +42,10 @@ export function Footer() {
         gap: 48,
       }} className="footer-grid">
         <div>
-          <p style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 22,
-            fontWeight: 700,
-            color: 'var(--accent)',
-            marginBottom: 14,
-            letterSpacing: '0.02em',
-          }}>
-            Lark
-          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+            <img src="/lark-logo.png" alt="Lark" width={32} height={32} style={{ display: 'block' }} />
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700, color: 'var(--text)', letterSpacing: '0.04em' }}>Lark</span>
+          </div>
           <p style={{
             fontSize: 13,
             color: 'var(--text3)',

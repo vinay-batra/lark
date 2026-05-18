@@ -24,14 +24,9 @@ export function ToolNav({ active }: { active: 'tuner' | 'chords' }) {
       top: 0,
       zIndex: 50,
     }}>
-      <Link href="/" style={{
-        fontFamily: 'var(--font-mono)',
-        fontSize: 16,
-        fontWeight: 700,
-        color: 'var(--accent)',
-        letterSpacing: '0.04em',
-      }}>
-        Lark
+      <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+        <img src="/lark-logo.png" alt="Lark" width={26} height={26} style={{ display: 'block' }} />
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--text)', letterSpacing: '0.04em' }}>Lark</span>
       </Link>
 
       <div style={{

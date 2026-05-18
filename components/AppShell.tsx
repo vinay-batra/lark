@@ -74,15 +74,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Link href="/" style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 8,
+          gap: 9,
           padding: '8px 12px',
           marginBottom: 22,
         }}>
+          <img src="/lark-logo.png" alt="Lark" width={28} height={28} style={{ display: 'block' }} />
           <span style={{
             fontFamily: 'var(--font-mono)',
-            fontSize: 18,
+            fontSize: 17,
             fontWeight: 700,
-            color: 'var(--accent)',
+            color: 'var(--text)',
             letterSpacing: '0.04em',
           }}>
             Lark
@@ -236,14 +237,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             }}
           >
             <Link href="/" onClick={() => setMobileNavOpen(false)} style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 18,
-              fontWeight: 700,
-              color: 'var(--accent)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 9,
               padding: '8px 12px',
               marginBottom: 14,
             }}>
-              Lark
+              <img src="/lark-logo.png" alt="Lark" width={28} height={28} style={{ display: 'block' }} />
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 700, color: 'var(--text)', letterSpacing: '0.04em' }}>Lark</span>
             </Link>
             {NAV.map(item => {
               const active = pathname === item.href;

@@ -219,7 +219,7 @@ export default function AppPage() {
             {[
               { val: '0', label: 'Sessions' },
               { val: '0m', label: 'Practice time' },
-              { val: '—', label: 'Best tuning' },
+              { val: '--', label: 'Best tuning' },
               { val: '0', label: 'Chords learned' },
             ].map(s => (
               <div key={s.label}>

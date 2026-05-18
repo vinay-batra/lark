@@ -10,13 +10,21 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Lark — The guitar tutor that listens',
-  description:
-    'Tune, detect chords, follow songs, and get real feedback on your playing. AI-powered guitar coaching in your browser.',
+  title: 'Lark - The guitar tutor that listens',
+  description: 'Tune, detect chords, follow songs, and get real feedback on your playing. AI-powered guitar coaching in your browser.',
+  icons: {
+    icon: [
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
+    shortcut: '/favicon.ico',
+  },
   openGraph: {
-    title: 'Lark — The guitar tutor that listens',
+    title: 'Lark - The guitar tutor that listens',
     description: 'AI-powered guitar coaching that hears every note you play.',
     type: 'website',
+    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
   },
 };
 
