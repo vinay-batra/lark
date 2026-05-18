@@ -261,4 +261,5 @@ button, a, [role="button"] { touch-action: pan-y; }
 @media (max-width: 768px) {
   .public-nav { height: 56px; }
   .btn-lg { padding: 12px 24px; }
+  .features-grid { grid-template-columns: 1fr !important; }
 }
