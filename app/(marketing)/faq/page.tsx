@@ -193,8 +193,6 @@ export default function FAQPage() {
             transition={{ duration: 0.55, delay: 0.16 }}
             style={{ fontSize: 16, color: 'var(--text3)', lineHeight: 1.6 }}
           >
-            Anything you do not see here, email{' '}
-            <a href="mailto:hello@lark.fm" style={{ color: 'var(--accent)' }}>hello@lark.fm</a>.
           </motion.p>
         </div>
       </section>
