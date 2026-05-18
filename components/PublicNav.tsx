@@ -7,7 +7,6 @@ import { ThemeToggle } from './ThemeToggle';
 
 const LINKS = [
   { href: '/tuner', label: 'Tuner' },
-  { href: '/chords', label: 'Chords' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/changelog', label: 'Changelog' },
   { href: '/faq', label: 'FAQ' },
