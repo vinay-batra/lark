@@ -6,12 +6,12 @@ Guitar AI tutor. Hears you play, shows you what to play, gives feedback.
 
 ## Current Focus
 
-**Last shipped: v0.3 (May 18, 2026) — Mobile pass, security headers, UI polish, logo, email waitlist.**
+**Last shipped: v0.4 (May 18, 2026) — Song Mode with score-following + AI Coach via Claude API.**
 
 Live at: `https://lark-git-main-vinay-batras-projects.vercel.app`
 Supabase project: `ebsddbpbvjbcdwfldubx` (auth live, waitlist table needs migration)
 
-12 routes:
+13 routes:
 - `/` — Cinematic landing. Single OPEN APP CTA. Green CSS multi-gradient bg. Email waitlist.
 - `/pricing` — 3-tier (Free / Pro $8 / Studio $24, paid coming soon)
 - `/changelog` — Timeline with v0.1 / v0.2 / v0.3 entries
@@ -22,16 +22,16 @@ Supabase project: `ebsddbpbvjbcdwfldubx` (auth live, waitlist table needs migrat
 - `/app` — Auth-gated dashboard (redirects to /auth if not signed in)
 - `/app/tuner` — Tuner inside AppShell
 - `/app/chords` — Chords inside AppShell
+- `/app/songs` — Song Mode: pick a song, play note-by-note, get AI coaching
 - `/app/settings` — Theme, audio prefs, account, version
+- `/api/coach` — POST endpoint: sends session data to Claude, returns guitar feedback
 
 ### Next up
 1. Run waitlist migration in Supabase SQL editor (`supabase/migrations/20260518000000_waitlist.sql`)
-2. Song follow-along (Dynamic Time Warping)
-3. AI feedback on playing (Claude API + Railway backend)
-4. Stripe for Pro tier (needs parent for under-18 TOS)
-3. Song follow-along (Dynamic Time Warping)
-4. AI feedback on playing (Claude API)
-5. Backend (Railway + FastAPI) when AI ships
+2. Add ANTHROPIC_API_KEY to Vercel env vars (Project Settings -> Environment Variables)
+3. Stripe for Pro tier (needs parent for under-18 TOS)
+4. Progress tracking (session history, stats in /app dashboard)
+5. Backend (Railway + FastAPI) when needed for heavier AI features
 
 ---
 
@@ -41,6 +41,7 @@ Supabase project: `ebsddbpbvjbcdwfldubx` (auth live, waitlist table needs migrat
 - **Styling**: CSS variables only (no Tailwind), Space Mono for accent/numbers
 - **Animation**: framer-motion + IntersectionObserver-based `Reveal` component
 - **Audio**: Web Audio API + Pitchy v4 (pitch) + @tonaljs/chord-detect (chords)
+- **AI**: @anthropic-ai/sdk (server-side only, `/api/coach` route)
 - **Auth**: Supabase (browser client + @supabase/ssr middleware)
 - **Deploy**: Vercel (push to main auto-deploys)
 - **Local path**: `~/Downloads/lark/`
@@ -198,6 +199,33 @@ Newer TS strict mode flags `Float32Array<ArrayBufferLike>` vs `Float32Array<Arra
 ```ts
 analyser.getFloatFrequencyData(freqData as Float32Array<ArrayBuffer>);
 ```
+
+---
+
+## Song Mode (v0.4)
+
+### Architecture
+- `lib/songs.ts` — `Song` + `SongNote` types. Each note has a display name (e.g. `E4`) and MIDI number for frequency comparison.
+- `components/SongFollowView.tsx` — score-following component. Uses same Pitchy pitch detection as Tuner.
+- `app/app/songs/page.tsx` — song list UI + SongFollowView when a song is selected.
+- `app/api/coach/route.ts` — POST endpoint. Sends session stats to `claude-sonnet-4-6`, returns 2-3 sentence feedback.
+
+### Score-following logic (incremental, not full DTW)
+- Note tolerance: 100 cents (1 semitone) — generous for beginners
+- Clarity threshold: 0.88 (slightly looser than Tuner's 0.92)
+- Per-note timeout: 4 seconds. If user doesn't play the right note in time, auto-advance as a miss.
+- `advancedRef` prevents double-advance race between RAF loop and timeout.
+- Refs (`noteIndexRef`, `sessionNotesRef`) are the source of truth inside the RAF loop. State is synced for rendering.
+
+### AI Coach
+- Requires `ANTHROPIC_API_KEY` env var (server-side only, never `NEXT_PUBLIC_`).
+- Gracefully degrades: returns a setup message if key is missing.
+- Called once per session after all notes are played.
+- Input: song title, per-note hit/miss + cents offset, totals.
+- Model: `claude-sonnet-4-6`, max 200 tokens.
+
+### Songs
+Defined in `lib/songs.ts`: Ode to Joy, Seven Nation Army, Smoke on the Water, Happy Birthday, Twinkle Twinkle. All beginner difficulty. Add more by appending to the `SONGS` array.
 
 ---
 

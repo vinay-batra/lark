@@ -21,12 +21,18 @@ const QUICK_TOOLS = [
     desc: 'Play any chord, Lark identifies it from the chromagram.',
     icon: <><rect x="3" y="6" width="18" height="12" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="3" y1="14" x2="21" y2="14"/><line x1="8" y1="6" x2="8" y2="18"/><line x1="14" y1="6" x2="14" y2="18"/></>,
   },
+  {
+    href: '/app/songs',
+    eyebrow: 'SONG MODE',
+    title: 'Follow along with songs',
+    desc: 'Play note-by-note. Lark scores your accuracy and gives AI coaching after each session.',
+    icon: <><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></>,
+  },
 ];
 
 const SOON = [
-  { eyebrow: 'SONG MODE', title: 'Follow along with songs', desc: 'Score following + scrolling tab. Lark adapts to your tempo.' },
-  { eyebrow: 'AI COACH', title: 'Feedback that means something', desc: 'Specific, actionable feedback on every note and chord.' },
   { eyebrow: 'PROGRESS', title: 'Track your improvement', desc: 'See your tuning accuracy, chord recognition, and practice time over weeks.' },
+  { eyebrow: 'STRIPE', title: 'Pro + Studio plans', desc: 'Unlock unlimited songs, advanced AI coaching, and detailed session history.' },
 ];
 
 export default function AppPage() {
