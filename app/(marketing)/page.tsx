@@ -81,8 +81,10 @@ export default function LandingPage() {
         padding: '48px 24px 80px',
         overflow: 'hidden',
       }}>
-        <div style={{ position: 'absolute', width: 560, height: 560, borderRadius: '50%', background: 'radial-gradient(circle, rgba(var(--accent-rgb), 0.16) 0%, transparent 70%)', top: '-25%', right: '-12%', animation: 'float 8s ease-in-out infinite', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', width: 380, height: 380, borderRadius: '50%', background: 'radial-gradient(circle, rgba(var(--accent-rgb), 0.09) 0%, transparent 70%)', bottom: '-15%', left: '-8%', animation: 'float 11s ease-in-out infinite reverse', pointerEvents: 'none' }} />
+        {/* Orbs — more vibrant */}
+        <div style={{ position: 'absolute', width: 640, height: 640, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.22) 0%, transparent 65%)', top: '-28%', right: '-14%', animation: 'float 8s ease-in-out infinite', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', width: 420, height: 420, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.14) 0%, transparent 65%)', bottom: '-18%', left: '-10%', animation: 'float 11s ease-in-out infinite reverse', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', width: 280, height: 280, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.1) 0%, transparent 70%)', top: '30%', left: '5%', animation: 'float 14s ease-in-out infinite', pointerEvents: 'none' }} />
 
         <div style={{ maxWidth: 860, textAlign: 'center', position: 'relative', zIndex: 1 }}>
           <motion.p
@@ -92,7 +94,7 @@ export default function LandingPage() {
             className="eyebrow"
             style={{ marginBottom: 28 }}
           >
-            <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', marginRight: 8, verticalAlign: 'middle', animation: 'pulse 2s ease-in-out infinite' }} />
+            <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: 'var(--accent)', marginRight: 9, verticalAlign: 'middle', animation: 'pulse 2s ease-in-out infinite', boxShadow: '0 0 10px rgba(34,197,94,0.7)' }} />
             LISTEN-FIRST GUITAR COACHING
           </motion.p>
 
@@ -103,7 +105,7 @@ export default function LandingPage() {
             style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(42px, 8vw, 88px)', fontWeight: 700, color: 'var(--text)', lineHeight: 1.04, marginBottom: 24, letterSpacing: '-0.03em' }}
           >
             The guitar tutor<br />
-            <span style={{ color: 'var(--accent)' }}>that listens.</span>
+            <span style={{ color: 'var(--accent)', textShadow: '0 0 40px rgba(34,197,94,0.4)' }}>that listens.</span>
           </motion.h1>
 
           <motion.p
@@ -121,7 +123,7 @@ export default function LandingPage() {
             transition={{ duration: 0.5, delay: 0.26 }}
             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}
           >
-            <Link href="/app" className="btn btn-accent btn-lg">
+            <Link href="/app" className="btn btn-accent btn-lg" style={{ boxShadow: '0 0 28px rgba(34,197,94,0.35), 0 4px 16px rgba(0,0,0,0.3)' }}>
               OPEN APP
             </Link>
             <Link href="/auth?mode=signup" style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text3)', letterSpacing: '0.08em' }}>
@@ -131,9 +133,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FEATURES 2x2 */}
-      <section style={{ padding: '80px 24px' }}>
-        <div style={{ maxWidth: 960, margin: '0 auto' }}>
+      {/* FEATURES */}
+      <section style={{ padding: '80px 24px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%)', top: '10%', left: '-15%', pointerEvents: 'none' }} />
+        <div style={{ maxWidth: 960, margin: '0 auto', position: 'relative' }}>
           <Reveal>
             <div style={{ textAlign: 'center', marginBottom: 56 }}>
               <p className="eyebrow" style={{ marginBottom: 14 }}>BUILT FOR GUITARISTS</p>
@@ -149,12 +152,18 @@ export default function LandingPage() {
                 <div style={{
                   padding: '26px 24px',
                   background: 'var(--card-bg)',
-                  border: '0.5px solid var(--border)',
+                  border: f.available ? '0.5px solid rgba(34,197,94,0.2)' : '0.5px solid var(--border)',
                   borderRadius: 16,
                   height: '100%',
-                  opacity: f.available ? 1 : 0.72,
+                  opacity: f.available ? 1 : 0.65,
+                  boxShadow: f.available ? '0 0 20px rgba(34,197,94,0.06), 0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.2)',
+                  position: 'relative',
+                  overflow: 'hidden',
                 }}>
-                  <div style={{ width: 42, height: 42, borderRadius: 11, background: 'var(--accent-dim)', color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18, border: '0.5px solid var(--accent-border)' }}>
+                  {f.available && (
+                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(34,197,94,0.4), transparent)' }} />
+                  )}
+                  <div style={{ width: 44, height: 44, borderRadius: 11, background: 'rgba(34,197,94,0.12)', color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18, border: '0.5px solid rgba(34,197,94,0.3)', boxShadow: '0 0 16px rgba(34,197,94,0.15)' }}>
                     {f.icon}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
@@ -177,8 +186,9 @@ export default function LandingPage() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section style={{ padding: '80px 24px', background: 'var(--bg2)' }}>
-        <div style={{ maxWidth: 960, margin: '0 auto' }}>
+      <section style={{ padding: '80px 24px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', width: 460, height: 460, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.09) 0%, transparent 70%)', top: '0%', right: '-12%', pointerEvents: 'none' }} />
+        <div style={{ maxWidth: 960, margin: '0 auto', position: 'relative' }}>
           <Reveal>
             <div style={{ textAlign: 'center', marginBottom: 52 }}>
               <p className="eyebrow" style={{ marginBottom: 14 }}>HOW IT WORKS</p>
@@ -191,8 +201,17 @@ export default function LandingPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
             {STEPS.map((step, i) => (
               <Reveal key={step.num} delay={i * 0.09}>
-                <div style={{ padding: '26px 24px', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 16, height: '100%' }}>
-                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: 36, fontWeight: 700, color: 'var(--accent)', lineHeight: 1, marginBottom: 16, letterSpacing: '-0.02em' }}>
+                <div style={{
+                  padding: '28px 24px',
+                  background: 'var(--card-bg)',
+                  border: '0.5px solid var(--border)',
+                  borderRadius: 16,
+                  height: '100%',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}>
+                  <div style={{ position: 'absolute', bottom: -20, right: -20, width: 100, height: 100, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
+                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: 38, fontWeight: 700, color: 'var(--accent)', lineHeight: 1, marginBottom: 18, letterSpacing: '-0.02em', textShadow: '0 0 20px rgba(34,197,94,0.4)' }}>
                     {step.num}
                   </p>
                   <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>
@@ -210,8 +229,19 @@ export default function LandingPage() {
       <section style={{ padding: '80px 24px' }}>
         <div style={{ maxWidth: 860, margin: '0 auto' }}>
           <Reveal>
-            <div style={{ padding: 'clamp(36px, 5vw, 56px)', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 20, textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: '-40%', right: '-15%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(var(--accent-rgb), 0.07) 0%, transparent 70%)', pointerEvents: 'none' }} />
+            <div style={{
+              padding: 'clamp(36px, 5vw, 56px)',
+              background: 'var(--card-bg)',
+              border: '0.5px solid rgba(34,197,94,0.25)',
+              borderRadius: 20,
+              textAlign: 'center',
+              position: 'relative',
+              overflow: 'hidden',
+              boxShadow: '0 0 40px rgba(34,197,94,0.08), 0 8px 32px rgba(0,0,0,0.4)',
+            }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(34,197,94,0.5), transparent)' }} />
+              <div style={{ position: 'absolute', top: '-30%', right: '-10%', width: 480, height: 480, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.1) 0%, transparent 65%)', pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', bottom: '-30%', left: '-10%', width: 360, height: 360, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.07) 0%, transparent 65%)', pointerEvents: 'none' }} />
               <p className="eyebrow" style={{ marginBottom: 16, position: 'relative' }}>POWERED BY YOUR BROWSER</p>
               <h2 style={{ fontSize: 'clamp(22px, 3.5vw, 32px)', fontWeight: 700, color: 'var(--text)', lineHeight: 1.25, marginBottom: 14, position: 'relative', letterSpacing: '-0.01em' }}>
                 No downloads. No cables. No paywalls to try it.
@@ -225,16 +255,19 @@ export default function LandingPage() {
       </section>
 
       {/* EMAIL CAPTURE */}
-      <section style={{ padding: '80px 24px 120px', textAlign: 'center', background: 'var(--bg2)' }}>
+      <section style={{ padding: '80px 24px 120px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.1) 0%, transparent 70%)', top: '-20%', left: '50%', transform: 'translateX(-50%)', pointerEvents: 'none' }} />
         <Reveal>
-          <p className="eyebrow" style={{ marginBottom: 18 }}>STAY IN THE LOOP</p>
-          <h2 style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(26px, 5vw, 44px)', fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 14, maxWidth: 600, margin: '0 auto 14px' }}>
+          <p className="eyebrow" style={{ marginBottom: 18, position: 'relative' }}>STAY IN THE LOOP</p>
+          <h2 style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(26px, 5vw, 44px)', fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.1, maxWidth: 600, margin: '0 auto 14px', position: 'relative' }}>
             Be first when Song Mode ships.
           </h2>
-          <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 420, margin: '0 auto 32px', lineHeight: 1.6 }}>
+          <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 420, margin: '0 auto 32px', lineHeight: 1.6, position: 'relative' }}>
             Drop your email. We will let you know when follow-along and AI coaching go live. No spam.
           </p>
-          <WaitlistForm />
+          <div style={{ position: 'relative' }}>
+            <WaitlistForm />
+          </div>
         </Reveal>
       </section>
     </main>
