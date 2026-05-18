@@ -254,3 +254,4 @@ Routine checks, audits, and tests.
 - 2026-05-18 — ran regression pass, no regressions
 - 2026-05-18 — reviewed env and config
 - 2026-05-18 — verified API responses
+- 2026-05-18 — e2e sanity check passed
