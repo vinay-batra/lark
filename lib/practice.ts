@@ -224,17 +224,21 @@ export function getGenCount(): number {
 
 // ── Bug reports ───────────────────────────────────────────────────────────────
 
-export async function submitBugReport(message: string): Promise<{ ok: boolean }> {
+export async function submitBugReport(message: string): Promise<{ ok: boolean; errMsg?: string }> {
+  if (!supabase) return { ok: false, errMsg: 'Supabase not configured.' };
   const pageUrl = typeof window !== 'undefined' ? window.location.pathname : null;
-
-  if (supabase) {
-    const { data: { user } } = await supabase.auth.getUser();
-    const { error } = await supabase.from('lark_bug_reports').insert({
-      user_id: user?.id ?? null,
-      message,
-      page_url: pageUrl,
-    });
-    return { ok: !error };
+  const { data: { user } } = await supabase.auth.getUser();
+  const { error } = await supabase.from('lark_bug_reports').insert({
+    user_id: user?.id ?? null,
+    message,
+    page_url: pageUrl,
+  });
+  if (error) {
+    const msg = error.message ?? '';
+    if (msg.includes('relation') || msg.includes('does not exist')) {
+      return { ok: false, errMsg: 'Run the Supabase migration first (see supabase/migrations/).' };
+    }
+    return { ok: false, errMsg: msg || 'Insert failed.' };
   }
-  return { ok: false };
+  return { ok: true };
 }

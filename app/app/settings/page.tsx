@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { useTheme } from '@/components/ThemeProvider';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { Reveal } from '@/components/Reveal';
+import { TOUR_KEY } from '@/components/OnboardingTour';
 
 const PREF_KEYS = {
   highSensitivity: 'lark_pref_high_sensitivity',
@@ -103,6 +104,8 @@ function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const [email, setEmail] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState('');
+  const [displayNameSaved, setDisplayNameSaved] = useState(false);
   const [highSensitivity, setHighSensitivity] = useState(false);
   const [showFreq, setShowFreq] = useState(true);
   const [defaultTuning, setDefaultTuning] = useState('standard');
@@ -113,12 +116,22 @@ export default function SettingsPage() {
     setShowFreq(localStorage.getItem(PREF_KEYS.showFreq) !== '0');
     setDefaultTuning(localStorage.getItem(PREF_KEYS.defaultTuning) ?? 'standard');
     if (supabase) {
-      supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
+      supabase.auth.getUser().then(({ data }) => {
+        setEmail(data.user?.email ?? null);
+        setDisplayName(data.user?.user_metadata?.display_name ?? '');
+      });
     }
   }, []);
 
   const setPref = (key: string, value: string) => {
     try { localStorage.setItem(key, value); } catch {}
+  };
+
+  const saveDisplayName = async () => {
+    if (!supabase || !displayName.trim()) return;
+    await supabase.auth.updateUser({ data: { display_name: displayName.trim() } });
+    setDisplayNameSaved(true);
+    setTimeout(() => setDisplayNameSaved(false), 2000);
   };
 
   return (
@@ -145,6 +158,33 @@ export default function SettingsPage() {
           Tweak how Lark looks and behaves.
         </p>
       </motion.div>
+
+      {/* Profile */}
+      {email && (
+        <Section eyebrow="PROFILE" title="Your profile">
+          <Row label="Display name" hint="Shown in the app instead of your email.">
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input
+                type="text"
+                value={displayName}
+                onChange={e => setDisplayName(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') saveDisplayName(); }}
+                placeholder={email.split('@')[0]}
+                className="input-field"
+                style={{ width: 160, height: 36, fontSize: 13, padding: '0 12px' }}
+              />
+              <button onClick={saveDisplayName} className="btn btn-ghost btn-sm">
+                {displayNameSaved ? 'SAVED' : 'SAVE'}
+              </button>
+            </div>
+          </Row>
+          <Row label="Avatar" hint="Generated from your display name or email initial.">
+            <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--accent-dim)', border: '1.5px solid var(--accent-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: 'var(--accent)' }}>
+              {(displayName?.[0] ?? email?.[0] ?? '?').toUpperCase()}
+            </div>
+          </Row>
+        </Section>
+      )}
 
       <Section eyebrow="APPEARANCE" title="Theme">
         <Row label="Color mode" hint="Choose how Lark looks. Synced across the whole app.">
@@ -228,6 +268,17 @@ export default function SettingsPage() {
       <Section eyebrow="ABOUT" title="Lark">
         <Row label="Version" hint="Latest build deployed.">
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text3)' }}>{VERSION}</span>
+        </Row>
+        <Row label="App tour" hint="Walk through the main features again.">
+          <button
+            className="btn btn-ghost btn-sm"
+            onClick={() => {
+              localStorage.removeItem(TOUR_KEY);
+              window.location.reload();
+            }}
+          >
+            REPLAY TOUR
+          </button>
         </Row>
       </Section>
     </div>

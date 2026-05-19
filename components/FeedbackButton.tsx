@@ -9,12 +9,19 @@ export function FeedbackButton() {
   const [state, setState] = useState<State>('idle');
   const [message, setMessage] = useState('');
 
+  const [errMsg, setErrMsg] = useState('');
+
   const submit = async () => {
     if (!message.trim()) return;
     setState('submitting');
-    const { ok } = await submitBugReport(message.trim());
-    setState(ok ? 'done' : 'error');
-    if (ok) setTimeout(() => { setState('idle'); setMessage(''); }, 2000);
+    const result = await submitBugReport(message.trim());
+    if (result.ok) {
+      setState('done');
+      setTimeout(() => { setState('idle'); setMessage(''); }, 2000);
+    } else {
+      setErrMsg(result.errMsg ?? 'Failed to send.');
+      setState('error');
+    }
   };
 
   return (
@@ -78,7 +85,7 @@ export function FeedbackButton() {
                 />
                 {state === 'error' && (
                   <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--danger)', marginBottom: 10 }}>
-                    Failed to send. Make sure you are signed in.
+                    {errMsg}
                   </p>
                 )}
                 <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
