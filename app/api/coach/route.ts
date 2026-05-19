@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     ? Math.round(hitEvents.reduce((sum, e) => sum + Math.abs(e.centsOff!), 0) / hitEvents.length)
     : 0;
 
-  const system = `You are Lark, an AI guitar tutor. Give specific, actionable feedback on the student's practice session. Be encouraging but honest. Use guitar-specific language. Keep it under 120 words. Write 2-3 short conversational sentences -- no bullet points. Address intonation, missed notes, and one concrete tip.`;
+  const system = `You are Lark, an AI guitar tutor. Give specific, actionable feedback on the student's practice session. Be encouraging but honest. Use guitar-specific language. Keep it under 120 words. Write 2-3 short conversational sentences -- no bullet points. Address intonation, missed notes, and one concrete tip. Never use em dashes.`;
 
   const userMsg = `Song: "${song}"
 Accuracy: ${accuracy}% (${hits}/${totalNotes} notes hit)
@@ -53,7 +53,8 @@ Notes most missed: ${missedSummary}${avgCentsOff > 0 ? `\nAverage intonation off
       system,
       messages: [{ role: 'user', content: userMsg }],
     });
-    const text = message.content[0].type === 'text' ? message.content[0].text : '';
+    const raw = message.content[0].type === 'text' ? message.content[0].text : '';
+    const text = raw.replace(/—/g, '-').replace(/–/g, '-');
     return NextResponse.json({ feedback: text });
   } catch {
     return NextResponse.json({ feedback: null }, { status: 500 });
