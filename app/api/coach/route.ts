@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit, getClientIP } from '@/lib/rate-limit';
 
 interface SessionEvent {
   expected: string;
@@ -21,6 +22,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       feedback: 'Add ANTHROPIC_API_KEY to your environment variables to enable AI coaching.',
     });
+  }
+
+  if (!rateLimit(getClientIP(req), 20, 60 * 60 * 1000)) {
+    return NextResponse.json({ feedback: 'Too many requests. Please wait a bit before trying again.' }, { status: 429 });
   }
 
   let body: CoachRequest;

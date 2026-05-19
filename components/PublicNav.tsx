@@ -19,17 +19,15 @@ export function PublicNav() {
   const lastScrollRef = useRef(0);
 
   useEffect(() => {
-    let raf = 0;
-    const tick = () => {
+    const onScroll = () => {
       const y = window.scrollY;
       const prev = lastScrollRef.current;
       if (y > 80 && y > prev + 4) setHidden(true);
       else if (y < prev - 4 || y < 80) setHidden(false);
       lastScrollRef.current = y;
-      raf = requestAnimationFrame(tick);
     };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   useEffect(() => { setOpen(false); }, [pathname]);

@@ -1,10 +1,15 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { OPEN_MIDI, Song } from '@/lib/songs';
+import { rateLimit, getClientIP } from '@/lib/rate-limit';
 
 export async function POST(req: NextRequest) {
   if (!process.env.ANTHROPIC_API_KEY) {
     return NextResponse.json({ error: 'AI tab generation requires ANTHROPIC_API_KEY.' }, { status: 503 });
+  }
+
+  if (!rateLimit(getClientIP(req), 10, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: 'Too many generation requests. Please wait before trying again.' }, { status: 429 });
   }
 
   const { query } = await req.json();

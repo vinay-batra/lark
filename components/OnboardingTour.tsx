@@ -56,7 +56,14 @@ export function OnboardingTour({ onDone }: { onDone: () => void }) {
   const [step, setStep] = useState(0);
   const current = STEPS[step];
   const targetRect = useTargetRect(current.targetId);
-  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 880;
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 880);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   // Pulsing ring on target element
   useEffect(() => {

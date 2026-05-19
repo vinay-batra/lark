@@ -51,7 +51,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       setSignedIn(!!u);
     });
     return () => sub.subscription.unsubscribe();
-  }, []);
+  }, [router]);
 
   useEffect(() => { setMobileNavOpen(false); }, [pathname]);
 

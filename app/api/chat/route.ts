@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit, getClientIP } from '@/lib/rate-limit';
 
 const MAX_MESSAGES = 20;
 const MAX_CONTENT_LENGTH = 2000;
@@ -16,6 +17,10 @@ interface ChatRequest {
 export async function POST(req: NextRequest) {
   if (!process.env.ANTHROPIC_API_KEY) {
     return NextResponse.json({ error: 'Chat not configured.' }, { status: 503 });
+  }
+
+  if (!rateLimit(getClientIP(req), 30, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: 'Too many requests. Please wait before sending more messages.' }, { status: 429 });
   }
 
   let body: ChatRequest;

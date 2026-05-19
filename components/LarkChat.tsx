@@ -409,12 +409,13 @@ export function LarkChat() {
           0%, 100% { opacity: 0.3; transform: scale(0.85); }
           50% { opacity: 1; transform: scale(1); }
         }
-        @media (max-width: 479px) {
+        @media (max-width: 639px) {
           .lark-chat-panel {
             bottom: 80px !important;
             right: 0 !important;
             left: 0 !important;
             width: 100% !important;
+            max-height: 60dvh !important;
             border-radius: 16px 16px 0 0 !important;
           }
         }
