@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { ThemeToggle } from './ThemeToggle';
+import { loadSessionsFromSupabase, loadSavedSongsFromSupabase } from '@/lib/practice';
 
 interface UserState {
   email: string | null;
@@ -38,6 +39,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         return;
       }
       setUser({ email: data.user?.email ?? null, signedIn: !!data.user });
+      if (data.user) {
+        loadSessionsFromSupabase();
+        loadSavedSongsFromSupabase();
+      }
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser({ email: session?.user?.email ?? null, signedIn: !!session?.user });
