@@ -266,3 +266,4 @@ Routine checks, audits, and tests.
 - 2026-05-18 — accessibility pass, minor notes
 - 2026-05-18 — general housekeeping
 - 2026-05-18 — verified production build output
+- 2026-05-18 — reviewed error logging
