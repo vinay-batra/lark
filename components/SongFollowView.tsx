@@ -206,7 +206,11 @@ export function SongFollowView({ song }: { song: Song }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         song: song.title,
-        events: finalNotes.map(n => ({ expected: `str${n.string} fret${n.fret}`, hit: n.result === 'hit', centsOff: n.centsOff })),
+        events: finalNotes.map(n => {
+          const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+          const noteName = NOTE_NAMES[n.midi % 12] + Math.floor(n.midi / 12 - 1);
+          return { expected: noteName, hit: n.result === 'hit', centsOff: n.centsOff };
+        }),
         totalNotes: finalNotes.length,
         hits,
       }),

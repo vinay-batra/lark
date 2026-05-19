@@ -65,54 +65,130 @@ const STEPS = [
   { num: '03', title: 'Get coached', desc: 'When you finish, Claude gives you specific, actionable feedback on what to fix and how.' },
 ];
 
-const BG = `
-  radial-gradient(ellipse 700px 600px at 92% 4%, rgba(34,197,94,0.18) 0%, transparent 70%),
-  radial-gradient(ellipse 500px 500px at 5% 16%, rgba(34,197,94,0.11) 0%, transparent 65%),
-  radial-gradient(ellipse 520px 480px at 10% 50%, rgba(34,197,94,0.07) 0%, transparent 65%),
-  radial-gradient(ellipse 480px 480px at 90% 64%, rgba(34,197,94,0.08) 0%, transparent 65%)
-`;
-
 export default function LandingPage() {
   return (
-    <main style={{ overflowX: 'hidden', backgroundImage: BG }}>
+    <main style={{ overflowX: 'hidden' }}>
 
       {/* HERO */}
-      <section style={{ minHeight: 'calc(100vh - 64px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 24px 80px' }}>
-        <div style={{ maxWidth: 860, textAlign: 'center', position: 'relative', zIndex: 1 }}>
-          <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} className="eyebrow" style={{ marginBottom: 28 }}>
-            <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: 'var(--accent)', marginRight: 9, verticalAlign: 'middle', animation: 'pulse 2s ease-in-out infinite', boxShadow: '0 0 10px rgba(34,197,94,0.7)' }} />
-            LISTEN-FIRST GUITAR COACHING
-          </motion.p>
+      <section style={{ minHeight: 'calc(100vh - 64px)', display: 'flex', alignItems: 'center', padding: '60px 24px 80px', maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center', width: '100%' }} className="hero-grid">
 
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, delay: 0.08, ease: [0.16, 1, 0.3, 1] }} style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(42px, 8vw, 88px)', fontWeight: 700, color: 'var(--text)', lineHeight: 1.04, marginBottom: 24, letterSpacing: '-0.03em' }}>
-            The guitar tutor<br />
-            <span style={{ color: 'var(--accent)', textShadow: '0 0 40px rgba(34,197,94,0.4)' }}>that listens.</span>
-          </motion.h1>
+          {/* Left: text */}
+          <div>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
+              <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 2s ease-in-out infinite', boxShadow: '0 0 8px rgba(34,197,94,0.8)' }} />
+              <p className="eyebrow" style={{ fontSize: 9 }}>LISTEN-FIRST GUITAR COACHING</p>
+            </motion.div>
 
-          <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.18 }} style={{ fontSize: 'clamp(15px, 2vw, 18px)', color: 'var(--text2)', lineHeight: 1.65, maxWidth: 560, margin: '0 auto 14px' }}>
-            50 songs. Real-time tab follow-along. AI coaching after every session. Tuner, chord detector, metronome, chord library. All free. All in your browser.
-          </motion.p>
+            <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.06, ease: [0.16, 1, 0.3, 1] }}
+              style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(36px, 5.5vw, 64px)', fontWeight: 700, color: 'var(--text)', lineHeight: 1.08, letterSpacing: '-0.03em', marginBottom: 20 }}>
+              Practice<br />
+              <span style={{ color: 'var(--accent)', textShadow: '0 0 32px rgba(34,197,94,0.5)' }}>smarter.</span>
+            </motion.h1>
 
-          {/* Stats bar */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.28 }} style={{ display: 'flex', justifyContent: 'center', gap: 28, marginBottom: 40, flexWrap: 'wrap' }}>
-            {[['50', 'songs'], ['4', 'difficulty levels'], ['6', 'tools'], ['Free', 'forever']].map(([val, label]) => (
-              <div key={label} style={{ textAlign: 'center' }}>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(20px, 3vw, 28px)', fontWeight: 700, color: 'var(--accent)', lineHeight: 1 }}>{val}</div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', letterSpacing: '0.14em', marginTop: 4 }}>{label.toUpperCase()}</div>
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.18 }}
+              style={{ fontSize: 16, color: 'var(--text2)', lineHeight: 1.7, marginBottom: 28, maxWidth: 420 }}>
+              Lark hears every note you play, scores you in real time, and gives you AI coaching when you finish. 73 songs, 4 difficulty levels, free.
+            </motion.p>
+
+            {/* Stats row */}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.45, delay: 0.26 }}
+              style={{ display: 'flex', gap: 20, marginBottom: 32, flexWrap: 'wrap' }}>
+              {[['73', 'songs'], ['4', 'levels'], ['7', 'tools'], ['Free', '']].map(([val, label]) => (
+                <div key={val} style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--accent)', lineHeight: 1 }}>{val}</span>
+                  {label && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', letterSpacing: '0.12em' }}>{label.toUpperCase()}</span>}
+                </div>
+              ))}
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.32 }}
+              style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+              <Link href="/app" className="btn btn-accent btn-lg" style={{ boxShadow: '0 0 24px rgba(34,197,94,0.3)' }}>
+                START PLAYING
+              </Link>
+              <Link href="/auth?mode=signup" className="btn btn-ghost btn-lg">
+                CREATE ACCOUNT
+              </Link>
+            </motion.div>
+
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.42 }}
+              style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', marginTop: 14, letterSpacing: '0.08em' }}>
+              NO CREDIT CARD -- NO DOWNLOAD -- WORKS IN YOUR BROWSER
+            </motion.p>
+          </div>
+
+          {/* Right: mini tab demo */}
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="hero-demo" style={{ position: 'relative' }}>
+            <div style={{
+              background: 'var(--card-bg)', border: '0.5px solid var(--border2)',
+              borderRadius: 18, padding: '24px 20px', boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 0 0.5px var(--border)',
+              position: 'relative', overflow: 'hidden',
+            }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(34,197,94,0.5), transparent)' }} />
+
+              {/* App header mock */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <div>
+                  <p className="eyebrow" style={{ fontSize: 8, marginBottom: 3 }}>SONG MODE</p>
+                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>Seven Nation Army</p>
+                </div>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: 'var(--accent)' }}>78%</span>
               </div>
-            ))}
-          </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.32 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-            <Link href="/app" className="btn btn-accent btn-lg" style={{ boxShadow: '0 0 28px rgba(34,197,94,0.35), 0 4px 16px rgba(0,0,0,0.3)' }}>
-              OPEN APP FREE
-            </Link>
-            <Link href="/auth?mode=signup" style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text3)', letterSpacing: '0.08em' }}>
-              or create an account to save progress
-            </Link>
+              {/* Current note */}
+              <div style={{ textAlign: 'center', marginBottom: 20, padding: '16px 0', background: 'var(--bg3)', borderRadius: 10 }}>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', letterSpacing: '0.2em', marginBottom: 6 }}>PLAY NOW</p>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 48, fontWeight: 700, color: 'var(--accent)', lineHeight: 1, textShadow: '0 0 24px rgba(34,197,94,0.5)' }}>G</div>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>e string -- fret 3</p>
+              </div>
+
+              {/* Tab ribbon */}
+              <div style={{ background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 10, padding: '12px 14px' }}>
+                {['e','B','G','D','A','E'].map((str, si) => (
+                  <div key={str} style={{ display: 'flex', alignItems: 'center', height: 22 }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', width: 14, textAlign: 'right', marginRight: 6 }}>{str}</span>
+                    {[
+                      [true, false, false, false, false, false, false, false, false, false], // e: hit fret 0
+                      [false, false, true, false, false, false, false, false, false, false], // B: current fret 0
+                      [false, false, false, false, false, false, false, false, false, false],
+                      [false, false, false, false, false, false, false, false, false, false],
+                      [false, false, false, false, false, false, false, false, false, false],
+                      [false, false, false, false, false, false, false, false, false, false],
+                    ][si].map((active, ci) => (
+                      <div key={ci} style={{ width: 28, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', flexShrink: 0 }}>
+                        <div style={{ position: 'absolute', left: 0, right: 0, height: '0.5px', background: 'var(--border)' }} />
+                        {active && ci === 0 && (
+                          <span style={{ position: 'relative', zIndex: 1, fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--accent)', background: 'var(--card-bg)', padding: '0 2px', boxShadow: '0 0 0 1.5px var(--accent)' }}>0</span>
+                        )}
+                        {ci === 2 && si === 0 && (
+                          <span style={{ position: 'relative', zIndex: 1, fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--text)', background: 'var(--bg3)', padding: '0 2px', boxShadow: '0 0 0 1.5px var(--accent)', animation: 'pulse 1.4s ease-out infinite' }}>3</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+
+              {/* AI coach preview */}
+              <div style={{ marginTop: 14, padding: '12px 14px', background: 'var(--bg3)', borderRadius: 10, borderLeft: '2px solid var(--accent)' }}>
+                <p className="eyebrow" style={{ fontSize: 8, marginBottom: 5 }}>AI COACH</p>
+                <p style={{ fontSize: 11, color: 'var(--text3)', lineHeight: 1.6 }}>
+                  Clean playing overall. Your B string open notes are slightly sharp -- about 14 cents. Try lightening your fretting hand pressure.
+                </p>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
+
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .hero-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+          .hero-demo { display: none !important; }
+        }
+      `}</style>
 
       {/* SONG LIBRARY */}
       <section style={{ padding: '80px 24px' }}>
