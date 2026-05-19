@@ -45,7 +45,7 @@ Supabase project: `ebsddbpbvjbcdwfldubx` (auth live, waitlist table needs migrat
 - **Auth**: Supabase (browser client + @supabase/ssr middleware)
 - **Deploy**: Vercel (push to main auto-deploys)
 - **Local path**: `~/Downloads/lark/`
-- **Domain**: lark.fm or lark.app — buy on Vercel
+- **Domain**: lark.coach (bought on Vercel)
 
 ---
 
