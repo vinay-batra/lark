@@ -270,3 +270,4 @@ Routine checks, audits, and tests.
 - 2026-05-18 — checked auth and session handling
 - 2026-05-18 — checked mobile layouts
 - 2026-05-18 — ran regression pass, no regressions
+- 2026-05-18 — routine maintenance
