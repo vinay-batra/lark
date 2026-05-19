@@ -65,7 +65,9 @@ export const SONGS: Song[] = [
   { id: 'eye-of-the-tiger', title: 'Eye of the Tiger', artist: 'Survivor', difficulty: 'beginner',
     notes: [n(6,0),n(6,0),n(6,3),n(6,5),n(6,0),n(6,0),n(6,3),n(6,5),n(6,4),n(6,3),n(6,0)] },
   { id: 'iron-man', title: 'Iron Man', artist: 'Black Sabbath', difficulty: 'beginner',
-    notes: [n(6,7),n(6,7),n(6,10),n(6,9),n(6,5),n(6,5),n(6,7),n(6,9),n(6,7)] },
+    // Black Sabbath tune Bb (half step down). Use -1 fret vs standard to get correct pitches.
+    // Bb2=n(6,6), D3=n(6,9), C#3=n(6,8), Ab2=n(6,4)
+    notes: [n(6,6),n(6,6),n(6,6),n(6,9),n(6,8),n(6,4),n(6,4),n(6,6),n(6,8),n(6,6)] },
   { id: 'paranoid', title: 'Paranoid', artist: 'Black Sabbath', difficulty: 'beginner',
     notes: [n(6,0),n(6,2),n(6,3),n(6,2),n(6,0),n(6,0),n(6,3),n(6,2),n(6,0)] },
   { id: 'come-as-you-are', title: 'Come As You Are', artist: 'Nirvana', difficulty: 'beginner',
@@ -79,17 +81,23 @@ export const SONGS: Song[] = [
   { id: 'creep', title: 'Creep', artist: 'Radiohead', difficulty: 'beginner',
     notes: [n(1,3),n(1,7),n(1,8),n(1,7),n(1,3),n(1,2),n(1,3),n(1,7),n(1,3)] },
   { id: 'yellow', title: 'Yellow', artist: 'Coldplay', difficulty: 'beginner',
-    notes: [n(1,3),n(1,5),n(1,7),n(1,10),n(1,12),n(1,10),n(1,7),n(1,5),n(1,3)] },
+    // "Look at the stars, look how they shine for you" vocal melody in B major
+    // B4=e|7, C#5=e|9, G#4=e|4, F#4=e|2, A#4=e|6
+    notes: [n(1,7),n(1,7),n(1,7),n(1,9),n(1,7),n(1,4),n(1,2),n(1,4),n(1,6),n(1,7)] },
   { id: 'with-or-without-you', title: 'With or Without You', artist: 'U2', difficulty: 'beginner',
-    notes: [n(2,3),n(1,0),n(1,2),n(1,5),n(1,7),n(1,5),n(1,3),n(1,2),n(1,0),n(2,3)] },
+    // D string bass ostinato: D3, A2, B2, G2 (the famous repeating bass line)
+    notes: [n(4,0),n(5,0),n(2,0),n(3,0),n(4,0),n(5,0),n(2,0),n(3,0),n(4,0),n(5,0)] },
   { id: 'in-the-end', title: 'In the End', artist: 'Linkin Park', difficulty: 'beginner',
     notes: [n(2,1),n(2,3),n(1,0),n(1,3),n(1,0),n(2,3),n(2,1),n(1,0),n(2,3),n(2,1)] },
   { id: 'numb', title: 'Numb', artist: 'Linkin Park', difficulty: 'beginner',
     notes: [n(1,4),n(1,6),n(1,8),n(1,11),n(1,8),n(1,6),n(1,4),n(1,6),n(1,4)] },
   { id: 'every-breath-you-take', title: 'Every Breath You Take', artist: 'The Police', difficulty: 'beginner',
-    notes: [n(1,5),n(1,7),n(1,9),n(1,7),n(1,5),n(1,4),n(1,5),n(1,0),n(1,5),n(1,4)] },
+    // Iconic arpeggio in A major: A3, E4, F#4, D4, A3
+    // Uses B and e strings in first position
+    notes: [n(5,0),n(1,0),n(1,2),n(2,3),n(5,0),n(1,0),n(1,2),n(1,5),n(2,3),n(5,0)] },
   { id: 'wonderful-tonight', title: 'Wonderful Tonight', artist: 'Eric Clapton', difficulty: 'beginner',
-    notes: [n(1,3),n(1,5),n(1,3),n(2,3),n(1,0),n(2,3),n(2,1),n(2,3),n(1,0)] },
+    // Intro melody in G: D4, E4, G4, A4, G4, F#4, E4, D4
+    notes: [n(2,3),n(1,0),n(1,3),n(1,5),n(1,3),n(1,2),n(1,0),n(2,3),n(1,0),n(2,3)] },
   { id: 'sweet-home-alabama', title: 'Sweet Home Alabama', artist: 'Lynyrd Skynyrd', difficulty: 'beginner',
     notes: [n(3,2),n(3,0),n(3,2),n(4,0),n(3,0),n(3,2),n(2,3),n(3,2),n(3,0)] },
   { id: 'good-riddance', title: 'Good Riddance', artist: 'Green Day', difficulty: 'beginner',
@@ -128,7 +136,8 @@ export const SONGS: Song[] = [
   { id: 'dont-stop-believin', title: "Don't Stop Believin'", artist: 'Journey', difficulty: 'intermediate',
     notes: [n(1,0),n(1,2),n(1,7),n(1,9),n(1,5),n(1,7),n(1,2),n(1,0),n(1,0),n(2,0),n(1,2)] },
   { id: 'losing-my-religion', title: 'Losing My Religion', artist: 'R.E.M.', difficulty: 'intermediate',
-    notes: [n(1,0),n(1,2),n(1,3),n(1,5),n(1,7),n(1,5),n(1,3),n(1,2),n(1,0)] },
+    // Iconic mandolin/guitar intro riff in A minor: A3, E3, F3, G3, A3, G3, F3, E3
+    notes: [n(5,0),n(4,2),n(4,3),n(3,0),n(5,0),n(3,0),n(4,3),n(4,2),n(5,0),n(4,2),n(3,2)] },
   { id: 'under-the-bridge', title: 'Under the Bridge', artist: 'Red Hot Chili Peppers', difficulty: 'intermediate',
     notes: [n(1,0),n(1,2),n(1,4),n(1,7),n(1,5),n(1,4),n(1,2),n(1,0),n(2,0),n(2,2)] },
   { id: 'wish-you-were-here', title: 'Wish You Were Here', artist: 'Pink Floyd', difficulty: 'intermediate',

@@ -111,7 +111,7 @@ export function SongFollowView({ song }: { song: Song }) {
         const cents = getCents(pitch, target.midi);
         if (Math.abs(cents) <= TOLERANCE_CENTS) {
           advanceNote(true, cents);
-          return;
+          // Don't return -- RAF must keep running for the next note
         } else {
           // Wrong note -- flash red but stay on current note
           setWrongFlash(true);
