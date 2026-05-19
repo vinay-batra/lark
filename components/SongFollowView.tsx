@@ -18,6 +18,7 @@ type NoteResult = 'pending' | 'hit' | 'miss';
 interface SessionNote {
   note: string;
   midi: number;
+  hint: string;
   result: NoteResult;
   centsOff: number | null;
 }
@@ -276,9 +277,12 @@ export function SongFollowView({ song }: { song: Song }) {
                 lineHeight: 1,
                 animation: 'accentRing 1.4s ease-out infinite',
               }}>
-                {currentNote.note}
+                {currentNote.note.replace(/\d+$/, '')}
               </div>
-              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', marginTop: 10, letterSpacing: '0.06em' }}>
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--text3)', marginTop: 8, letterSpacing: '0.06em' }}>
+                {currentNote.hint.replace('|', ' · fret ')}
+              </p>
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', marginTop: 6, letterSpacing: '0.06em' }}>
                 {noteIndex + 1} / {notes.length}
               </p>
             </div>
@@ -334,7 +338,7 @@ export function SongFollowView({ song }: { song: Song }) {
                 >
                   <span style={{
                     fontFamily: 'var(--font-mono)',
-                    fontSize: isCurrent ? 15 : 12,
+                    fontSize: isCurrent ? 14 : 11,
                     fontWeight: 700,
                     color: note.result === 'hit'
                       ? 'var(--accent)'
@@ -346,7 +350,21 @@ export function SongFollowView({ song }: { song: Song }) {
                     transition: 'color 0.15s',
                     letterSpacing: '-0.01em',
                   }}>
-                    {note.note}
+                    {note.note.replace(/\d+$/, '')}
+                  </span>
+                  <span style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 8,
+                    color: note.result === 'hit'
+                      ? 'var(--accent)'
+                      : note.result === 'miss'
+                      ? 'var(--danger)'
+                      : isCurrent
+                      ? 'var(--text3)'
+                      : 'var(--text-muted)',
+                    letterSpacing: '0.04em',
+                  }}>
+                    {note.hint}
                   </span>
                   {note.result === 'hit' && (
                     <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--accent)' }} />

@@ -93,7 +93,10 @@ export function ChordsView() {
     if (activeNotes.length >= 2) {
       const detected = detectChord(activeNotes);
       if (detected.length > 0) {
-        setResult({ name: formatChord(detected[0]), quality: chordQuality(detected[0]), alternatives: detected.slice(1, 4).map(formatChord), notes: activeNotes });
+        // Prefer full chords over power chords (e.g. D over D5)
+        const best = detected.find(c => !/^[A-G][#b]?5$/.test(c)) ?? detected[0];
+        const alts = detected.filter(c => c !== best).slice(0, 3).map(formatChord);
+        setResult({ name: formatChord(best), quality: chordQuality(best), alternatives: alts, notes: activeNotes });
       } else { setResult(null); }
     } else { setResult(null); }
 
