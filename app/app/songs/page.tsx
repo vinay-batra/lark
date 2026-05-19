@@ -1,17 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { SONGS, Song } from '@/lib/songs';
+import { SONGS, Song, Difficulty, DIFFICULTY_COLORS, DIFFICULTY_DIM, DIFFICULTY_BORDER, DIFFICULTY_ORDER } from '@/lib/songs';
 import { SongFollowView } from '@/components/SongFollowView';
 import { Reveal } from '@/components/Reveal';
 import { motion } from 'framer-motion';
 import { getSavedSongs, saveSong, deleteSavedSong, renameSavedSong, canGenerate, recordGeneration, GEN_LIMIT, SavedSong } from '@/lib/practice';
 
 type Tab = 'library' | 'songs';
+type DiffFilter = 'all' | Difficulty;
 
 export default function SongsPage() {
   const [selected, setSelected] = useState<Song | null>(null);
   const [tab, setTab] = useState<Tab>('songs');
+  const [diffFilter, setDiffFilter] = useState<DiffFilter>('all');
   const [search, setSearch] = useState('');
   const [requestQuery, setRequestQuery] = useState('');
   const [generating, setGenerating] = useState(false);
@@ -32,9 +34,16 @@ export default function SongsPage() {
   };
 
   const filtered = SONGS.filter(s =>
-    s.title.toLowerCase().includes(search.toLowerCase()) ||
-    s.artist.toLowerCase().includes(search.toLowerCase())
+    (diffFilter === 'all' || s.difficulty === diffFilter) &&
+    (s.title.toLowerCase().includes(search.toLowerCase()) ||
+     s.artist.toLowerCase().includes(search.toLowerCase()))
   );
+
+  // Group by difficulty for the "all" view
+  const grouped = DIFFICULTY_ORDER.map(diff => ({
+    diff,
+    songs: filtered.filter(s => s.difficulty === diff),
+  })).filter(g => g.songs.length > 0);
 
   const handleGenerate = async () => {
     if (!requestQuery.trim()) return;
@@ -184,21 +193,56 @@ export default function SongsPage() {
             {genError && <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--danger)', marginBottom: 16, marginTop: -16 }}>{genError}</p>}
           </Reveal>
 
-          {/* Song grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 12 }}>
-            {filtered.map((song, i) => (
-              <Reveal key={song.id} delay={i * 0.03}>
-                <SongCard song={song} onPlay={() => setSelected(song)} onSave={() => { handleSaveFromLibrary(song); }} isSaved={savedSongs.some(s => s.title === song.title)} />
-              </Reveal>
-            ))}
-            {filtered.length === 0 && (
-              <div style={{ gridColumn: '1 / -1', padding: '40px 0', textAlign: 'center' }}>
-                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--text-muted)', letterSpacing: '0.06em' }}>
-                  No matches. Use Generate above.
-                </p>
-              </div>
-            )}
+          {/* Difficulty filter pills */}
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 28 }}>
+            {(['all', ...DIFFICULTY_ORDER] as const).map(d => {
+              const active = diffFilter === d;
+              const color = d === 'all' ? 'var(--text2)' : DIFFICULTY_COLORS[d];
+              return (
+                <button key={d} onClick={() => setDiffFilter(d)} style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', padding: '6px 14px', borderRadius: 99, border: `1px solid ${active ? color : 'var(--border2)'}`, background: active ? (d === 'all' ? 'var(--bg3)' : DIFFICULTY_DIM[d]) : 'transparent', color: active ? color : 'var(--text-muted)', cursor: 'pointer', transition: 'all 0.15s' }}>
+                  {d.toUpperCase()}
+                </button>
+              );
+            })}
           </div>
+
+          {/* Song sections grouped by difficulty */}
+          {grouped.length === 0 ? (
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--text-muted)', padding: '40px 0', textAlign: 'center' }}>
+              No matches. Use Generate above.
+            </p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
+              {grouped.map(({ diff, songs: groupSongs }) => (
+                <div key={diff}>
+                  {/* Section header */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: DIFFICULTY_COLORS[diff], boxShadow: `0 0 8px ${DIFFICULTY_COLORS[diff]}80`, flexShrink: 0 }} />
+                    <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: DIFFICULTY_COLORS[diff], letterSpacing: '0.16em' }}>
+                      {diff.toUpperCase()}
+                    </p>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)' }}>
+                      {groupSongs.length} songs
+                    </span>
+                    <div style={{ flex: 1, height: '0.5px', background: `linear-gradient(90deg, ${DIFFICULTY_COLORS[diff]}40, transparent)` }} />
+                  </div>
+
+                  {/* Cards grid -- no stagger, simple viewport fade */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 10 }}>
+                    {groupSongs.map(song => (
+                      <SongCard
+                        key={song.id}
+                        song={song}
+                        onPlay={() => setSelected(song)}
+                        onSave={() => handleSaveFromLibrary(song)}
+                        isSaved={savedSongs.some(s => s.title === song.title)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </>
       )}
 
@@ -266,21 +310,21 @@ export default function SongsPage() {
 }
 
 function SongCard({ song, onPlay, onSave, isSaved }: { song: Song; onPlay: () => void; onSave: () => void; isSaved: boolean }) {
+  const dc = DIFFICULTY_COLORS[song.difficulty];
+  const dd = DIFFICULTY_DIM[song.difficulty];
+  const db = DIFFICULTY_BORDER[song.difficulty];
   return (
     <div style={{ background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 14, overflow: 'hidden', transition: 'border-color 0.15s', display: 'flex', flexDirection: 'column' }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent-border)'; }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = db; }}
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; }}
     >
-      <button onClick={onPlay} style={{ textAlign: 'left', padding: '18px 18px 12px', background: 'none', border: 'none', cursor: 'pointer', flex: 1 }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--accent-dim)', border: '0.5px solid var(--accent-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <button onClick={onPlay} style={{ textAlign: 'left', padding: '16px 16px 10px', background: 'none', border: 'none', cursor: 'pointer', flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
+          <div style={{ width: 32, height: 32, borderRadius: 7, background: dd, border: `0.5px solid ${db}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: dc }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
             </svg>
           </div>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, letterSpacing: '0.12em', color: song.difficulty === 'beginner' ? 'var(--accent)' : 'var(--sharp)', background: song.difficulty === 'beginner' ? 'var(--accent-dim)' : 'var(--sharp-dim)', border: `0.5px solid ${song.difficulty === 'beginner' ? 'var(--accent-border)' : 'rgba(245,158,11,0.25)'}`, borderRadius: 99, padding: '2px 7px' }}>
-            {song.difficulty.toUpperCase()}
-          </span>
         </div>
         <p style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.01em', marginBottom: 2 }}>{song.title}</p>
         <p style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 10 }}>{song.artist}</p>

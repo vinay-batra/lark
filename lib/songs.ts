@@ -11,18 +11,27 @@ export interface TabNote {
 export type Difficulty = 'beginner' | 'intermediate' | 'advanced' | 'expert';
 
 export const DIFFICULTY_COLORS: Record<Difficulty, string> = {
-  beginner: 'var(--accent)',
-  intermediate: 'var(--sharp)',
-  advanced: '#f97316',
-  expert: '#e11d48',
+  beginner:     'var(--accent)',  // green
+  intermediate: '#f59e0b',        // yellow
+  advanced:     '#ef4444',        // red
+  expert:       '#ec4899',        // pink
 };
 
 export const DIFFICULTY_DIM: Record<Difficulty, string> = {
-  beginner: 'var(--accent-dim)',
-  intermediate: 'var(--sharp-dim)',
-  advanced: 'rgba(249,115,22,0.1)',
-  expert: 'rgba(225,29,72,0.1)',
+  beginner:     'var(--accent-dim)',
+  intermediate: 'rgba(245,158,11,0.1)',
+  advanced:     'rgba(239,68,68,0.1)',
+  expert:       'rgba(236,72,153,0.1)',
 };
+
+export const DIFFICULTY_BORDER: Record<Difficulty, string> = {
+  beginner:     'var(--accent-border)',
+  intermediate: 'rgba(245,158,11,0.3)',
+  advanced:     'rgba(239,68,68,0.3)',
+  expert:       'rgba(236,72,153,0.3)',
+};
+
+export const DIFFICULTY_ORDER: Difficulty[] = ['beginner', 'intermediate', 'advanced', 'expert'];
 
 export interface Song {
   id: string;
