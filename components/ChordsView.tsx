@@ -179,7 +179,7 @@ export function ChordsView() {
 
       {error && <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--danger)', marginBottom: 20, textAlign: 'center', maxWidth: 'min(100%, 320px)', lineHeight: 1.55 }}>{error}</p>}
 
-      <button onClick={listening ? stop : start} className={`btn ${listening ? 'btn-ghost' : 'btn-accent'}`} style={{ fontSize: 13, padding: '14px 52px' }}>
+      <button onClick={listening ? stop : start} aria-pressed={listening} className={`btn ${listening ? 'btn-ghost' : 'btn-accent'}`} style={{ fontSize: 13, padding: '14px 52px' }}>
         <span className="btn-text">{listening ? 'STOP' : 'START LISTENING'}</span>
       </button>
 

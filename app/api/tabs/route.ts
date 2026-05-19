@@ -9,6 +9,7 @@ export async function POST(req: NextRequest) {
 
   const { query } = await req.json();
   if (!query?.trim()) return NextResponse.json({ error: 'No song query provided.' }, { status: 400 });
+  if (query.length > 200) return NextResponse.json({ error: 'Query too long.' }, { status: 400 });
 
   const system = `You are a guitar tab expert. Generate accurate guitar tablature for the most recognizable riff or intro of the requested song.
 

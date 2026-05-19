@@ -74,8 +74,8 @@ function AuthInner() {
       overflow: 'hidden',
     }}>
       {/* Ambient orbs */}
-      <div style={{ position: 'absolute', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.1) 0%, transparent 70%)', top: '-20%', right: '-15%', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', width: 360, height: 360, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.07) 0%, transparent 70%)', bottom: '-15%', left: '-10%', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(var(--accent-rgb),0.1) 0%, transparent 70%)', top: '-20%', right: '-15%', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', width: 360, height: 360, borderRadius: '50%', background: 'radial-gradient(circle, rgba(var(--accent-rgb),0.07) 0%, transparent 70%)', bottom: '-15%', left: '-10%', pointerEvents: 'none' }} />
 
       {/* Back to home */}
       <Link href="/" style={{ position: 'absolute', top: 24, left: 28, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
@@ -94,7 +94,7 @@ function AuthInner() {
           border: '0.5px solid var(--border)',
           borderRadius: 20,
           overflow: 'hidden',
-          boxShadow: '0 0 60px rgba(34,197,94,0.08), 0 24px 80px rgba(0,0,0,0.6)',
+          boxShadow: '0 0 60px rgba(var(--accent-rgb),0.08), 0 24px 80px rgba(0,0,0,0.6)',
           position: 'relative',
           zIndex: 1,
         }}
@@ -110,7 +110,7 @@ function AuthInner() {
             border: '0.5px solid var(--accent-border)',
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             marginBottom: 16,
-            boxShadow: '0 0 24px rgba(34,197,94,0.15)',
+            boxShadow: '0 0 24px rgba(var(--accent-rgb),0.15)',
           }}>
             <img src="/lark-logo.png" alt="Lark" width={34} height={34} />
           </div>

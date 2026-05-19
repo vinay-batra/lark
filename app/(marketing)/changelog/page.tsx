@@ -119,7 +119,7 @@ export default function ChangelogPage() {
 
                 {/* Dot */}
                 <div style={{ flexShrink: 0, width: 12, display: 'flex', justifyContent: 'center', paddingTop: 7 }}>
-                  <div style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--accent)', boxShadow: '0 0 5px rgba(34,197,94,0.6)', flexShrink: 0 }} />
+                  <div style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--accent)', boxShadow: '0 0 5px rgba(var(--accent-rgb),0.6)', flexShrink: 0 }} />
                 </div>
 
                 {/* Content */}

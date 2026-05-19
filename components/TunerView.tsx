@@ -150,7 +150,8 @@ export function TunerView() {
 
       <button
         onClick={listening ? stop : start}
-        style={{ padding: '14px 52px', borderRadius: 9999, border: listening ? '1px solid var(--border2)' : 'none', background: listening ? 'var(--card-bg)' : 'var(--accent)', color: listening ? 'var(--text2)' : '#061b0e', fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', transition: 'all 0.15s' }}
+        aria-pressed={listening}
+        style={{ padding: '14px 52px', borderRadius: 9999, border: listening ? '1px solid var(--border2)' : 'none', background: listening ? 'var(--card-bg)' : 'var(--accent)', color: listening ? 'var(--text2)' : 'var(--bg)', fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', transition: 'all 0.15s' }}
       >
         {listening ? 'STOP' : 'START TUNER'}
       </button>

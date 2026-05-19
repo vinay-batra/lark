@@ -80,6 +80,7 @@ function AccordionItem({ q, a, open, onClick }: { q: string; a: string; open: bo
     }}>
       <button
         onClick={onClick}
+        aria-expanded={open}
         style={{
           width: '100%',
           padding: '20px 0',
@@ -193,6 +194,7 @@ export default function FAQPage() {
             transition={{ duration: 0.55, delay: 0.16 }}
             style={{ fontSize: 16, color: 'var(--text3)', lineHeight: 1.6 }}
           >
+            Everything you need to know about Lark.
           </motion.p>
         </div>
       </section>

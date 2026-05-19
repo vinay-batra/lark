@@ -23,10 +23,10 @@ export const Card = memo(function Card({ children, style = {}, trackColor }: Car
     borderLeft: trackColor
       ? `2px solid ${trackColor}`
       : hov
-      ? '2px solid rgba(34,197,94,0.5)'
+      ? '2px solid rgba(var(--accent-rgb),0.5)'
       : '0.5px solid var(--border)',
     boxShadow: hov
-      ? '0 0 28px rgba(34,197,94,0.1), 0 8px 32px rgba(0,0,0,0.4), 0 0 0 0.5px rgba(34,197,94,0.2)'
+      ? '0 0 28px rgba(var(--accent-rgb),0.1), 0 8px 32px rgba(0,0,0,0.4), 0 0 0 0.5px rgba(var(--accent-rgb),0.2)'
       : '0 2px 8px rgba(0,0,0,0.25), 0 0 0 0.5px var(--border)',
     transition: 'border-left 0.18s, box-shadow 0.18s',
   };

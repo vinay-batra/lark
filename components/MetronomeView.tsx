@@ -536,7 +536,7 @@ export function MetronomeView() {
             borderRadius: 9999,
             border: running ? '1px solid var(--border2)' : 'none',
             background: running ? 'var(--card-bg)' : 'var(--accent)',
-            color: running ? 'var(--text2)' : '#061b0e',
+            color: running ? 'var(--text2)' : 'var(--bg)',
             cursor: 'pointer',
             textTransform: 'uppercase',
             transition: 'background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s',

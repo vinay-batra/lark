@@ -71,6 +71,7 @@ export function WaitlistForm() {
             placeholder="your@email.com"
             className="input-field"
             style={{ maxWidth: 300, flex: '1 1 200px' }}
+            aria-label="Email address for waitlist"
           />
           <button
             type="submit"

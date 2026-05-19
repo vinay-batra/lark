@@ -76,14 +76,14 @@ export default function LandingPage() {
           {/* Left: text */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 36 }}>
-              <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 2s ease-in-out infinite', boxShadow: '0 0 8px rgba(34,197,94,0.8)' }} />
+              <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 2s ease-in-out infinite', boxShadow: '0 0 8px rgba(var(--accent-rgb),0.8)' }} />
               <p className="eyebrow" style={{ fontSize: 9 }}>LISTEN-FIRST GUITAR COACHING</p>
             </motion.div>
 
             <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.06, ease: [0.16, 1, 0.3, 1] }}
               style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(42px, 6vw, 72px)', fontWeight: 700, color: 'var(--text)', lineHeight: 1.05, letterSpacing: '-0.03em', marginBottom: 32 }}>
               Practice<br />
-              <span style={{ color: 'var(--accent)', textShadow: '0 0 32px rgba(34,197,94,0.5)' }}>smarter.</span>
+              <span style={{ color: 'var(--accent)', textShadow: '0 0 32px rgba(var(--accent-rgb),0.5)' }}>smarter.</span>
             </motion.h1>
 
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.18 }}
@@ -104,7 +104,7 @@ export default function LandingPage() {
 
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.32 }}
               style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap' }}>
-              <Link href="/app" className="btn btn-accent btn-lg" style={{ boxShadow: '0 0 24px rgba(34,197,94,0.3)' }}>
+              <Link href="/app" className="btn btn-accent btn-lg" style={{ boxShadow: '0 0 24px rgba(var(--accent-rgb),0.3)' }}>
                 START PLAYING
               </Link>
               <Link href="/auth?mode=signup" className="btn btn-ghost btn-lg">
@@ -126,7 +126,7 @@ export default function LandingPage() {
               borderRadius: 18, padding: '24px 20px', boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 0 0.5px var(--border)',
               position: 'relative', overflow: 'hidden',
             }}>
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(34,197,94,0.5), transparent)' }} />
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(var(--accent-rgb),0.5), transparent)' }} />
 
               {/* App header mock */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
@@ -140,7 +140,7 @@ export default function LandingPage() {
               {/* Current note */}
               <div style={{ textAlign: 'center', marginBottom: 20, padding: '16px 0', background: 'var(--bg3)', borderRadius: 10 }}>
                 <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', letterSpacing: '0.2em', marginBottom: 6 }}>PLAY NOW</p>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 48, fontWeight: 700, color: 'var(--accent)', lineHeight: 1, textShadow: '0 0 24px rgba(34,197,94,0.5)' }}>G</div>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 48, fontWeight: 700, color: 'var(--accent)', lineHeight: 1, textShadow: '0 0 24px rgba(var(--accent-rgb),0.5)' }}>G</div>
                 <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>e string -- fret 3</p>
               </div>
 
@@ -250,8 +250,8 @@ export default function LandingPage() {
             </div>
           </Reveal>
           <Reveal delay={0.1}>
-            <div style={{ padding: '28px 32px', background: 'var(--card-bg)', border: '0.5px solid rgba(34,197,94,0.25)', borderRadius: 16, position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(34,197,94,0.5), transparent)' }} />
+            <div style={{ padding: '28px 32px', background: 'var(--card-bg)', border: '0.5px solid rgba(var(--accent-rgb),0.25)', borderRadius: 16, position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(var(--accent-rgb),0.5), transparent)' }} />
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
                 <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--accent-dim)', border: '0.5px solid var(--accent-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)', flexShrink: 0 }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -287,7 +287,7 @@ export default function LandingPage() {
                   border: '0.5px solid var(--border)', borderRadius: 14, height: '100%', textDecoration: 'none',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden',
                 }}>
-                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(34,197,94,0.3), transparent)' }} />
+                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(var(--accent-rgb),0.3), transparent)' }} />
                   <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--accent-dim)', color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16, border: '0.5px solid var(--accent-border)' }}>
                     <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{f.icon}</svg>
                   </div>
@@ -316,7 +316,7 @@ export default function LandingPage() {
             {STEPS.map((step, i) => (
               <Reveal key={step.num} delay={i * 0.09}>
                 <div style={{ padding: '28px 24px', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 16, height: '100%' }}>
-                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: 38, fontWeight: 700, color: 'var(--accent)', lineHeight: 1, marginBottom: 18, letterSpacing: '-0.02em', textShadow: '0 0 20px rgba(34,197,94,0.4)' }}>{step.num}</p>
+                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: 38, fontWeight: 700, color: 'var(--accent)', lineHeight: 1, marginBottom: 18, letterSpacing: '-0.02em', textShadow: '0 0 20px rgba(var(--accent-rgb),0.4)' }}>{step.num}</p>
                   <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>{step.title}</h3>
                   <p style={{ fontSize: 14, color: 'var(--text3)', lineHeight: 1.65 }}>{step.desc}</p>
                 </div>
@@ -330,8 +330,8 @@ export default function LandingPage() {
       <section style={{ padding: '80px 24px' }}>
         <div style={{ maxWidth: 860, margin: '0 auto' }}>
           <Reveal>
-            <div style={{ padding: 'clamp(36px, 5vw, 56px)', background: 'var(--card-bg)', border: '0.5px solid rgba(34,197,94,0.25)', borderRadius: 20, textAlign: 'center', position: 'relative', overflow: 'hidden', boxShadow: '0 0 40px rgba(34,197,94,0.08), 0 8px 32px rgba(0,0,0,0.4)' }}>
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(34,197,94,0.5), transparent)' }} />
+            <div style={{ padding: 'clamp(36px, 5vw, 56px)', background: 'var(--card-bg)', border: '0.5px solid rgba(var(--accent-rgb),0.25)', borderRadius: 20, textAlign: 'center', position: 'relative', overflow: 'hidden', boxShadow: '0 0 40px rgba(var(--accent-rgb),0.08), 0 8px 32px rgba(0,0,0,0.4)' }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(var(--accent-rgb),0.5), transparent)' }} />
               <p className="eyebrow" style={{ marginBottom: 16 }}>RUNS IN YOUR BROWSER</p>
               <h2 style={{ fontSize: 'clamp(22px, 3.5vw, 32px)', fontWeight: 700, color: 'var(--text)', lineHeight: 1.25, marginBottom: 14, letterSpacing: '-0.01em' }}>
                 No app store. No cable. No paywall to try it.
@@ -363,7 +363,7 @@ export default function LandingPage() {
             Free forever. Create an account to save your progress, library, and stats across devices.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 56 }}>
-            <Link href="/app" className="btn btn-accent btn-lg" style={{ boxShadow: '0 0 24px rgba(34,197,94,0.3)' }}>OPEN APP FREE</Link>
+            <Link href="/app" className="btn btn-accent btn-lg" style={{ boxShadow: '0 0 24px rgba(var(--accent-rgb),0.3)' }}>OPEN APP FREE</Link>
             <Link href="/auth?mode=signup" className="btn btn-ghost btn-lg">CREATE ACCOUNT</Link>
           </div>
           <div style={{ maxWidth: 480, margin: '0 auto' }}>

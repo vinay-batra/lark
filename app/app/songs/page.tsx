@@ -51,18 +51,22 @@ export default function SongsPage() {
     if (!status.allowed) { setGenError(`No generations left. Resets in ${status.resetIn}.`); return; }
     setGenerating(true);
     setGenError(null);
+    const controller = new AbortController();
     try {
       const res = await fetch('/api/tabs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: requestQuery.trim() }),
+        signal: controller.signal,
       });
+      if (!res.ok) { throw new Error(`Request failed: ${res.status}`); }
       const data = await res.json();
       if (data.error) { setGenError(data.error); return; }
       recordGeneration();
       refreshSaved();
       setSelected(data.song);
-    } catch {
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return;
       setGenError('Generation failed. Try again.');
     } finally {
       setGenerating(false);
@@ -134,10 +138,10 @@ export default function SongsPage() {
       {/* Tab bar */}
       <div style={{ display: 'flex', gap: 2, padding: 4, background: 'var(--bg3)', borderRadius: 10, border: '0.5px solid var(--border)', width: 'fit-content', marginBottom: 28 }}>
         {(['songs', 'library'] as Tab[]).map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{ padding: '8px 18px', borderRadius: 6, border: 'none', background: tab === t ? 'var(--accent)' : 'transparent', color: tab === t ? '#061b0e' : 'var(--text2)', fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', cursor: 'pointer', transition: 'all 0.15s', position: 'relative' }}>
+          <button key={t} onClick={() => setTab(t)} style={{ padding: '8px 18px', borderRadius: 6, border: 'none', background: tab === t ? 'var(--accent)' : 'transparent', color: tab === t ? 'var(--bg)' : 'var(--text2)', fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', cursor: 'pointer', transition: 'all 0.15s', position: 'relative' }}>
             {t.toUpperCase()}
             {t === 'library' && savedSongs.length > 0 && (
-              <span style={{ position: 'absolute', top: 3, right: 3, width: 6, height: 6, borderRadius: '50%', background: tab === t ? '#061b0e' : 'var(--accent)' }} />
+              <span style={{ position: 'absolute', top: 3, right: 3, width: 6, height: 6, borderRadius: '50%', background: tab === t ? 'var(--bg)' : 'var(--accent)' }} />
             )}
           </button>
         ))}
@@ -153,7 +157,7 @@ export default function SongsPage() {
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }}>
                   <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
                 </svg>
-                <input type="text" placeholder="Search songs..." value={search} onChange={e => setSearch(e.target.value)} className="input-field" style={{ paddingLeft: 34, height: 42 }} />
+                <input type="text" placeholder="Search songs..." value={search} onChange={e => setSearch(e.target.value)} className="input-field" style={{ paddingLeft: 34, height: 42 }} aria-label="Search songs" />
               </div>
               <div style={{ display: 'flex', gap: 8, flex: '2 1 280px', minWidth: 240 }}>
                 <input
@@ -165,6 +169,7 @@ export default function SongsPage() {
                   className="input-field"
                   style={{ flex: 1, height: 42, opacity: genStatus.allowed ? 1 : 0.6 }}
                   disabled={generating || !genStatus.allowed}
+                  aria-label="Request a song for AI generation"
                 />
                 <button onClick={handleGenerate} disabled={generating || !requestQuery.trim() || !genStatus.allowed} className="btn btn-accent" style={{ height: 42, paddingLeft: 16, paddingRight: 16, flexShrink: 0 }}>
                   {generating ? (
@@ -291,10 +296,10 @@ export default function SongsPage() {
                       <button onClick={() => setSelected({ id: saved.id, title: saved.title, artist: saved.artist, difficulty: 'beginner', generated: saved.generated, notes: saved.notes })} className="btn btn-accent btn-sm">
                         PLAY
                       </button>
-                      <button onClick={() => { setRenamingId(saved.id); setRenameVal(saved.customName ?? saved.title); }} className="btn btn-ghost btn-sm" title="Rename">
+                      <button onClick={() => { setRenamingId(saved.id); setRenameVal(saved.customName ?? saved.title); }} className="btn btn-ghost btn-sm" title="Rename" aria-label="Rename song">
                         RENAME
                       </button>
-                      <button onClick={() => handleDelete(saved.id)} className="btn btn-ghost btn-sm" style={{ color: 'var(--danger)' }} title="Remove">
+                      <button onClick={() => handleDelete(saved.id)} className="btn btn-ghost btn-sm" style={{ color: 'var(--danger)' }} title="Remove" aria-label="Remove song from library">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
                       </button>
                     </div>

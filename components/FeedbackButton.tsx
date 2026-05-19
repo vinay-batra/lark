@@ -59,7 +59,7 @@ export function FeedbackButton() {
                 <p className="eyebrow" style={{ marginBottom: 4 }}>FEEDBACK</p>
                 <p style={{ fontFamily: 'var(--font-mono)', fontSize: 15, fontWeight: 700, color: 'var(--text)' }}>Report a bug</p>
               </div>
-              <button onClick={() => { setState('idle'); setMessage(''); }} style={{ width: 28, height: 28, borderRadius: 8, background: 'var(--bg3)', border: '0.5px solid var(--border)', color: 'var(--text3)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <button onClick={() => { setState('idle'); setMessage(''); }} aria-label="Close feedback form" style={{ width: 28, height: 28, borderRadius: 8, background: 'var(--bg3)', border: '0.5px solid var(--border)', color: 'var(--text3)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             </div>

@@ -111,21 +111,21 @@ export function LarkChat() {
           borderRadius: '50%',
           background: 'var(--accent)',
           border: 'none',
-          color: '#fff',
+          color: 'var(--bg)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
           transition: 'transform 0.15s, box-shadow 0.15s',
-          boxShadow: '0 4px 16px rgba(34,197,94,0.35)',
+          boxShadow: '0 4px 16px rgba(var(--accent-rgb), 0.35)',
         }}
         onMouseEnter={e => {
           (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)';
-          (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 6px 22px rgba(34,197,94,0.5)';
+          (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 6px 22px rgba(var(--accent-rgb), 0.5)';
         }}
         onMouseLeave={e => {
           (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
-          (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 16px rgba(34,197,94,0.35)';
+          (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 16px rgba(var(--accent-rgb), 0.35)';
         }}
       >
         {open ? (
@@ -267,7 +267,7 @@ export function LarkChat() {
                 <div
                   style={{
                     background: msg.role === 'user' ? 'var(--accent)' : 'var(--bg3)',
-                    color: msg.role === 'user' ? '#fff' : 'var(--text)',
+                    color: msg.role === 'user' ? 'var(--bg)' : 'var(--text)',
                     borderRadius: 10,
                     padding: '10px 12px',
                     fontSize: 13,
@@ -385,7 +385,7 @@ export function LarkChat() {
                 borderRadius: 9,
                 background: !input.trim() || loading || limitReached ? 'var(--bg3)' : 'var(--accent)',
                 border: '0.5px solid var(--border2)',
-                color: !input.trim() || loading || limitReached ? 'var(--text3)' : '#fff',
+                color: !input.trim() || loading || limitReached ? 'var(--text3)' : 'var(--bg)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

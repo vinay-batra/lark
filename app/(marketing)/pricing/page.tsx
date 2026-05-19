@@ -66,7 +66,7 @@ const PLANS: Plan[] = [
       '1:1 onboarding',
     ],
     cta: 'CONTACT US',
-    href: 'mailto:hello@lark.fm',
+    href: 'mailto:hello@lark.coach',
     badge: 'COMING SOON',
   },
 ];
@@ -153,7 +153,7 @@ export default function PricingPage() {
                     fontSize: 9,
                     fontWeight: 700,
                     letterSpacing: '0.16em',
-                    color: '#061b0e',
+                    color: 'var(--bg)',
                     background: 'var(--accent)',
                     padding: '4px 10px',
                     borderRadius: 99,

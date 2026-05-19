@@ -11,6 +11,7 @@ const TOLERANCE_CENTS = 100;
 const CLARITY_THRESHOLD = 0.88;
 const NOTE_TIMEOUT_MS = 4000;
 const NOTES_PER_LINE = 10;
+const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 
 function midiToFreq(midi: number) { return 440 * Math.pow(2, (midi - 69) / 12); }
 function getCents(freq: number, targetMidi: number) {
@@ -55,6 +56,9 @@ export function SongFollowView({ song }: { song: Song }) {
   const sessionNotesRef = useRef<SessionNote[]>([]);
   const advancedRef = useRef(false);
 
+  // Countdown timer ref
+  const countdownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // Metronome refs
   const metroBeatRef = useRef(0);
   const metroNextTimeRef = useRef(0);
@@ -75,6 +79,7 @@ export function SongFollowView({ song }: { song: Song }) {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     if (wrongTimerRef.current) clearTimeout(wrongTimerRef.current);
+    if (countdownTimerRef.current) clearTimeout(countdownTimerRef.current);
     ctxRef.current?.close();
     streamRef.current?.getTracks().forEach(t => t.stop());
     rafRef.current = null; ctxRef.current = null; analyserRef.current = null; streamRef.current = null;
@@ -238,7 +243,7 @@ export function SongFollowView({ song }: { song: Song }) {
           metroRafRef.current = requestAnimationFrame(metroRafLoop);
           return;
         }
-        setTimeout(() => { setCountdown(c - 1); tick(c - 1); }, 1000);
+        countdownTimerRef.current = setTimeout(() => { setCountdown(c - 1); tick(c - 1); }, 1000);
       };
       tick(3);
     } catch (err) {
@@ -272,6 +277,7 @@ export function SongFollowView({ song }: { song: Song }) {
     } catch {}
     setIsSaved(getSavedSongs().some(s => s.title === song.title && s.artist === song.artist));
     setLoadingFeedback(true);
+    const controller = new AbortController();
     fetch('/api/coach', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -279,19 +285,27 @@ export function SongFollowView({ song }: { song: Song }) {
         song: song.title,
         bpm: song.bpm,
         events: finalNotes.map(n => {
-          const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
           const noteName = NOTE_NAMES[n.midi % 12] + Math.floor(n.midi / 12 - 1);
           return { expected: noteName, hit: n.result === 'hit', centsOff: n.centsOff, timingMs: n.timingMs };
         }),
         totalNotes: finalNotes.length,
         hits,
       }),
+      signal: controller.signal,
     })
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(`Coach API error: ${r.status}`);
+        return r.json();
+      })
       .then(data => setFeedback(data.feedback ?? null))
-      .catch(() => {})
+      .catch(err => {
+        if (err.name !== 'AbortError') {
+          setFeedback('Could not load feedback. Check your connection and try again.');
+        }
+      })
       .finally(() => setLoadingFeedback(false));
-  }, [mode, song.title, song.bpm]);
+    return () => controller.abort();
+  }, [mode, song.title, song.artist, song.bpm]);
 
   const hits = notes.filter(n => n.result === 'hit').length;
   const played = notes.filter(n => n.result !== 'pending').length;
@@ -335,7 +349,7 @@ export function SongFollowView({ song }: { song: Song }) {
             Play each highlighted note. Lark keeps the beat and gives AI feedback when you finish.
           </p>
           {micError && <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--danger)', marginBottom: 16 }}>{micError}</p>}
-          <button onClick={startSession} className="btn btn-accent btn-lg">
+          <button onClick={startSession} className="btn btn-accent btn-lg" aria-label={`Start playing ${song.title}`}>
             <span className="btn-text">START</span>
           </button>
         </div>

@@ -90,7 +90,7 @@ function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void 
         width: 16,
         height: 16,
         borderRadius: '50%',
-        background: '#fff',
+        background: 'var(--card-bg)',
         position: 'absolute',
         top: 3,
         left: on ? 21 : 3,
@@ -198,7 +198,7 @@ export default function SettingsPage() {
                   borderRadius: 6,
                   border: 'none',
                   background: theme === t ? 'var(--accent)' : 'transparent',
-                  color: theme === t ? '#061b0e' : 'var(--text2)',
+                  color: theme === t ? 'var(--bg)' : 'var(--text2)',
                   fontFamily: 'var(--font-mono)',
                   fontSize: 10,
                   fontWeight: 700,
@@ -227,6 +227,7 @@ export default function SettingsPage() {
             onChange={e => { setDefaultTuning(e.target.value); setPref(PREF_KEYS.defaultTuning, e.target.value); }}
             className="input-field"
             style={{ width: 'auto', padding: '8px 12px', fontSize: 12 }}
+            aria-label="Default tuning"
           >
             <option value="standard">Standard (EADGBE)</option>
             <option value="dropd">Drop D</option>
