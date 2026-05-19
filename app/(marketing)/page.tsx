@@ -70,40 +70,40 @@ export default function LandingPage() {
     <main style={{ overflowX: 'hidden' }}>
 
       {/* HERO */}
-      <section style={{ minHeight: 'calc(100vh - 64px)', display: 'flex', alignItems: 'center', padding: '60px 24px 80px', maxWidth: 1200, margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center', width: '100%' }} className="hero-grid">
+      <section style={{ minHeight: 'calc(100vh - 64px)', display: 'flex', alignItems: 'center', padding: '80px 24px 100px', maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center', width: '100%' }} className="hero-grid">
 
           {/* Left: text */}
-          <div>
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 36 }}>
               <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 2s ease-in-out infinite', boxShadow: '0 0 8px rgba(34,197,94,0.8)' }} />
               <p className="eyebrow" style={{ fontSize: 9 }}>LISTEN-FIRST GUITAR COACHING</p>
             </motion.div>
 
             <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.06, ease: [0.16, 1, 0.3, 1] }}
-              style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(36px, 5.5vw, 64px)', fontWeight: 700, color: 'var(--text)', lineHeight: 1.08, letterSpacing: '-0.03em', marginBottom: 20 }}>
+              style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(42px, 6vw, 72px)', fontWeight: 700, color: 'var(--text)', lineHeight: 1.05, letterSpacing: '-0.03em', marginBottom: 32 }}>
               Practice<br />
               <span style={{ color: 'var(--accent)', textShadow: '0 0 32px rgba(34,197,94,0.5)' }}>smarter.</span>
             </motion.h1>
 
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.18 }}
-              style={{ fontSize: 16, color: 'var(--text2)', lineHeight: 1.7, marginBottom: 28, maxWidth: 420 }}>
+              style={{ fontSize: 17, color: 'var(--text2)', lineHeight: 1.75, marginBottom: 40, maxWidth: 440 }}>
               Lark hears every note you play, scores you in real time, and gives you AI coaching when you finish. 73 songs, 4 difficulty levels, free.
             </motion.p>
 
             {/* Stats row */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.45, delay: 0.26 }}
-              style={{ display: 'flex', gap: 20, marginBottom: 32, flexWrap: 'wrap' }}>
+              style={{ display: 'flex', gap: 28, marginBottom: 44, flexWrap: 'wrap', alignItems: 'baseline' }}>
               {[['73', 'songs'], ['4', 'levels'], ['7', 'tools'], ['Free', '']].map(([val, label]) => (
-                <div key={val} style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--accent)', lineHeight: 1 }}>{val}</span>
-                  {label && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', letterSpacing: '0.12em' }}>{label.toUpperCase()}</span>}
+                <div key={val} style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 26, fontWeight: 700, color: 'var(--accent)', lineHeight: 1 }}>{val}</span>
+                  {label && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', letterSpacing: '0.14em' }}>{label.toUpperCase()}</span>}
                 </div>
               ))}
             </motion.div>
 
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.32 }}
-              style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+              style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap' }}>
               <Link href="/app" className="btn btn-accent btn-lg" style={{ boxShadow: '0 0 24px rgba(34,197,94,0.3)' }}>
                 START PLAYING
               </Link>
@@ -113,7 +113,7 @@ export default function LandingPage() {
             </motion.div>
 
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.42 }}
-              style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', marginTop: 14, letterSpacing: '0.08em' }}>
+              style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', marginTop: 22, letterSpacing: '0.08em' }}>
               NO CREDIT CARD -- NO DOWNLOAD -- WORKS IN YOUR BROWSER
             </motion.p>
           </div>

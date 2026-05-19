@@ -48,7 +48,7 @@ function ChordCard({
 }) {
   return (
     <motion.div
-      layout
+      layout="size"
       onClick={onToggle}
       style={{
         background: expanded ? 'var(--card-bg)' : 'var(--bg2)',
@@ -62,6 +62,7 @@ function ChordCard({
         overflow: 'hidden',
         position: 'relative',
       }}
+      transition={{ layout: { duration: 0.35, ease: [0.16, 1, 0.3, 1] } }}
       whileHover={{ y: expanded ? 0 : -2, transition: { duration: 0.15 } }}
       whileTap={{ scale: 0.98 }}
     >
@@ -538,26 +539,22 @@ export default function ChordLibraryPage() {
             layout
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
               gap: 16,
             }}
           >
-            <AnimatePresence>
+            <AnimatePresence initial={false}>
               {filtered.map((chord, i) => (
                 <motion.div
                   key={chord.name}
-                  layout
+                  layout="position"
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{
-                    duration: 0.3,
-                    delay: Math.min(i * 0.04, 0.4),
-                    ease: [0.16, 1, 0.3, 1],
-                  }}
-                  style={{
-                    // Expanded card spans full row visually via layout animation
-                    gridColumn: expandedName === chord.name ? 'span 2' : 'span 1',
+                    layout: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
+                    opacity: { duration: 0.25, delay: Math.min(i * 0.03, 0.3) },
+                    y: { duration: 0.25, delay: Math.min(i * 0.03, 0.3), ease: [0.16, 1, 0.3, 1] },
                   }}
                 >
                   <ChordCard
