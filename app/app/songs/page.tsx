@@ -1,17 +1,35 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SONGS, Song } from '@/lib/songs';
 import { SongFollowView } from '@/components/SongFollowView';
 import { Reveal } from '@/components/Reveal';
 import { motion } from 'framer-motion';
+import { getSavedSongs, saveSong, deleteSavedSong, renameSavedSong, canGenerate, recordGeneration, GEN_LIMIT, SavedSong } from '@/lib/practice';
+
+type Tab = 'library' | 'songs';
 
 export default function SongsPage() {
   const [selected, setSelected] = useState<Song | null>(null);
+  const [tab, setTab] = useState<Tab>('songs');
   const [search, setSearch] = useState('');
   const [requestQuery, setRequestQuery] = useState('');
   const [generating, setGenerating] = useState(false);
   const [genError, setGenError] = useState<string | null>(null);
+  const [savedSongs, setSavedSongs] = useState<SavedSong[]>([]);
+  const [genStatus, setGenStatus] = useState<ReturnType<typeof canGenerate>>({ allowed: true, remaining: GEN_LIMIT, resetIn: null });
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameVal, setRenameVal] = useState('');
+
+  useEffect(() => {
+    setSavedSongs(getSavedSongs());
+    setGenStatus(canGenerate());
+  }, []);
+
+  const refreshSaved = () => {
+    setSavedSongs(getSavedSongs());
+    setGenStatus(canGenerate());
+  };
 
   const filtered = SONGS.filter(s =>
     s.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -20,6 +38,8 @@ export default function SongsPage() {
 
   const handleGenerate = async () => {
     if (!requestQuery.trim()) return;
+    const status = canGenerate();
+    if (!status.allowed) { setGenError(`No generations left. Resets in ${status.resetIn}.`); return; }
     setGenerating(true);
     setGenError(null);
     try {
@@ -30,6 +50,8 @@ export default function SongsPage() {
       });
       const data = await res.json();
       if (data.error) { setGenError(data.error); return; }
+      recordGeneration();
+      refreshSaved();
       setSelected(data.song);
     } catch {
       setGenError('Generation failed. Try again.');
@@ -38,24 +60,43 @@ export default function SongsPage() {
     }
   };
 
+  const handleSaveFromLibrary = (song: Song | SavedSong) => {
+    const toSave: Song = {
+      id: ('id' in song ? song.id : '') as string,
+      title: song.title,
+      artist: song.artist,
+      difficulty: 'beginner',
+      generated: true,
+      notes: song.notes,
+    };
+    saveSong(toSave);
+    refreshSaved();
+  };
+
+  const handleDelete = (id: string) => {
+    deleteSavedSong(id);
+    refreshSaved();
+  };
+
+  const handleRename = (id: string) => {
+    if (!renameVal.trim()) return;
+    renameSavedSong(id, renameVal.trim());
+    setRenamingId(null);
+    setRenameVal('');
+    refreshSaved();
+  };
+
   if (selected) {
     return (
       <div style={{ maxWidth: 640, margin: '0 auto' }}>
         <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
           <button
             onClick={() => setSelected(null)}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700,
-              letterSpacing: '0.1em', color: 'var(--text3)', background: 'none',
-              border: 'none', padding: 0, cursor: 'pointer', transition: 'color 0.15s',
-            }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', color: 'var(--text3)', background: 'none', border: 'none', padding: 0, cursor: 'pointer', transition: 'color 0.15s' }}
             onMouseEnter={e => { e.currentTarget.style.color = 'var(--text)'; }}
             onMouseLeave={e => { e.currentTarget.style.color = 'var(--text3)'; }}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 12H5M12 5l-7 7 7 7"/>
-            </svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
             BACK TO SONGS
           </button>
           {selected.generated && (
@@ -71,12 +112,7 @@ export default function SongsPage() {
 
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-        style={{ marginBottom: 36 }}
-      >
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }} style={{ marginBottom: 28 }}>
         <p className="eyebrow" style={{ marginBottom: 12 }}>SONG MODE</p>
         <h1 style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 8 }}>
           Pick a song.
@@ -86,114 +122,183 @@ export default function SongsPage() {
         </p>
       </motion.div>
 
-      {/* Search + AI request */}
-      <Reveal>
-        <div style={{ display: 'flex', gap: 10, marginBottom: 32, flexWrap: 'wrap' }}>
-          {/* Search existing */}
-          <div style={{ position: 'relative', flex: '1 1 200px', minWidth: 180 }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-              style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }}>
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-            </svg>
-            <input
-              type="text"
-              placeholder="Search songs..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="input-field"
-              style={{ paddingLeft: 36, height: 42 }}
-            />
-          </div>
-
-          {/* AI generation */}
-          <div style={{ display: 'flex', gap: 8, flex: '2 1 300px', minWidth: 260 }}>
-            <input
-              type="text"
-              placeholder="Don't see your song? Type it here..."
-              value={requestQuery}
-              onChange={e => { setRequestQuery(e.target.value); setGenError(null); }}
-              onKeyDown={e => { if (e.key === 'Enter') handleGenerate(); }}
-              className="input-field"
-              style={{ flex: 1, height: 42 }}
-              disabled={generating}
-            />
-            <button
-              onClick={handleGenerate}
-              disabled={generating || !requestQuery.trim()}
-              className="btn btn-accent"
-              style={{ height: 42, paddingLeft: 18, paddingRight: 18, flexShrink: 0 }}
-            >
-              {generating ? (
-                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor', animation: 'pulse 0.8s ease-in-out infinite' }} />
-                  <span className="btn-text">Generating</span>
-                </span>
-              ) : (
-                <span className="btn-text">Generate</span>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {genError && (
-          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--danger)', marginBottom: 16, marginTop: -20 }}>
-            {genError}
-          </p>
-        )}
-      </Reveal>
-
-      {/* Song grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 14 }}>
-        {filtered.map((song, i) => (
-          <Reveal key={song.id} delay={i * 0.04}>
-            <button
-              onClick={() => setSelected(song)}
-              className="hover-lift"
-              style={{
-                width: '100%', textAlign: 'left', padding: '20px 20px',
-                background: 'var(--card-bg)', border: '0.5px solid var(--border)',
-                borderRadius: 16, cursor: 'pointer', transition: 'border-color 0.15s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent-border)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; }}
-            >
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
-                <div style={{ width: 38, height: 38, borderRadius: 9, background: 'var(--accent-dim)', border: '0.5px solid var(--accent-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)' }}>
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
-                  </svg>
-                </div>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.12em', color: song.difficulty === 'beginner' ? 'var(--accent)' : 'var(--sharp)', background: song.difficulty === 'beginner' ? 'var(--accent-dim)' : 'var(--sharp-dim)', border: `0.5px solid ${song.difficulty === 'beginner' ? 'var(--accent-border)' : 'rgba(245,158,11,0.25)'}`, borderRadius: 99, padding: '3px 8px' }}>
-                  {song.difficulty.toUpperCase()}
-                </span>
-              </div>
-              <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.01em', marginBottom: 3 }}>
-                {song.title}
-              </h3>
-              <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12 }}>{song.artist}</p>
-
-              {/* Mini tab preview: show first 5 notes as string/fret chips */}
-              <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                {song.notes.slice(0, 5).map((note, j) => (
-                  <span key={j} style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', background: 'var(--bg3)', borderRadius: 4, padding: '2px 5px' }}>
-                    {['e','B','G','D','A','E'][note.string - 1]}|{note.fret}
-                  </span>
-                ))}
-                {song.notes.length > 5 && (
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)' }}>+{song.notes.length - 5}</span>
-                )}
-              </div>
-            </button>
-          </Reveal>
+      {/* Tab bar */}
+      <div style={{ display: 'flex', gap: 2, padding: 4, background: 'var(--bg3)', borderRadius: 10, border: '0.5px solid var(--border)', width: 'fit-content', marginBottom: 28 }}>
+        {(['songs', 'library'] as Tab[]).map(t => (
+          <button key={t} onClick={() => setTab(t)} style={{ padding: '8px 18px', borderRadius: 6, border: 'none', background: tab === t ? 'var(--accent)' : 'transparent', color: tab === t ? '#061b0e' : 'var(--text2)', fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', cursor: 'pointer', transition: 'all 0.15s', position: 'relative' }}>
+            {t.toUpperCase()}
+            {t === 'library' && savedSongs.length > 0 && (
+              <span style={{ position: 'absolute', top: 3, right: 3, width: 6, height: 6, borderRadius: '50%', background: tab === t ? '#061b0e' : 'var(--accent)' }} />
+            )}
+          </button>
         ))}
+      </div>
 
-        {filtered.length === 0 && (
-          <div style={{ gridColumn: '1 / -1', padding: '40px 0', textAlign: 'center' }}>
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--text-muted)', letterSpacing: '0.06em' }}>
-              No songs match. Use the Generate box above to create tabs for any song.
-            </p>
+      {/* SONGS TAB */}
+      {tab === 'songs' && (
+        <>
+          {/* Search + AI generation */}
+          <Reveal>
+            <div style={{ display: 'flex', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
+              <div style={{ position: 'relative', flex: '1 1 180px', minWidth: 160 }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }}>
+                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="text" placeholder="Search songs..." value={search} onChange={e => setSearch(e.target.value)} className="input-field" style={{ paddingLeft: 34, height: 42 }} />
+              </div>
+              <div style={{ display: 'flex', gap: 8, flex: '2 1 280px', minWidth: 240 }}>
+                <input
+                  type="text"
+                  placeholder={genStatus.allowed ? "Don't see your song? Type it here..." : `No generations left -- resets in ${genStatus.resetIn}`}
+                  value={requestQuery}
+                  onChange={e => { setRequestQuery(e.target.value); setGenError(null); }}
+                  onKeyDown={e => { if (e.key === 'Enter') handleGenerate(); }}
+                  className="input-field"
+                  style={{ flex: 1, height: 42, opacity: genStatus.allowed ? 1 : 0.6 }}
+                  disabled={generating || !genStatus.allowed}
+                />
+                <button onClick={handleGenerate} disabled={generating || !requestQuery.trim() || !genStatus.allowed} className="btn btn-accent" style={{ height: 42, paddingLeft: 16, paddingRight: 16, flexShrink: 0 }}>
+                  {generating ? (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'currentColor', animation: 'pulse 0.8s ease-in-out infinite' }} />
+                      <span className="btn-text">Generating</span>
+                    </span>
+                  ) : <span className="btn-text">Generate</span>}
+                </button>
+              </div>
+            </div>
+
+            {/* Gen counter */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
+              <div style={{ display: 'flex', gap: 3 }}>
+                {Array.from({ length: GEN_LIMIT }).map((_, i) => (
+                  <div key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: i < (GEN_LIMIT - genStatus.remaining) ? 'var(--accent)' : 'var(--border2)', transition: 'background 0.2s' }} />
+                ))}
+              </div>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', letterSpacing: '0.08em' }}>
+                {genStatus.remaining}/{GEN_LIMIT} FREE GENERATIONS
+                {!genStatus.allowed && genStatus.resetIn && ` -- RESETS IN ${genStatus.resetIn.toUpperCase()}`}
+              </span>
+            </div>
+
+            {genError && <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--danger)', marginBottom: 16, marginTop: -16 }}>{genError}</p>}
+          </Reveal>
+
+          {/* Song grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 12 }}>
+            {filtered.map((song, i) => (
+              <Reveal key={song.id} delay={i * 0.03}>
+                <SongCard song={song} onPlay={() => setSelected(song)} onSave={() => { handleSaveFromLibrary(song); }} isSaved={savedSongs.some(s => s.title === song.title)} />
+              </Reveal>
+            ))}
+            {filtered.length === 0 && (
+              <div style={{ gridColumn: '1 / -1', padding: '40px 0', textAlign: 'center' }}>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--text-muted)', letterSpacing: '0.06em' }}>
+                  No matches. Use Generate above.
+                </p>
+              </div>
+            )}
           </div>
-        )}
+        </>
+      )}
+
+      {/* LIBRARY TAB */}
+      {tab === 'library' && (
+        <div>
+          {savedSongs.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '60px 0' }}>
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--text-muted)', marginBottom: 16 }}>Your library is empty.</p>
+              <button onClick={() => setTab('songs')} className="btn btn-ghost btn-sm">BROWSE SONGS</button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {savedSongs.map(saved => (
+                <div key={saved.id} style={{ padding: '18px 20px', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 14, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    {renamingId === saved.id ? (
+                      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        <input
+                          autoFocus
+                          value={renameVal}
+                          onChange={e => setRenameVal(e.target.value)}
+                          onKeyDown={e => { if (e.key === 'Enter') handleRename(saved.id); if (e.key === 'Escape') setRenamingId(null); }}
+                          className="input-field"
+                          style={{ height: 32, fontSize: 13, padding: '0 10px' }}
+                          placeholder="Custom name..."
+                        />
+                        <button onClick={() => handleRename(saved.id)} className="btn btn-accent btn-sm">SAVE</button>
+                        <button onClick={() => setRenamingId(null)} className="btn btn-ghost btn-sm">X</button>
+                      </div>
+                    ) : (
+                      <>
+                        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>
+                          {saved.customName ?? saved.title}
+                        </p>
+                        <p style={{ fontSize: 12, color: 'var(--text3)' }}>
+                          {saved.artist}
+                          {saved.customName && <span style={{ color: 'var(--text-muted)', marginLeft: 8 }}>{saved.title}</span>}
+                          {saved.generated && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--accent)', marginLeft: 8, letterSpacing: '0.1em' }}>AI</span>}
+                        </p>
+                      </>
+                    )}
+                  </div>
+                  {renamingId !== saved.id && (
+                    <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                      <button onClick={() => setSelected({ id: saved.id, title: saved.title, artist: saved.artist, difficulty: 'beginner', generated: saved.generated, notes: saved.notes })} className="btn btn-accent btn-sm">
+                        PLAY
+                      </button>
+                      <button onClick={() => { setRenamingId(saved.id); setRenameVal(saved.customName ?? saved.title); }} className="btn btn-ghost btn-sm" title="Rename">
+                        RENAME
+                      </button>
+                      <button onClick={() => handleDelete(saved.id)} className="btn btn-ghost btn-sm" style={{ color: 'var(--danger)' }} title="Remove">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SongCard({ song, onPlay, onSave, isSaved }: { song: Song; onPlay: () => void; onSave: () => void; isSaved: boolean }) {
+  return (
+    <div style={{ background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 14, overflow: 'hidden', transition: 'border-color 0.15s', display: 'flex', flexDirection: 'column' }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent-border)'; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; }}
+    >
+      <button onClick={onPlay} style={{ textAlign: 'left', padding: '18px 18px 12px', background: 'none', border: 'none', cursor: 'pointer', flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--accent-dim)', border: '0.5px solid var(--accent-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+            </svg>
+          </div>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, letterSpacing: '0.12em', color: song.difficulty === 'beginner' ? 'var(--accent)' : 'var(--sharp)', background: song.difficulty === 'beginner' ? 'var(--accent-dim)' : 'var(--sharp-dim)', border: `0.5px solid ${song.difficulty === 'beginner' ? 'var(--accent-border)' : 'rgba(245,158,11,0.25)'}`, borderRadius: 99, padding: '2px 7px' }}>
+            {song.difficulty.toUpperCase()}
+          </span>
+        </div>
+        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.01em', marginBottom: 2 }}>{song.title}</p>
+        <p style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 10 }}>{song.artist}</p>
+        <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+          {song.notes.slice(0, 5).map((note, j) => (
+            <span key={j} style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--text-muted)', background: 'var(--bg3)', borderRadius: 3, padding: '2px 4px' }}>
+              {['e','B','G','D','A','E'][note.string - 1]}|{note.fret}
+            </span>
+          ))}
+          {song.notes.length > 5 && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--text-muted)' }}>+{song.notes.length - 5}</span>}
+        </div>
+      </button>
+      {/* Footer */}
+      <div style={{ display: 'flex', borderTop: '0.5px solid var(--border)', padding: '8px 12px', gap: 8 }}>
+        <button onClick={onPlay} className="btn btn-accent btn-sm" style={{ flex: 1, fontSize: 10 }}>PLAY</button>
+        <button onClick={onSave} disabled={isSaved} className="btn btn-ghost btn-sm" style={{ fontSize: 10 }}>
+          {isSaved ? 'SAVED' : 'SAVE'}
+        </button>
       </div>
     </div>
   );

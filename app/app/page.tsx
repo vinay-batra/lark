@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { Reveal } from '@/components/Reveal';
+import { getSessions, getStreak, getAvgAccuracy, getGenCount } from '@/lib/practice';
 
 const QUICK_TOOLS = [
   {
@@ -38,15 +39,20 @@ const SOON = [
 export default function AppPage() {
   const [greeting, setGreeting] = useState('Good day');
   const [email, setEmail] = useState<string | null>(null);
+  const [stats, setStats] = useState({ sessions: 0, streak: 0, accuracy: null as number | null, generated: 0 });
 
   useEffect(() => {
     const h = new Date().getHours();
     setGreeting(h < 5 ? 'Late night' : h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening');
     if (supabase) {
-      supabase.auth.getUser().then(({ data }) => {
-        setEmail(data.user?.email ?? null);
-      });
+      supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
     }
+    setStats({
+      sessions: getSessions().length,
+      streak: getStreak(),
+      accuracy: getAvgAccuracy(),
+      generated: getGenCount(),
+    });
   }, []);
 
   const username = email?.split('@')[0] ?? null;
@@ -207,51 +213,30 @@ export default function AppPage() {
         ))}
       </div>
 
-      {/* Activity stats placeholder */}
+      {/* Stats */}
       <Reveal>
-        <div style={{
-          marginTop: 56,
-          padding: '28px 26px',
-          background: 'var(--card-bg)',
-          border: '0.5px solid var(--border)',
-          borderRadius: 16,
-        }}>
-          <p className="eyebrow" style={{ marginBottom: 16 }}>YOUR PRACTICE</p>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-            gap: 24,
-          }}>
+        <div style={{ marginTop: 56, padding: '28px 26px', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 16 }}>
+          <p className="eyebrow" style={{ marginBottom: 20 }}>YOUR PRACTICE</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 24 }}>
             {[
-              { val: '0', label: 'Sessions' },
-              { val: '0m', label: 'Practice time' },
-              { val: '--', label: 'Best tuning' },
-              { val: '0', label: 'Chords learned' },
+              { val: stats.sessions.toString(), label: 'Sessions played', accent: stats.sessions > 0 },
+              { val: stats.streak > 0 ? `${stats.streak}d` : '0', label: 'Day streak', accent: stats.streak > 0 },
+              { val: stats.accuracy !== null ? `${stats.accuracy}%` : '--', label: 'Avg accuracy', accent: stats.accuracy !== null },
+              { val: stats.generated.toString(), label: 'Tabs generated', accent: stats.generated > 0 },
             ].map(s => (
               <div key={s.label}>
-                <div style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 28,
-                  fontWeight: 700,
-                  color: 'var(--text)',
-                  letterSpacing: '-0.02em',
-                  marginBottom: 4,
-                }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: s.accent ? 'var(--accent)' : 'var(--text)', letterSpacing: '-0.02em', marginBottom: 4 }}>
                   {s.val}
                 </div>
                 <div style={{ fontSize: 12, color: 'var(--text3)' }}>{s.label}</div>
               </div>
             ))}
           </div>
-          <p style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            color: 'var(--text-muted)',
-            marginTop: 16,
-            letterSpacing: '0.08em',
-          }}>
-            STATS COMING WITH AUTH + BACKEND
-          </p>
+          {stats.sessions === 0 && (
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', marginTop: 16, letterSpacing: '0.08em' }}>
+              PLAY A SONG TO START TRACKING
+            </p>
+          )}
         </div>
       </Reveal>
     </div>

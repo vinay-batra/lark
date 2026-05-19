@@ -229,9 +229,6 @@ export default function SettingsPage() {
         <Row label="Version" hint="Latest build deployed.">
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text3)' }}>{VERSION}</span>
         </Row>
-        <Row label="Feedback" hint="Tell us what is broken or missing.">
-          <a href="mailto:the404supply@gmail.com?subject=Lark Feedback" className="btn btn-ghost btn-sm">EMAIL US</a>
-        </Row>
       </Section>
     </div>
   );

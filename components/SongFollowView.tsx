@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { PitchDetector } from 'pitchy';
 import { Song } from '@/lib/songs';
 import { TabView } from './TabView';
+import { saveSession, saveSong, getSavedSongs } from '@/lib/practice';
 
 const TOLERANCE_CENTS = 100;
 const CLARITY_THRESHOLD = 0.88;
@@ -37,6 +38,7 @@ export function SongFollowView({ song }: { song: Song }) {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [loadingFeedback, setLoadingFeedback] = useState(false);
   const [micError, setMicError] = useState<string | null>(null);
+  const [isSaved, setIsSaved] = useState(false);
 
   const rafRef = useRef<number | null>(null);
   const ctxRef = useRef<AudioContext | null>(null);
@@ -191,6 +193,13 @@ export function SongFollowView({ song }: { song: Song }) {
     if (mode !== 'finished') return;
     const finalNotes = sessionNotesRef.current;
     const hits = finalNotes.filter(n => n.result === 'hit').length;
+    const accuracy = Math.round((hits / finalNotes.length) * 100);
+    // Save session to localStorage
+    try {
+      saveSession({ songTitle: song.title, artist: song.artist, accuracy, hits, total: finalNotes.length, completedAt: new Date().toISOString() });
+    } catch {}
+    // Check if already saved
+    setIsSaved(getSavedSongs().some(s => s.title === song.title && s.artist === song.artist));
     setLoadingFeedback(true);
     fetch('/api/coach', {
       method: 'POST',
@@ -376,10 +385,23 @@ export function SongFollowView({ song }: { song: Song }) {
             )}
           </div>
 
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <button onClick={reset} className="btn btn-ghost">
               <span className="btn-text">TRY AGAIN</span>
             </button>
+            {!isSaved ? (
+              <button
+                className="btn btn-outline"
+                onClick={() => { saveSong(song); setIsSaved(true); }}
+              >
+                <span className="btn-text">SAVE TO LIBRARY</span>
+              </button>
+            ) : (
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                SAVED
+              </span>
+            )}
           </div>
         </div>
       )}

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Space_Mono } from 'next/font/google';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { GlobalUI } from '@/components/GlobalUI';
 import './globals.css';
 
 const spaceMono = Space_Mono({
@@ -42,7 +43,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          {children}
+          <GlobalUI />
+        </ThemeProvider>
       </body>
     </html>
   );

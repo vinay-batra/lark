@@ -92,6 +92,40 @@ export const SONGS: Song[] = [
     ],
   },
   {
+    id: 'back-in-black',
+    title: 'Back in Black',
+    artist: 'AC/DC',
+    difficulty: 'beginner',
+    // Main riff on low E string
+    notes: [
+      n(6,0), n(6,0), n(6,0), n(6,5), n(6,7),
+      n(6,7), n(6,5), n(6,3), n(6,0),
+      n(6,5), n(6,7), n(6,7), n(6,5), n(6,3), n(6,0),
+    ],
+  },
+  {
+    id: 'eye-of-the-tiger',
+    title: 'Eye of the Tiger',
+    artist: 'Survivor',
+    difficulty: 'beginner',
+    // Main riff on low E string
+    notes: [
+      n(6,0), n(6,0), n(6,3), n(6,5),
+      n(6,0), n(6,0), n(6,3), n(6,5), n(6,4), n(6,3), n(6,0),
+    ],
+  },
+  {
+    id: 'enter-sandman',
+    title: 'Enter Sandman',
+    artist: 'Metallica',
+    difficulty: 'intermediate',
+    // Main riff on low E string
+    notes: [
+      n(6,0), n(6,0), n(6,7), n(6,9),
+      n(6,7), n(6,5), n(6,3), n(6,0), n(6,3), n(6,0),
+    ],
+  },
+  {
     id: 'happy-birthday',
     title: 'Happy Birthday',
     artist: 'Traditional',
