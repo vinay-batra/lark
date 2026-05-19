@@ -1,12 +1,15 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { PitchDetector } from 'pitchy';
 import { Song } from '@/lib/songs';
+import { TabView } from './TabView';
 
 const TOLERANCE_CENTS = 100;
 const CLARITY_THRESHOLD = 0.88;
 const NOTE_TIMEOUT_MS = 4000;
+const NOTES_PER_LINE = 10;
 
 function midiToFreq(midi: number) { return 440 * Math.pow(2, (midi - 69) / 12); }
 function getCents(freq: number, targetMidi: number) {
@@ -14,22 +17,23 @@ function getCents(freq: number, targetMidi: number) {
 }
 
 type NoteResult = 'pending' | 'hit' | 'miss';
+type Mode = 'idle' | 'countdown' | 'playing' | 'finished';
 
 interface SessionNote {
-  note: string;
+  string: number;
+  fret: number;
   midi: number;
-  hint: string;
   result: NoteResult;
   centsOff: number | null;
 }
-
-type Mode = 'idle' | 'countdown' | 'playing' | 'finished';
 
 export function SongFollowView({ song }: { song: Song }) {
   const [mode, setMode] = useState<Mode>('idle');
   const [countdown, setCountdown] = useState(3);
   const [notes, setNotes] = useState<SessionNote[]>([]);
   const [noteIndex, setNoteIndex] = useState(0);
+  const [lineIndex, setLineIndex] = useState(0); // which line (group of NOTES_PER_LINE) is visible
+  const [wrongFlash, setWrongFlash] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [loadingFeedback, setLoadingFeedback] = useState(false);
   const [micError, setMicError] = useState<string | null>(null);
@@ -41,15 +45,15 @@ export function SongFollowView({ song }: { song: Song }) {
   const inputRef = useRef<Float32Array | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wrongTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const noteIndexRef = useRef(0);
   const sessionNotesRef = useRef<SessionNote[]>([]);
   const advancedRef = useRef(false);
-  const noteChipRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const ribbonRef = useRef<HTMLDivElement | null>(null);
 
   const stopAudio = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (wrongTimerRef.current) clearTimeout(wrongTimerRef.current);
     ctxRef.current?.close();
     streamRef.current?.getTracks().forEach(t => t.stop());
     rafRef.current = null; ctxRef.current = null; analyserRef.current = null; streamRef.current = null;
@@ -57,19 +61,12 @@ export function SongFollowView({ song }: { song: Song }) {
 
   useEffect(() => () => stopAudio(), [stopAudio]);
 
-  // Scroll current note chip into view
-  useEffect(() => {
-    noteChipRefs.current[noteIndex]?.scrollIntoView({
-      behavior: noteIndex === 0 ? 'instant' : 'smooth',
-      block: 'nearest',
-      inline: 'center',
-    });
-  }, [noteIndex]);
-
   const advanceNote = useCallback((hit: boolean, centsOff: number | null) => {
     if (advancedRef.current) return;
     advancedRef.current = true;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (wrongTimerRef.current) clearTimeout(wrongTimerRef.current);
+    setWrongFlash(false);
 
     const idx = noteIndexRef.current;
     const updated = [...sessionNotesRef.current];
@@ -80,6 +77,10 @@ export function SongFollowView({ song }: { song: Song }) {
     const next = idx + 1;
     noteIndexRef.current = next;
     setNoteIndex(next);
+
+    // Advance line when we cross a line boundary
+    const newLine = Math.floor(next / NOTES_PER_LINE);
+    setLineIndex(newLine);
 
     if (next >= updated.length) {
       setMode('finished');
@@ -109,6 +110,11 @@ export function SongFollowView({ song }: { song: Song }) {
         if (Math.abs(cents) <= TOLERANCE_CENTS) {
           advanceNote(true, cents);
           return;
+        } else {
+          // Wrong note -- flash red but stay on current note
+          setWrongFlash(true);
+          if (wrongTimerRef.current) clearTimeout(wrongTimerRef.current);
+          wrongTimerRef.current = setTimeout(() => setWrongFlash(false), 350);
         }
       }
     }
@@ -121,12 +127,20 @@ export function SongFollowView({ song }: { song: Song }) {
   const startSession = async () => {
     setMicError(null);
     setFeedback(null);
-    const sessionNotes: SessionNote[] = song.notes.map(sn => ({ ...sn, result: 'pending', centsOff: null }));
+    const sessionNotes: SessionNote[] = song.notes.map(sn => ({
+      string: sn.string,
+      fret: sn.fret,
+      midi: sn.midi,
+      result: 'pending',
+      centsOff: null,
+    }));
     sessionNotesRef.current = sessionNotes;
     setNotes(sessionNotes);
     noteIndexRef.current = 0;
     setNoteIndex(0);
+    setLineIndex(0);
     advancedRef.current = false;
+    setWrongFlash(false);
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
@@ -150,17 +164,12 @@ export function SongFollowView({ song }: { song: Song }) {
           timeoutRef.current = setTimeout(() => advanceNote(false, null), NOTE_TIMEOUT_MS);
           return;
         }
-        setTimeout(() => {
-          setCountdown(c - 1);
-          tick(c - 1);
-        }, 1000);
+        setTimeout(() => { setCountdown(c - 1); tick(c - 1); }, 1000);
       };
       tick(3);
     } catch (err) {
       if (err instanceof DOMException && err.name === 'NotAllowedError') {
-        setMicError('Microphone access denied. Allow permission in your browser settings.');
-      } else if (err instanceof DOMException && err.name === 'NotFoundError') {
-        setMicError('No microphone found.');
+        setMicError('Microphone access denied.');
       } else {
         setMicError('Could not access microphone.');
       }
@@ -172,11 +181,12 @@ export function SongFollowView({ song }: { song: Song }) {
     setMode('idle');
     setNotes([]);
     setNoteIndex(0);
+    setLineIndex(0);
     setFeedback(null);
     setLoadingFeedback(false);
+    setWrongFlash(false);
   };
 
-  // Fetch AI feedback when session finishes
   useEffect(() => {
     if (mode !== 'finished') return;
     const finalNotes = sessionNotesRef.current;
@@ -187,7 +197,7 @@ export function SongFollowView({ song }: { song: Song }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         song: song.title,
-        events: finalNotes.map(n => ({ expected: n.note, hit: n.result === 'hit', centsOff: n.centsOff })),
+        events: finalNotes.map(n => ({ expected: `str${n.string} fret${n.fret}`, hit: n.result === 'hit', centsOff: n.centsOff })),
         totalNotes: finalNotes.length,
         hits,
       }),
@@ -198,13 +208,18 @@ export function SongFollowView({ song }: { song: Song }) {
       .finally(() => setLoadingFeedback(false));
   }, [mode, song.title]);
 
-  const played = notes.filter(n => n.result !== 'pending').length;
   const hits = notes.filter(n => n.result === 'hit').length;
+  const played = notes.filter(n => n.result !== 'pending').length;
   const accuracy = played > 0 ? Math.round((hits / played) * 100) : null;
+
+  const lineStart = lineIndex * NOTES_PER_LINE;
+  const lineEnd = Math.min(lineStart + NOTES_PER_LINE, notes.length);
+  const lineNotes = notes.slice(lineStart, lineEnd);
+  const currentInLine = noteIndex - lineStart;
   const currentNote = notes[noteIndex];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 20px', minHeight: '60vh', gap: 0 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 20px', minHeight: '60vh' }}>
 
       {/* IDLE */}
       {mode === 'idle' && (
@@ -216,12 +231,10 @@ export function SongFollowView({ song }: { song: Song }) {
           <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--text3)', marginBottom: 32 }}>
             {song.artist} &mdash; {song.notes.length} notes
           </p>
-          <p style={{ fontSize: 14, color: 'var(--text3)', lineHeight: 1.7, marginBottom: 36, maxWidth: 360, margin: '0 auto 36px' }}>
-            Play each highlighted note on your guitar. Lark listens and advances when it hears the right pitch. Each note has a 4-second window.
+          <p style={{ fontSize: 14, color: 'var(--text3)', lineHeight: 1.7, marginBottom: 36 }}>
+            Play each highlighted note. Lark scores you in real time and gives feedback at the end.
           </p>
-          {micError && (
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--danger)', marginBottom: 20 }}>{micError}</p>
-          )}
+          {micError && <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--danger)', marginBottom: 16 }}>{micError}</p>}
           <button onClick={startSession} className="btn btn-accent btn-lg">
             <span className="btn-text">START</span>
           </button>
@@ -232,166 +245,106 @@ export function SongFollowView({ song }: { song: Song }) {
       {mode === 'countdown' && (
         <div style={{ textAlign: 'center' }}>
           <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--text3)', letterSpacing: '0.14em', marginBottom: 24 }}>GET READY</p>
-          <div style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 'clamp(80px, 22vw, 140px)',
-            fontWeight: 700,
-            color: 'var(--accent)',
-            lineHeight: 1,
-            animation: 'pulse 0.6s ease-in-out',
-          }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(80px, 22vw, 140px)', fontWeight: 700, color: 'var(--accent)', lineHeight: 1 }}>
             {countdown || '!'}
           </div>
         </div>
       )}
 
       {/* PLAYING */}
-      {(mode === 'playing' || (mode === 'finished' && notes.length > 0)) && (
-        <div style={{ width: '100%', maxWidth: 560 }}>
-          {/* Score header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+      {mode === 'playing' && notes.length > 0 && (
+        <div style={{ width: '100%', maxWidth: 600 }}>
+          {/* Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
             <p className="eyebrow">{song.title.toUpperCase()}</p>
-            {accuracy !== null && (
-              <span style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 13,
-                fontWeight: 700,
-                color: accuracy >= 80 ? 'var(--accent)' : accuracy >= 50 ? 'var(--sharp)' : 'var(--danger)',
-              }}>
-                {accuracy}%
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              {accuracy !== null && (
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, color: accuracy >= 80 ? 'var(--accent)' : accuracy >= 50 ? 'var(--sharp)' : 'var(--danger)' }}>
+                  {accuracy}%
+                </span>
+              )}
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)' }}>
+                {noteIndex + 1} / {notes.length}
               </span>
-            )}
+            </div>
           </div>
 
-          {/* Current note display */}
-          {mode === 'playing' && currentNote && (
+          {/* Current note big display */}
+          {currentNote && (
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.2em', color: 'var(--text-muted)', marginBottom: 8 }}>
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.2em', color: 'var(--text-muted)', marginBottom: 6 }}>
                 PLAY NOW
               </p>
               <div style={{
                 fontFamily: 'var(--font-mono)',
-                fontSize: 'clamp(64px, 18vw, 96px)',
+                fontSize: 'clamp(52px, 14vw, 80px)',
                 fontWeight: 700,
-                color: 'var(--accent)',
                 lineHeight: 1,
-                animation: 'accentRing 1.4s ease-out infinite',
+                color: wrongFlash ? 'var(--danger)' : 'var(--accent)',
+                transition: 'color 0.1s',
+                animation: wrongFlash ? 'none' : 'accentRing 1.4s ease-out infinite',
               }}>
-                {currentNote.note.replace(/\d+$/, '')}
+                {currentNote.fret === 0 ? 'Open' : `Fret ${currentNote.fret}`}
               </div>
-              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--text3)', marginTop: 8, letterSpacing: '0.06em' }}>
-                {currentNote.hint.replace('|', ' · fret ')}
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: wrongFlash ? 'var(--danger)' : 'var(--text3)', marginTop: 6, transition: 'color 0.1s' }}>
+                {['e','B','G','D','A','E'][currentNote.string - 1]} string
               </p>
-              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', marginTop: 6, letterSpacing: '0.06em' }}>
-                {noteIndex + 1} / {notes.length}
-              </p>
+              {wrongFlash && (
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--danger)', marginTop: 4, letterSpacing: '0.1em' }}>
+                  WRONG NOTE
+                </p>
+              )}
             </div>
           )}
 
-          {/* Note ribbon */}
-          <div
-            ref={ribbonRef}
-            style={{
-              display: 'flex',
-              gap: 8,
-              overflowX: 'auto',
-              paddingBottom: 6,
-              scrollbarWidth: 'none',
-            }}
-          >
-            {notes.map((note, i) => {
-              const isCurrent = i === noteIndex && mode === 'playing';
-              const isPast = note.result !== 'pending';
-              const isFuture = !isPast && !isCurrent;
-              return (
-                <div
-                  key={i}
-                  ref={el => { noteChipRefs.current[i] = el; }}
-                  style={{
-                    flexShrink: 0,
-                    width: isCurrent ? 64 : 48,
-                    height: isCurrent ? 72 : 56,
-                    borderRadius: 10,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 4,
-                    border: isCurrent
-                      ? '1.5px solid var(--accent)'
-                      : note.result === 'hit'
-                      ? '1px solid var(--accent-border)'
-                      : note.result === 'miss'
-                      ? '1px solid rgba(239,68,68,0.3)'
-                      : '0.5px solid var(--border)',
-                    background: note.result === 'hit'
-                      ? 'var(--accent-dim)'
-                      : note.result === 'miss'
-                      ? 'var(--danger-dim)'
-                      : isCurrent
-                      ? 'var(--bg3)'
-                      : 'var(--card-bg)',
-                    opacity: isFuture && i > noteIndex + 4 ? 0.35 : 1,
-                    transition: 'all 0.15s',
-                    boxShadow: isCurrent ? 'var(--accent-glow)' : 'none',
-                  }}
-                >
-                  <span style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: isCurrent ? 14 : 11,
-                    fontWeight: 700,
-                    color: note.result === 'hit'
-                      ? 'var(--accent)'
-                      : note.result === 'miss'
-                      ? 'var(--danger)'
-                      : isCurrent
-                      ? 'var(--text)'
-                      : 'var(--text3)',
-                    transition: 'color 0.15s',
-                    letterSpacing: '-0.01em',
-                  }}>
-                    {note.note.replace(/\d+$/, '')}
-                  </span>
-                  <span style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 8,
-                    color: note.result === 'hit'
-                      ? 'var(--accent)'
-                      : note.result === 'miss'
-                      ? 'var(--danger)'
-                      : isCurrent
-                      ? 'var(--text3)'
-                      : 'var(--text-muted)',
-                    letterSpacing: '0.04em',
-                  }}>
-                    {note.hint}
-                  </span>
-                  {note.result === 'hit' && (
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--accent)' }} />
-                  )}
-                  {note.result === 'miss' && (
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--danger)' }} />
-                  )}
-                </div>
-              );
-            })}
-          </div>
+          {/* Tab display with line transitions */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={lineIndex}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                padding: '16px 14px',
+                background: 'var(--card-bg)',
+                border: '0.5px solid var(--border)',
+                borderRadius: 14,
+              }}
+            >
+              <TabView
+                notes={lineNotes}
+                currentIndex={currentInLine}
+                wrongFlash={wrongFlash}
+              />
+              {/* Line progress dots */}
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 5, marginTop: 12 }}>
+                {Array.from({ length: Math.ceil(notes.length / NOTES_PER_LINE) }).map((_, i) => (
+                  <div key={i} style={{
+                    width: i === lineIndex ? 16 : 5,
+                    height: 5,
+                    borderRadius: 99,
+                    background: i < lineIndex ? 'var(--accent)' : i === lineIndex ? 'var(--accent)' : 'var(--border2)',
+                    opacity: i === lineIndex ? 1 : 0.5,
+                    transition: 'all 0.25s',
+                  }} />
+                ))}
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       )}
 
       {/* FINISHED */}
       {mode === 'finished' && (
-        <div style={{ width: '100%', maxWidth: 560, marginTop: 32 }}>
+        <div style={{ width: '100%', maxWidth: 560 }}>
+          {/* Final tab view (last line) */}
+          <div style={{ padding: '14px', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 14, marginBottom: 20, opacity: 0.7 }}>
+            <TabView notes={lineNotes} currentIndex={-1} wrongFlash={false} />
+          </div>
 
-          {/* Score card */}
-          <div style={{
-            padding: '28px 26px',
-            background: 'var(--card-bg)',
-            border: '0.5px solid var(--border)',
-            borderRadius: 16,
-            marginBottom: 20,
-            textAlign: 'center',
-          }}>
+          {/* Score */}
+          <div style={{ padding: '28px 26px', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 16, marginBottom: 16, textAlign: 'center' }}>
             <p className="eyebrow" style={{ marginBottom: 12 }}>SESSION COMPLETE</p>
             <div style={{
               fontFamily: 'var(--font-mono)',
@@ -408,29 +361,18 @@ export function SongFollowView({ song }: { song: Song }) {
             </p>
           </div>
 
-          {/* AI Feedback card */}
-          <div style={{
-            padding: '22px 24px',
-            background: 'var(--card-bg)',
-            border: '0.5px solid var(--accent-border)',
-            borderRadius: 14,
-            marginBottom: 24,
-            minHeight: 80,
-          }}>
+          {/* AI Feedback */}
+          <div style={{ padding: '22px 24px', background: 'var(--card-bg)', border: '0.5px solid var(--accent-border)', borderRadius: 14, marginBottom: 24 }}>
             <p className="eyebrow" style={{ marginBottom: 12 }}>AI COACH</p>
             {loadingFeedback ? (
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s ease-in-out infinite' }} />
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', letterSpacing: '0.08em' }}>
-                  ANALYZING...
-                </span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', letterSpacing: '0.08em' }}>ANALYZING...</span>
               </div>
             ) : feedback ? (
               <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.7 }}>{feedback}</p>
             ) : (
-              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', letterSpacing: '0.06em' }}>
-                No feedback available.
-              </p>
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)' }}>No feedback available.</p>
             )}
           </div>
 

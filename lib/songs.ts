@@ -1,7 +1,11 @@
-export interface SongNote {
-  note: string;   // e.g. 'E4' -- used for pitch detection only
-  midi: number;   // MIDI number for frequency comparison
-  hint: string;   // e.g. 'e|0' or 'D|5' -- string name | fret number
+// Standard tuning open-string MIDI: e=64 B=59 G=55 D=50 A=45 E=40
+export const OPEN_MIDI = [64, 59, 55, 50, 45, 40] as const;
+export const STRING_LABELS = ['e', 'B', 'G', 'D', 'A', 'E'] as const;
+
+export interface TabNote {
+  string: 1 | 2 | 3 | 4 | 5 | 6; // 1=high e, 6=low E
+  fret: number;
+  midi: number;
 }
 
 export interface Song {
@@ -9,15 +13,13 @@ export interface Song {
   title: string;
   artist: string;
   difficulty: 'beginner' | 'intermediate';
-  notes: SongNote[];
+  generated?: boolean; // true for AI-generated songs
+  notes: TabNote[];
 }
 
-function n(note: string, midi: number, hint: string): SongNote {
-  return { note, midi, hint };
+function n(string: 1 | 2 | 3 | 4 | 5 | 6, fret: number): TabNote {
+  return { string, fret, midi: OPEN_MIDI[string - 1] + fret };
 }
-
-// String open-string MIDI: E2=40 A2=45 D3=50 G3=55 B3=59 e4=64
-// fret = midi - open_string_midi
 
 export const SONGS: Song[] = [
   {
@@ -26,10 +28,10 @@ export const SONGS: Song[] = [
     artist: 'Beethoven',
     difficulty: 'beginner',
     notes: [
-      n('E4', 64, 'e|0'), n('E4', 64, 'e|0'), n('F4', 65, 'e|1'), n('G4', 67, 'e|3'),
-      n('G4', 67, 'e|3'), n('F4', 65, 'e|1'), n('E4', 64, 'e|0'), n('D4', 62, 'B|3'),
-      n('C4', 60, 'B|1'), n('C4', 60, 'B|1'), n('D4', 62, 'B|3'), n('E4', 64, 'e|0'),
-      n('E4', 64, 'e|0'), n('D4', 62, 'B|3'), n('D4', 62, 'B|3'),
+      n(1,0), n(1,0), n(1,1), n(1,3),
+      n(1,3), n(1,1), n(1,0), n(2,3),
+      n(2,1), n(2,1), n(2,3), n(1,0),
+      n(1,0), n(2,3), n(2,3),
     ],
   },
   {
@@ -38,8 +40,8 @@ export const SONGS: Song[] = [
     artist: 'The White Stripes',
     difficulty: 'beginner',
     notes: [
-      n('E4', 64, 'e|0'), n('E4', 64, 'e|0'), n('G4', 67, 'e|3'), n('E4', 64, 'e|0'),
-      n('D4', 62, 'B|3'), n('C4', 60, 'B|1'), n('B3', 59, 'B|0'), n('B3', 59, 'B|0'), n('C4', 60, 'B|1'),
+      n(1,0), n(1,0), n(1,3), n(1,0),
+      n(2,3), n(2,1), n(2,0), n(2,0), n(2,1),
     ],
   },
   {
@@ -48,21 +50,33 @@ export const SONGS: Song[] = [
     artist: 'Deep Purple',
     difficulty: 'beginner',
     notes: [
-      n('D3', 50, 'D|0'), n('F3', 53, 'D|3'), n('G3', 55, 'D|5'),
-      n('D3', 50, 'D|0'), n('F3', 53, 'D|3'), n('Ab3', 56, 'D|6'), n('G3', 55, 'D|5'),
-      n('D3', 50, 'D|0'), n('F3', 53, 'D|3'), n('G3', 55, 'D|5'), n('F3', 53, 'D|3'), n('D3', 50, 'D|0'),
+      n(4,0), n(4,3), n(4,5),
+      n(4,0), n(4,3), n(4,6), n(4,5),
+      n(4,0), n(4,3), n(4,5), n(4,3), n(4,0),
     ],
   },
   {
-    id: 'happy-birthday',
-    title: 'Happy Birthday',
-    artist: 'Traditional',
+    id: 'nothing-else-matters',
+    title: 'Nothing Else Matters',
+    artist: 'Metallica',
     difficulty: 'beginner',
+    // Em arpeggiation: E2 B2 E3 G3 B3 E4 and back
     notes: [
-      n('G4', 67, 'e|3'), n('G4', 67, 'e|3'), n('A4', 69, 'e|5'), n('G4', 67, 'e|3'), n('C5', 72, 'e|8'), n('B4', 71, 'e|7'),
-      n('G4', 67, 'e|3'), n('G4', 67, 'e|3'), n('A4', 69, 'e|5'), n('G4', 67, 'e|3'), n('D5', 74, 'e|10'), n('C5', 72, 'e|8'),
-      n('G4', 67, 'e|3'), n('G4', 67, 'e|3'), n('G5', 79, 'e|15'), n('E5', 76, 'e|12'), n('C5', 72, 'e|8'), n('B4', 71, 'e|7'), n('A4', 69, 'e|5'),
-      n('F5', 77, 'e|13'), n('F5', 77, 'e|13'), n('E5', 76, 'e|12'), n('C5', 72, 'e|8'), n('D5', 74, 'e|10'), n('C5', 72, 'e|8'),
+      n(6,0), n(5,2), n(4,2), n(3,0), n(2,0), n(1,0),
+      n(2,0), n(3,0), n(4,2), n(5,2),
+      n(6,0), n(5,2), n(4,2), n(3,0), n(2,0), n(1,0),
+    ],
+  },
+  {
+    id: 'come-as-you-are',
+    title: 'Come As You Are',
+    artist: 'Nirvana',
+    difficulty: 'beginner',
+    // Main riff on low E string
+    notes: [
+      n(6,0), n(6,0), n(6,3), n(6,0),
+      n(6,0), n(6,2), n(6,0), n(6,0),
+      n(6,3), n(6,3), n(6,2),
     ],
   },
   {
@@ -71,10 +85,22 @@ export const SONGS: Song[] = [
     artist: 'Traditional',
     difficulty: 'beginner',
     notes: [
-      n('C4', 60, 'B|1'), n('C4', 60, 'B|1'), n('G4', 67, 'e|3'), n('G4', 67, 'e|3'),
-      n('A4', 69, 'e|5'), n('A4', 69, 'e|5'), n('G4', 67, 'e|3'),
-      n('F4', 65, 'e|1'), n('F4', 65, 'e|1'), n('E4', 64, 'e|0'), n('E4', 64, 'e|0'),
-      n('D4', 62, 'B|3'), n('D4', 62, 'B|3'), n('C4', 60, 'B|1'),
+      n(2,1), n(2,1), n(1,3), n(1,3),
+      n(1,5), n(1,5), n(1,3),
+      n(1,1), n(1,1), n(1,0), n(1,0),
+      n(2,3), n(2,3), n(2,1),
+    ],
+  },
+  {
+    id: 'happy-birthday',
+    title: 'Happy Birthday',
+    artist: 'Traditional',
+    difficulty: 'beginner',
+    notes: [
+      n(1,3), n(1,3), n(1,5), n(1,3), n(1,8), n(1,7),
+      n(1,3), n(1,3), n(1,5), n(1,3), n(1,10), n(1,8),
+      n(1,3), n(1,3), n(1,15), n(1,12), n(1,8), n(1,7), n(1,5),
+      n(1,13), n(1,13), n(1,12), n(1,8), n(1,10), n(1,8),
     ],
   },
 ];
