@@ -58,6 +58,7 @@ Rules:
       title: parsed.title ?? query,
       artist: parsed.artist ?? 'Unknown',
       difficulty: 'beginner',
+      bpm: 120,
       generated: true,
       notes: parsed.notes
         .filter(n => n.s >= 1 && n.s <= 6 && n.f >= 0 && n.f <= 24)
