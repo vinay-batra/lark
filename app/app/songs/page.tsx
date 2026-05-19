@@ -79,6 +79,7 @@ export default function SongsPage() {
       title: song.title,
       artist: song.artist,
       difficulty: 'beginner',
+      bpm: ('bpm' in song && song.bpm) ? song.bpm : 120,
       generated: true,
       notes: song.notes,
     };
@@ -293,7 +294,7 @@ export default function SongsPage() {
                   </div>
                   {renamingId !== saved.id && (
                     <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-                      <button onClick={() => setSelected({ id: saved.id, title: saved.title, artist: saved.artist, difficulty: 'beginner', generated: saved.generated, notes: saved.notes })} className="btn btn-accent btn-sm">
+                      <button onClick={() => setSelected({ id: saved.id, title: saved.title, artist: saved.artist, difficulty: 'beginner', bpm: saved.bpm ?? 120, generated: saved.generated, notes: saved.notes })} className="btn btn-accent btn-sm">
                         PLAY
                       </button>
                       <button onClick={() => { setRenamingId(saved.id); setRenameVal(saved.customName ?? saved.title); }} className="btn btn-ghost btn-sm" title="Rename" aria-label="Rename song">

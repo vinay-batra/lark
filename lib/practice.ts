@@ -25,6 +25,7 @@ export interface SavedSong {
   artist: string;
   customName?: string;
   notes: TabNote[];
+  bpm?: number;
   savedAt: string;
   generated: boolean;
 }
@@ -117,13 +118,14 @@ export function getSavedSongs(): SavedSong[] {
   return readLocal<SavedSong[]>(SAVED_KEY, []);
 }
 
-export async function saveSong(song: { id?: string; title: string; artist: string; notes: TabNote[]; generated?: boolean }, customName?: string): Promise<SavedSong> {
+export async function saveSong(song: { id?: string; title: string; artist: string; notes: TabNote[]; bpm?: number; generated?: boolean }, customName?: string): Promise<SavedSong> {
   const saved: SavedSong = {
     id: `saved-${Date.now()}`,
     title: song.title,
     artist: song.artist,
     customName,
     notes: song.notes,
+    bpm: song.bpm,
     savedAt: new Date().toISOString(),
     generated: song.generated ?? false,
   };
@@ -165,6 +167,7 @@ export async function loadSavedSongsFromSupabase(): Promise<void> {
     artist: r.artist,
     customName: r.custom_name ?? undefined,
     notes: r.notes_json,
+    bpm: r.bpm ?? undefined,
     savedAt: r.saved_at,
     generated: r.generated,
   }));
