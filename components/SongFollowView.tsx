@@ -26,6 +26,7 @@ interface SessionNote {
   midi: number;
   result: NoteResult;
   centsOff: number | null;
+  timingMs: number | null;
 }
 
 export function SongFollowView({ song }: { song: Song }) {
@@ -33,13 +34,15 @@ export function SongFollowView({ song }: { song: Song }) {
   const [countdown, setCountdown] = useState(3);
   const [notes, setNotes] = useState<SessionNote[]>([]);
   const [noteIndex, setNoteIndex] = useState(0);
-  const [lineIndex, setLineIndex] = useState(0); // which line (group of NOTES_PER_LINE) is visible
+  const [lineIndex, setLineIndex] = useState(0);
   const [wrongFlash, setWrongFlash] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [loadingFeedback, setLoadingFeedback] = useState(false);
   const [micError, setMicError] = useState<string | null>(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [currentBeat, setCurrentBeat] = useState(-1);
 
+  // Pitch detection refs
   const rafRef = useRef<number | null>(null);
   const ctxRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -52,6 +55,22 @@ export function SongFollowView({ song }: { song: Song }) {
   const sessionNotesRef = useRef<SessionNote[]>([]);
   const advancedRef = useRef(false);
 
+  // Metronome refs
+  const metroBeatRef = useRef(0);
+  const metroNextTimeRef = useRef(0);
+  const metroIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const metroRafRef = useRef<number | null>(null);
+  const metroPendingBeatRef = useRef(-2);
+
+  // Timing ref
+  const noteStartTimeRef = useRef(0);
+
+  const stopMetronome = useCallback(() => {
+    if (metroIntervalRef.current) { clearInterval(metroIntervalRef.current); metroIntervalRef.current = null; }
+    if (metroRafRef.current) { cancelAnimationFrame(metroRafRef.current); metroRafRef.current = null; }
+    setCurrentBeat(-1);
+  }, []);
+
   const stopAudio = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -59,7 +78,8 @@ export function SongFollowView({ song }: { song: Song }) {
     ctxRef.current?.close();
     streamRef.current?.getTracks().forEach(t => t.stop());
     rafRef.current = null; ctxRef.current = null; analyserRef.current = null; streamRef.current = null;
-  }, []);
+    stopMetronome();
+  }, [stopMetronome]);
 
   useEffect(() => () => stopAudio(), [stopAudio]);
 
@@ -71,16 +91,20 @@ export function SongFollowView({ song }: { song: Song }) {
     setWrongFlash(false);
 
     const idx = noteIndexRef.current;
+    const timingMs = hit && noteStartTimeRef.current > 0
+      ? performance.now() - noteStartTimeRef.current
+      : null;
+
     const updated = [...sessionNotesRef.current];
-    updated[idx] = { ...updated[idx], result: hit ? 'hit' : 'miss', centsOff };
+    updated[idx] = { ...updated[idx], result: hit ? 'hit' : 'miss', centsOff, timingMs };
     sessionNotesRef.current = updated;
     setNotes([...updated]);
 
     const next = idx + 1;
     noteIndexRef.current = next;
     setNoteIndex(next);
+    noteStartTimeRef.current = performance.now();
 
-    // Advance line when we cross a line boundary
     const newLine = Math.floor(next / NOTES_PER_LINE);
     setLineIndex(newLine);
 
@@ -111,9 +135,7 @@ export function SongFollowView({ song }: { song: Song }) {
         const cents = getCents(pitch, target.midi);
         if (Math.abs(cents) <= TOLERANCE_CENTS) {
           advanceNote(true, cents);
-          // Don't return -- RAF must keep running for the next note
         } else {
-          // Wrong note -- flash red but stay on current note
           setWrongFlash(true);
           if (wrongTimerRef.current) clearTimeout(wrongTimerRef.current);
           wrongTimerRef.current = setTimeout(() => setWrongFlash(false), 350);
@@ -135,6 +157,7 @@ export function SongFollowView({ song }: { song: Song }) {
       midi: sn.midi,
       result: 'pending',
       centsOff: null,
+      timingMs: null,
     }));
     sessionNotesRef.current = sessionNotes;
     setNotes(sessionNotes);
@@ -143,6 +166,7 @@ export function SongFollowView({ song }: { song: Song }) {
     setLineIndex(0);
     advancedRef.current = false;
     setWrongFlash(false);
+    setCurrentBeat(-1);
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
@@ -162,8 +186,56 @@ export function SongFollowView({ song }: { song: Song }) {
       const tick = (c: number) => {
         if (c <= 0) {
           setMode('playing');
+          noteStartTimeRef.current = performance.now();
           rafRef.current = requestAnimationFrame(detect);
           timeoutRef.current = setTimeout(() => advanceNote(false, null), NOTE_TIMEOUT_MS);
+
+          // Start metronome using the pitch-detection AudioContext
+          const beatSec = 60 / song.bpm;
+          metroBeatRef.current = 0;
+          metroNextTimeRef.current = ctx.currentTime + 0.05;
+          metroPendingBeatRef.current = -2;
+
+          const schedule = () => {
+            const audioCtx = ctxRef.current;
+            if (!audioCtx) return;
+            while (metroNextTimeRef.current < audioCtx.currentTime + 0.1) {
+              const beat = metroBeatRef.current;
+              const isAccent = beat === 0;
+              const when = metroNextTimeRef.current;
+
+              const osc = audioCtx.createOscillator();
+              const gain = audioCtx.createGain();
+              osc.connect(gain);
+              gain.connect(audioCtx.destination);
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(isAccent ? 880 : 440, when);
+              gain.gain.setValueAtTime(isAccent ? 0.55 : 0.3, when);
+              gain.gain.exponentialRampToValueAtTime(0.0001, when + 0.04);
+              osc.start(when);
+              osc.stop(when + 0.04);
+
+              const delay = Math.max(0, (when - audioCtx.currentTime) * 1000);
+              const capturedBeat = beat;
+              setTimeout(() => { metroPendingBeatRef.current = capturedBeat; }, delay);
+
+              metroNextTimeRef.current += beatSec;
+              metroBeatRef.current = (beat + 1) % 4;
+            }
+          };
+
+          schedule();
+          metroIntervalRef.current = setInterval(schedule, 25);
+
+          const metroRafLoop = () => {
+            const p = metroPendingBeatRef.current;
+            if (p !== -2) {
+              setCurrentBeat(p);
+              metroPendingBeatRef.current = -2;
+            }
+            metroRafRef.current = requestAnimationFrame(metroRafLoop);
+          };
+          metroRafRef.current = requestAnimationFrame(metroRafLoop);
           return;
         }
         setTimeout(() => { setCountdown(c - 1); tick(c - 1); }, 1000);
@@ -187,6 +259,7 @@ export function SongFollowView({ song }: { song: Song }) {
     setFeedback(null);
     setLoadingFeedback(false);
     setWrongFlash(false);
+    setCurrentBeat(-1);
   };
 
   useEffect(() => {
@@ -194,11 +267,9 @@ export function SongFollowView({ song }: { song: Song }) {
     const finalNotes = sessionNotesRef.current;
     const hits = finalNotes.filter(n => n.result === 'hit').length;
     const accuracy = Math.round((hits / finalNotes.length) * 100);
-    // Save session to localStorage
     try {
       saveSession({ songTitle: song.title, artist: song.artist, accuracy, hits, total: finalNotes.length, completedAt: new Date().toISOString() });
     } catch {}
-    // Check if already saved
     setIsSaved(getSavedSongs().some(s => s.title === song.title && s.artist === song.artist));
     setLoadingFeedback(true);
     fetch('/api/coach', {
@@ -206,10 +277,11 @@ export function SongFollowView({ song }: { song: Song }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         song: song.title,
+        bpm: song.bpm,
         events: finalNotes.map(n => {
           const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
           const noteName = NOTE_NAMES[n.midi % 12] + Math.floor(n.midi / 12 - 1);
-          return { expected: noteName, hit: n.result === 'hit', centsOff: n.centsOff };
+          return { expected: noteName, hit: n.result === 'hit', centsOff: n.centsOff, timingMs: n.timingMs };
         }),
         totalNotes: finalNotes.length,
         hits,
@@ -219,11 +291,17 @@ export function SongFollowView({ song }: { song: Song }) {
       .then(data => setFeedback(data.feedback ?? null))
       .catch(() => {})
       .finally(() => setLoadingFeedback(false));
-  }, [mode, song.title]);
+  }, [mode, song.title, song.bpm]);
 
   const hits = notes.filter(n => n.result === 'hit').length;
   const played = notes.filter(n => n.result !== 'pending').length;
   const accuracy = played > 0 ? Math.round((hits / played) * 100) : null;
+
+  // Timing: % of hit notes played within 1 beat of the song's tempo
+  const beatMs = 60000 / song.bpm;
+  const hitNotes = notes.filter(n => n.result === 'hit' && n.timingMs !== null);
+  const onTimeNotes = hitNotes.filter(n => n.timingMs! <= beatMs);
+  const timingPct = hitNotes.length > 0 ? Math.round((onTimeNotes.length / hitNotes.length) * 100) : null;
 
   const lineStart = lineIndex * NOTES_PER_LINE;
   const lineEnd = Math.min(lineStart + NOTES_PER_LINE, notes.length);
@@ -233,6 +311,12 @@ export function SongFollowView({ song }: { song: Song }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 20px', minHeight: '60vh' }}>
+      <style>{`
+        @keyframes noteCountdown {
+          from { width: 100%; }
+          to { width: 0%; }
+        }
+      `}</style>
 
       {/* IDLE */}
       {mode === 'idle' && (
@@ -241,11 +325,14 @@ export function SongFollowView({ song }: { song: Song }) {
           <h2 style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(24px, 6vw, 38px)', fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.02em', marginBottom: 6 }}>
             {song.title}
           </h2>
-          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--text3)', marginBottom: 32 }}>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--text3)', marginBottom: 6 }}>
             {song.artist} &mdash; {song.notes.length} notes
           </p>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', letterSpacing: '0.12em', marginBottom: 32 }}>
+            {song.bpm} BPM
+          </p>
           <p style={{ fontSize: 14, color: 'var(--text3)', lineHeight: 1.7, marginBottom: 36 }}>
-            Play each highlighted note. Lark scores you in real time and gives feedback at the end.
+            Play each highlighted note. Lark keeps the beat and gives AI feedback when you finish.
           </p>
           {micError && <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--danger)', marginBottom: 16 }}>{micError}</p>}
           <button onClick={startSession} className="btn btn-accent btn-lg">
@@ -267,12 +354,16 @@ export function SongFollowView({ song }: { song: Song }) {
       {/* PLAYING */}
       {mode === 'playing' && notes.length > 0 && (
         <div style={{ width: '100%', maxWidth: 600 }}>
-          {/* Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+
+          {/* Header row */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <p className="eyebrow">{song.title.toUpperCase()}</p>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               {accuracy !== null && (
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, color: accuracy >= 80 ? 'var(--accent)' : accuracy >= 50 ? 'var(--sharp)' : 'var(--danger)' }}>
+                <span style={{
+                  fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700,
+                  color: accuracy >= 80 ? 'var(--accent)' : accuracy >= 50 ? 'var(--sharp)' : 'var(--danger)',
+                }}>
                   {accuracy}%
                 </span>
               )}
@@ -282,9 +373,39 @@ export function SongFollowView({ song }: { song: Song }) {
             </div>
           </div>
 
-          {/* Current note big display */}
+          {/* Beat indicator */}
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', alignItems: 'center', marginBottom: 20 }}>
+            {[0, 1, 2, 3].map(i => {
+              const isActive = currentBeat === i;
+              const isAccent = i === 0;
+              return (
+                <div
+                  key={i}
+                  style={{
+                    width: isAccent ? 16 : 12,
+                    height: isAccent ? 16 : 12,
+                    borderRadius: '50%',
+                    flexShrink: 0,
+                    background: isActive
+                      ? (isAccent ? 'var(--accent)' : 'rgba(var(--accent-rgb), 0.55)')
+                      : 'var(--bg3)',
+                    boxShadow: isActive
+                      ? (isAccent ? '0 0 12px rgba(var(--accent-rgb), 0.65)' : '0 0 6px rgba(var(--accent-rgb), 0.3)')
+                      : 'none',
+                    border: `1.5px solid ${isActive ? 'var(--accent-border)' : 'var(--border2)'}`,
+                    transition: 'background 0.05s, box-shadow 0.05s, border-color 0.05s',
+                  }}
+                />
+              );
+            })}
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', marginLeft: 6, letterSpacing: '0.1em' }}>
+              {song.bpm} BPM
+            </span>
+          </div>
+
+          {/* Current note */}
           {currentNote && (
-            <div style={{ textAlign: 'center', marginBottom: 28 }}>
+            <div style={{ textAlign: 'center', marginBottom: 20 }}>
               <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.2em', color: 'var(--text-muted)', marginBottom: 6 }}>
                 PLAY NOW
               </p>
@@ -307,10 +428,23 @@ export function SongFollowView({ song }: { song: Song }) {
                   WRONG NOTE
                 </p>
               )}
+
+              {/* Countdown bar */}
+              <div style={{ width: '100%', maxWidth: 200, margin: '14px auto 0', height: 3, background: 'var(--bg3)', borderRadius: 99, overflow: 'hidden' }}>
+                <div
+                  key={noteIndex}
+                  style={{
+                    height: '100%',
+                    background: 'var(--accent)',
+                    borderRadius: 99,
+                    animation: `noteCountdown ${NOTE_TIMEOUT_MS}ms linear forwards`,
+                  }}
+                />
+              </div>
             </div>
           )}
 
-          {/* Tab display with line transitions */}
+          {/* Tab with line transitions */}
           <AnimatePresence mode="wait">
             <motion.div
               key={lineIndex}
@@ -318,26 +452,16 @@ export function SongFollowView({ song }: { song: Song }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              style={{
-                padding: '16px 14px',
-                background: 'var(--card-bg)',
-                border: '0.5px solid var(--border)',
-                borderRadius: 14,
-              }}
+              style={{ padding: '16px 14px', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 14 }}
             >
-              <TabView
-                notes={lineNotes}
-                currentIndex={currentInLine}
-                wrongFlash={wrongFlash}
-              />
-              {/* Line progress dots */}
+              <TabView notes={lineNotes} currentIndex={currentInLine} wrongFlash={wrongFlash} />
               <div style={{ display: 'flex', justifyContent: 'center', gap: 5, marginTop: 12 }}>
                 {Array.from({ length: Math.ceil(notes.length / NOTES_PER_LINE) }).map((_, i) => (
                   <div key={i} style={{
                     width: i === lineIndex ? 16 : 5,
                     height: 5,
                     borderRadius: 99,
-                    background: i < lineIndex ? 'var(--accent)' : i === lineIndex ? 'var(--accent)' : 'var(--border2)',
+                    background: i <= lineIndex ? 'var(--accent)' : 'var(--border2)',
                     opacity: i === lineIndex ? 1 : 0.5,
                     transition: 'all 0.25s',
                   }} />
@@ -351,12 +475,11 @@ export function SongFollowView({ song }: { song: Song }) {
       {/* FINISHED */}
       {mode === 'finished' && (
         <div style={{ width: '100%', maxWidth: 560 }}>
-          {/* Final tab view (last line) */}
           <div style={{ padding: '14px', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 14, marginBottom: 20, opacity: 0.7 }}>
             <TabView notes={lineNotes} currentIndex={-1} wrongFlash={false} />
           </div>
 
-          {/* Score */}
+          {/* Score card */}
           <div style={{ padding: '28px 26px', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 16, marginBottom: 16, textAlign: 'center' }}>
             <p className="eyebrow" style={{ marginBottom: 12 }}>SESSION COMPLETE</p>
             <div style={{
@@ -369,12 +492,17 @@ export function SongFollowView({ song }: { song: Song }) {
             }}>
               {Math.round((hits / notes.length) * 100)}%
             </div>
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text3)' }}>
-              {hits} / {notes.length} notes
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text3)', marginBottom: timingPct !== null ? 10 : 0 }}>
+              {hits} / {notes.length} notes correct
             </p>
+            {timingPct !== null && (
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', letterSpacing: '0.06em' }}>
+                {timingPct}% on time &mdash; {song.bpm} BPM
+              </p>
+            )}
           </div>
 
-          {/* AI Feedback */}
+          {/* AI Coach */}
           <div style={{ padding: '22px 24px', background: 'var(--card-bg)', border: '0.5px solid var(--accent-border)', borderRadius: 14, marginBottom: 24 }}>
             <p className="eyebrow" style={{ marginBottom: 12 }}>AI COACH</p>
             {loadingFeedback ? (
@@ -394,10 +522,7 @@ export function SongFollowView({ song }: { song: Song }) {
               <span className="btn-text">TRY AGAIN</span>
             </button>
             {!isSaved ? (
-              <button
-                className="btn btn-outline"
-                onClick={() => { saveSong(song); setIsSaved(true); }}
-              >
+              <button className="btn btn-outline" onClick={() => { saveSong(song); setIsSaved(true); }}>
                 <span className="btn-text">SAVE TO LIBRARY</span>
               </button>
             ) : (
