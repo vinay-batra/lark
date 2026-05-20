@@ -78,7 +78,7 @@ export default function LandingPage() {
     <main style={{ overflowX: 'hidden' }}>
 
       {/* HERO */}
-      <section style={{ minHeight: 'calc(100vh - 64px)', display: 'flex', alignItems: 'center', padding: '80px 24px 100px', maxWidth: 1200, margin: '0 auto' }}>
+      <section className="hero-section" style={{ minHeight: 'calc(100vh - 64px)', display: 'flex', alignItems: 'flex-start', padding: '80px 24px 100px', maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center', width: '100%' }} className="hero-grid">
 
           {/* Left: text */}
@@ -196,6 +196,7 @@ export default function LandingPage() {
         @media (max-width: 768px) {
           .hero-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
           .hero-demo { display: none !important; }
+          .hero-section { padding: 40px 20px 60px !important; min-height: unset !important; }
         }
       `}</style>
 

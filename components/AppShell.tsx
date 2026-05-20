@@ -161,7 +161,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             )}
           </header>
 
-          <main style={{ flex: 1, padding: '32px 28px 64px', minWidth: 0 }}>
+          <main style={{ flex: 1, padding: '32px 28px 64px', minWidth: 0 }} className="app-main">
             {children}
           </main>
         </div>
@@ -188,10 +188,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         )}
 
         <style>{`
-          @media (max-width: 880px) {
+          @media (max-width: 768px) {
             .app-shell { grid-template-columns: 1fr !important; }
             .app-sidebar { display: none !important; }
             .mobile-nav-trigger { display: inline-flex !important; }
+            .app-main { padding: 20px 16px 64px !important; }
           }
         `}</style>
       </div>

@@ -319,14 +319,14 @@ export default function ChordLibraryPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 80 }}>
+    <div style={{ paddingBottom: 80 }}>
 
       {/* ── Header ── */}
       <div
         style={{
           maxWidth: 900,
           margin: '0 auto',
-          padding: '52px 24px 0',
+          padding: '24px 16px 0',
         }}
       >
         <Reveal delay={0}>

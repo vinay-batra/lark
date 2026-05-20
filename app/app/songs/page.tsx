@@ -336,11 +336,11 @@ function SongCard({ song, onPlay, onSave, isSaved }: { song: Song; onPlay: () =>
         <p style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 10 }}>{song.artist}</p>
         <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
           {song.notes.slice(0, 5).map((note, j) => (
-            <span key={j} style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--text-muted)', background: 'var(--bg3)', borderRadius: 3, padding: '2px 4px' }}>
+            <span key={j} style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', background: 'var(--bg3)', borderRadius: 3, padding: '2px 4px' }}>
               {['e','B','G','D','A','E'][note.string - 1]}|{note.fret}
             </span>
           ))}
-          {song.notes.length > 5 && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--text-muted)' }}>+{song.notes.length - 5}</span>}
+          {song.notes.length > 5 && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)' }}>+{song.notes.length - 5}</span>}
         </div>
       </button>
       {/* Footer */}

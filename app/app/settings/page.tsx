@@ -76,12 +76,15 @@ function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void 
       style={{
         width: 40,
         height: 22,
+        minHeight: 44,
         borderRadius: 99,
         background: on ? 'var(--accent)' : 'var(--bg3)',
         border: 'none',
         position: 'relative',
         cursor: 'pointer',
         padding: 0,
+        display: 'flex',
+        alignItems: 'center',
         transition: 'background 0.18s',
         boxShadow: on ? `0 0 12px rgba(var(--accent-rgb), 0.4)` : 'none',
       }}
@@ -173,7 +176,7 @@ export default function SettingsPage() {
                 className="input-field"
                 style={{ width: 160, height: 36, fontSize: 13, padding: '0 12px' }}
               />
-              <button onClick={saveDisplayName} className="btn btn-ghost btn-sm">
+              <button onClick={saveDisplayName} disabled={!displayName.trim()} className="btn btn-ghost btn-sm">
                 {displayNameSaved ? 'SAVED' : 'SAVE'}
               </button>
             </div>

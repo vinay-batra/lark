@@ -173,7 +173,7 @@ export function PublicNav() {
                       onClick={signOut}
                       style={{
                         display: 'block', width: '100%', textAlign: 'left',
-                        padding: '11px 16px', fontSize: 13, color: 'var(--danger, #ef4444)',
+                        padding: '11px 16px', fontSize: 13, color: 'var(--danger)',
                         background: 'none', border: 'none', cursor: 'pointer',
                         transition: 'background 0.12s',
                         fontFamily: '-apple-system, BlinkMacSystemFont, Inter, sans-serif',
@@ -221,7 +221,7 @@ export function PublicNav() {
       {/* Mobile drawer */}
       {open && (
         <div style={{
-          position: 'fixed', inset: '64px 0 0 0',
+          position: 'fixed', inset: '56px 0 0 0',
           background: 'var(--bg)', zIndex: 99,
           padding: '24px 24px 48px',
           display: 'flex', flexDirection: 'column', gap: 4,
@@ -237,7 +237,7 @@ export function PublicNav() {
             <>
               <Link href="/app" className="btn btn-accent" style={{ marginBottom: 8 }}>Go to App</Link>
               <Link href="/settings" className="btn btn-ghost">Settings</Link>
-              <button onClick={signOut} className="btn btn-ghost" style={{ color: 'var(--danger, #ef4444)', marginTop: 8 }}>Sign out</button>
+              <button onClick={signOut} className="btn btn-ghost" style={{ color: 'var(--danger)', marginTop: 8 }}>Sign out</button>
             </>
           ) : (
             <>
@@ -249,7 +249,7 @@ export function PublicNav() {
       )}
 
       <style jsx>{`
-        @media (max-width: 880px) {
+        @media (max-width: 768px) {
           :global(.nav-center) { display: none !important; }
           :global(.nav-right) { display: none !important; }
           .nav-mobile-trigger { display: inline-flex !important; }

@@ -340,7 +340,7 @@ export function SongFollowView({ song }: { song: Song }) {
             {song.title}
           </h2>
           <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--text3)', marginBottom: 6 }}>
-            {song.artist} &mdash; {song.notes.length} notes
+            {song.artist} {'—'} {song.notes.length} notes
           </p>
           <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', letterSpacing: '0.12em', marginBottom: 32 }}>
             {song.bpm} BPM
@@ -511,7 +511,7 @@ export function SongFollowView({ song }: { song: Song }) {
             </p>
             {timingPct !== null && (
               <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', letterSpacing: '0.06em' }}>
-                {timingPct}% on time &mdash; {song.bpm} BPM
+                {timingPct}% on time {'—'} {song.bpm} BPM
               </p>
             )}
           </div>

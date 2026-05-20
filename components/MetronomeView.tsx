@@ -496,6 +496,7 @@ export function MetronomeView() {
         {/* Tap Tempo */}
         <button
           onClick={handleTap}
+          aria-label="Tap tempo"
           style={{
             fontFamily: 'var(--font-mono)',
             fontSize: 11,
@@ -527,6 +528,7 @@ export function MetronomeView() {
         {/* Start / Stop */}
         <button
           onClick={running ? stop : start}
+          aria-label={running ? 'Stop metronome' : 'Start metronome'}
           style={{
             fontFamily: 'var(--font-mono)',
             fontSize: 13,

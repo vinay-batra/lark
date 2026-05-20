@@ -155,6 +155,7 @@ export function LarkChat() {
             right: 24,
             zIndex: 201,
             width: 400,
+            maxWidth: 'calc(100vw - 48px)',
             maxHeight: 560,
             background: 'var(--card-bg)',
             border: '0.5px solid var(--border2)',
@@ -188,7 +189,7 @@ export function LarkChat() {
                 style={{
                   fontFamily: 'var(--font-mono)',
                   fontSize: 10,
-                  color: remaining === 0 ? 'var(--danger, #ef4444)' : 'var(--text3)',
+                  color: remaining === 0 ? 'var(--danger)' : 'var(--text3)',
                   letterSpacing: '0.04em',
                 }}
               >
@@ -198,8 +199,8 @@ export function LarkChat() {
                 onClick={() => setOpen(false)}
                 aria-label="Close chat"
                 style={{
-                  width: 28,
-                  height: 28,
+                  width: 36,
+                  height: 36,
                   borderRadius: 8,
                   background: 'var(--bg3)',
                   border: '0.5px solid var(--border)',
@@ -357,7 +358,7 @@ export function LarkChat() {
               <p
                 style={{
                   fontSize: 11,
-                  color: 'var(--danger, #ef4444)',
+                  color: 'var(--danger)',
                   fontFamily: 'var(--font-mono)',
                   textAlign: 'center',
                   letterSpacing: '0.03em',

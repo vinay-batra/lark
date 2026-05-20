@@ -33,7 +33,7 @@ function Section({ eyebrow, title, children, delay = 0 }: { eyebrow: string; tit
 
 function Row({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 18, padding: '14px 0', borderBottom: '0.5px solid var(--border)' }}>
+    <div className="settings-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 18, padding: '14px 0', borderBottom: '0.5px solid var(--border)' }}>
       <div style={{ minWidth: 0, flex: 1 }}>
         <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: hint ? 4 : 0 }}>{label}</p>
         {hint && <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.55 }}>{hint}</p>}
@@ -45,7 +45,7 @@ function Row({ label, hint, children }: { label: string; hint?: string; children
 
 function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
   return (
-    <button onClick={() => onChange(!on)} style={{ width: 40, height: 22, borderRadius: 99, background: on ? 'var(--accent)' : 'var(--bg3)', border: 'none', position: 'relative', cursor: 'pointer', padding: 0, transition: 'background 0.18s', boxShadow: on ? '0 0 12px rgba(var(--accent-rgb),0.4)' : 'none' }}>
+    <button onClick={() => onChange(!on)} style={{ width: 40, height: 22, minHeight: 44, borderRadius: 99, background: on ? 'var(--accent)' : 'var(--bg3)', border: 'none', position: 'relative', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', transition: 'background 0.18s', boxShadow: on ? '0 0 12px rgba(var(--accent-rgb),0.4)' : 'none' }}>
       <div style={{ width: 16, height: 16, borderRadius: '50%', background: 'var(--card-bg)', position: 'absolute', top: 3, left: on ? 21 : 3, transition: 'left 0.18s cubic-bezier(0.16,1,0.3,1)', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} />
     </button>
   );
@@ -203,7 +203,7 @@ export default function SettingsPage() {
               <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }} onChange={handleAvatarChange} />
             </div>
           </Row>
-          {avatarError && <p style={{ fontSize: 11, color: 'var(--danger, #ef4444)', fontFamily: 'var(--font-mono)', marginTop: 8 }}>{avatarError}</p>}
+          {avatarError && <p style={{ fontSize: 11, color: 'var(--danger)', fontFamily: 'var(--font-mono)', marginTop: 8 }}>{avatarError}</p>}
 
           {/* Display name */}
           <Row label="Display name" hint="Shown instead of your email across the app.">
@@ -217,7 +217,7 @@ export default function SettingsPage() {
                 className="input-field"
                 style={{ width: 160, height: 36, fontSize: 13, padding: '0 12px' }}
               />
-              <button onClick={saveName} className="btn btn-ghost btn-sm">
+              <button onClick={saveName} disabled={!displayName.trim()} className="btn btn-ghost btn-sm">
                 {nameSaved ? 'SAVED' : 'SAVE'}
               </button>
             </div>
@@ -283,7 +283,7 @@ export default function SettingsPage() {
           style={{ background: 'var(--card-bg)', border: '0.5px solid rgba(239,68,68,0.3)', borderRadius: 16, padding: '24px 26px', marginBottom: 18 }}
         >
           <div style={{ marginBottom: 22 }}>
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, letterSpacing: '0.22em', color: 'var(--danger, #ef4444)', textTransform: 'uppercase', marginBottom: 6 }}>DANGER ZONE</p>
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, letterSpacing: '0.22em', color: 'var(--danger)', textTransform: 'uppercase', marginBottom: 6 }}>DANGER ZONE</p>
             <h2 style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.01em' }}>Delete account</h2>
           </div>
           <p style={{ fontSize: 13, color: 'var(--text3)', lineHeight: 1.6, marginBottom: 18 }}>
@@ -292,7 +292,7 @@ export default function SettingsPage() {
           {!showDeleteConfirm ? (
             <button
               onClick={() => setShowDeleteConfirm(true)}
-              style={{ padding: '10px 20px', borderRadius: 9, background: 'rgba(239,68,68,0.08)', border: '0.5px solid rgba(239,68,68,0.4)', color: 'var(--danger, #ef4444)', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', cursor: 'pointer', transition: 'background 0.15s' }}
+              style={{ padding: '10px 20px', borderRadius: 9, background: 'rgba(239,68,68,0.08)', border: '0.5px solid rgba(239,68,68,0.4)', color: 'var(--danger)', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', cursor: 'pointer', transition: 'background 0.15s' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(239,68,68,0.15)'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(239,68,68,0.08)'; }}
             >
@@ -303,12 +303,12 @@ export default function SettingsPage() {
               <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 16 }}>
                 Are you sure? This cannot be undone.
               </p>
-              {deleteError && <p style={{ fontSize: 12, color: 'var(--danger, #ef4444)', fontFamily: 'var(--font-mono)', marginBottom: 12 }}>{deleteError}</p>}
+              {deleteError && <p style={{ fontSize: 12, color: 'var(--danger)', fontFamily: 'var(--font-mono)', marginBottom: 12 }}>{deleteError}</p>}
               <div style={{ display: 'flex', gap: 10 }}>
                 <button
                   onClick={deleteAccount}
                   disabled={deleting}
-                  style={{ padding: '10px 20px', borderRadius: 9, background: 'var(--danger, #ef4444)', border: 'none', color: '#fff', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', cursor: deleting ? 'not-allowed' : 'pointer', opacity: deleting ? 0.6 : 1 }}
+                  style={{ padding: '10px 20px', borderRadius: 9, background: 'var(--danger)', border: 'none', color: '#fff', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', cursor: deleting ? 'not-allowed' : 'pointer', opacity: deleting ? 0.6 : 1 }}
                 >
                   {deleting ? 'DELETING...' : 'YES, DELETE'}
                 </button>

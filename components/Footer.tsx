@@ -72,10 +72,7 @@ export function Footer() {
 
       <style>{`
         @media (max-width: 768px) {
-          .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 36px !important; }
-        }
-        @media (max-width: 460px) {
-          .footer-grid { grid-template-columns: 1fr !important; }
+          .footer-grid { grid-template-columns: 1fr !important; gap: 36px !important; }
         }
       `}</style>
     </footer>
