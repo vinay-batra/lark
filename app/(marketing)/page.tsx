@@ -225,11 +225,6 @@ export default function LandingPage() {
             </div>
           </Reveal>
 
-          <Reveal delay={0.2}>
-            <div style={{ textAlign: 'center' }}>
-              <Link href="/app/songs" className="btn btn-outline">BROWSE ALL SONGS</Link>
-            </div>
-          </Reveal>
         </div>
       </section>
 
