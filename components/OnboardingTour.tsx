@@ -54,7 +54,10 @@ const STEPS: Step[] = [
 
 function useTargetRect(targetId?: string) {
   const [rect, setRect] = useState<DOMRect | null>(null);
+  // Reads DOM measurements (which can't be lazy-init since the target may not
+  // be mounted yet). The setRect calls are the whole point of this effect.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!targetId) { setRect(null); return; }
     const update = () => {
       const el = document.getElementById(targetId);
@@ -118,7 +121,6 @@ export function OnboardingTour({ onDone }: { onDone: () => void }) {
     const spaceRight  = window.innerWidth  - targetRect.right;
     const spaceLeft   = targetRect.left;
     const spaceAbove  = targetRect.top;
-    const spaceBelow  = window.innerHeight - targetRect.bottom;
 
     let left: number;
     let top: number;

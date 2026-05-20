@@ -34,13 +34,33 @@ export function LarkChat() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [usedCount, setUsedCount] = useState(0);
+  // Lazy init from localStorage so we don't re-render after first paint just
+  // to fill in the count. Re-reads when the chat opens (in the effect below)
+  // so cross-tab updates stay accurate.
+  const [usedCount, setUsedCount] = useState(() => getUsedCount());
+  // Hidden during an active song session so it doesn't overlap the playing UI
+  // on mobile (the floating button sits over the tab + countdown bar at 60x60).
+  const [songPlaying, setSongPlaying] = useState(false);
 
   const messagesRef = useRef<HTMLDivElement>(null);
 
+  // Re-read on open so cross-tab usage shows up. Legitimate setState in effect.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setUsedCount(getUsedCount());
   }, [open]);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const ce = e as CustomEvent<{ playing: boolean }>;
+      setSongPlaying(!!ce.detail?.playing);
+      if (ce.detail?.playing) setOpen(false);
+    };
+    window.addEventListener('lark:song-state', handler);
+    return () => window.removeEventListener('lark:song-state', handler);
+  }, []);
+
+  if (songPlaying) return null;
 
   // Intentionally no auto-scroll on response -- user scrolls manually
 
@@ -199,8 +219,8 @@ export function LarkChat() {
                 onClick={() => setOpen(false)}
                 aria-label="Close chat"
                 style={{
-                  width: 36,
-                  height: 36,
+                  width: 44,
+                  height: 44,
                   borderRadius: 8,
                   background: 'var(--bg3)',
                   border: '0.5px solid var(--border)',
@@ -409,8 +429,8 @@ export function LarkChat() {
               disabled={!input.trim() || loading || limitReached}
               aria-label="Send message"
               style={{
-                width: 36,
-                height: 36,
+                width: 44,
+                height: 44,
                 borderRadius: 9,
                 background: !input.trim() || loading || limitReached ? 'var(--bg3)' : 'var(--accent)',
                 border: '0.5px solid var(--border2)',

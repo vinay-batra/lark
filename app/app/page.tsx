@@ -36,14 +36,23 @@ const SOON = [
   { eyebrow: 'STRIPE', title: 'Pro + Studio plans', desc: 'Unlock unlimited songs, advanced AI coaching, and detailed session history.' },
 ];
 
+function computeGreeting() {
+  const h = new Date().getHours();
+  return h < 5 ? 'Late night' : h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+}
+
 export default function AppPage() {
-  const [greeting, setGreeting] = useState('Good day');
+  // Lazy init: greeting + localStorage stats don't need an extra render.
+  const [greeting] = useState<string>(() => computeGreeting());
   const [displayName, setDisplayName] = useState<string | null>(null);
-  const [stats, setStats] = useState({ sessions: 0, streak: 0, accuracy: null as number | null, generated: 0 });
+  const [stats] = useState(() => ({
+    sessions: getSessions().length,
+    streak: getStreak(),
+    accuracy: getAvgAccuracy(),
+    generated: getGenCount(),
+  }));
 
   useEffect(() => {
-    const h = new Date().getHours();
-    setGreeting(h < 5 ? 'Late night' : h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening');
     if (supabase) {
       supabase.auth.getUser().then(({ data }) => {
         const u = data.user;
@@ -51,12 +60,6 @@ export default function AppPage() {
         setDisplayName(name);
       });
     }
-    setStats({
-      sessions: getSessions().length,
-      streak: getStreak(),
-      accuracy: getAvgAccuracy(),
-      generated: getGenCount(),
-    });
   }, []);
 
   return (
@@ -104,7 +107,20 @@ export default function AppPage() {
             ))}
           </div>
           {stats.sessions === 0 && (
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', marginTop: 16, letterSpacing: '0.08em' }}>PLAY A SONG TO START TRACKING</p>
+            <Link
+              href="/app/songs"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700,
+                color: 'var(--accent)', letterSpacing: '0.1em',
+                marginTop: 16, textDecoration: 'none',
+              }}
+            >
+              PLAY A SONG TO START TRACKING
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </Link>
           )}
         </div>
       </Reveal>

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { ThemeToggle } from './ThemeToggle';
@@ -39,17 +40,34 @@ export function PublicNav() {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  // Close dropdown on outside click
+  // Close dropdown on outside click or Esc. iOS Safari's tap doesn't always
+  // fire `mousedown`, so we also listen on `touchstart`. Esc gives keyboard
+  // users an escape hatch.
   useEffect(() => {
     if (!dropdownOpen) return;
-    const handler = (e: MouseEvent) => {
+    const handler = (e: MouseEvent | TouchEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setDropdownOpen(false);
       }
     };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setDropdownOpen(false); };
     document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener('touchstart', handler);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      document.removeEventListener('touchstart', handler);
+      document.removeEventListener('keydown', onKey);
+    };
   }, [dropdownOpen]);
+
+  // Esc closes the mobile drawer
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open]);
 
   useEffect(() => {
     const onScroll = () => {
@@ -63,6 +81,7 @@ export function PublicNav() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setOpen(false); }, [pathname]);
 
   const signOut = async () => {
@@ -92,7 +111,7 @@ export function PublicNav() {
           {/* Logo */}
           <div style={{ justifySelf: 'start' }}>
             <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 9 }}>
-              <img src="/lark-logo.png" alt="Lark" width={30} height={30} style={{ display: 'block' }} />
+              <Image src="/lark-logo.png" alt="Lark" width={30} height={30} style={{ display: 'block' }} priority />
               <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 17, color: 'var(--text)', letterSpacing: '0.04em' }}>
                 Lark
               </span>
@@ -128,6 +147,7 @@ export function PublicNav() {
                 >
                   <div style={{ width: 26, height: 26, borderRadius: '50%', overflow: 'hidden', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     {user?.avatarUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- base64 data URL, next/image adds no value
                       <img src={user.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                       <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--bg)' }}>{initial}</span>
@@ -198,10 +218,12 @@ export function PublicNav() {
           {/* Mobile trigger */}
           <button
             className="nav-mobile-trigger"
-            aria-label="Toggle menu"
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+            aria-controls="public-nav-mobile"
             onClick={() => setOpen(v => !v)}
             style={{
-              display: 'none', width: 38, height: 38,
+              display: 'none', width: 44, height: 44,
               border: '1px solid var(--border)', borderRadius: 10,
               background: 'transparent', color: 'var(--text)',
               alignItems: 'center', justifyContent: 'center',
@@ -220,12 +242,18 @@ export function PublicNav() {
 
       {/* Mobile drawer */}
       {open && (
-        <div style={{
-          position: 'fixed', inset: '56px 0 0 0',
-          background: 'var(--bg)', zIndex: 99,
-          padding: '24px 24px 48px',
-          display: 'flex', flexDirection: 'column', gap: 4,
-        }}>
+        <div
+          id="public-nav-mobile"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation"
+          style={{
+            position: 'fixed', inset: '56px 0 0 0',
+            background: 'var(--bg)', zIndex: 99,
+            padding: '24px 24px 48px',
+            display: 'flex', flexDirection: 'column', gap: 4,
+          }}
+        >
           {LINKS.map(l => (
             <Link key={l.href} href={l.href} className={`nav-link ${pathname === l.href ? 'active' : ''}`}
               style={{ padding: '14px 14px', fontSize: 14, letterSpacing: '0.04em', textTransform: 'none' }}>

@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { SONGS, Song, Difficulty, DIFFICULTY_COLORS, DIFFICULTY_DIM, DIFFICULTY_BORDER, DIFFICULTY_ORDER } from '@/lib/songs';
 import { SongFollowView } from '@/components/SongFollowView';
+import { SongCover } from '@/components/SongCover';
+import { VinylLoader } from '@/components/VinylLoader';
 import { Reveal } from '@/components/Reveal';
 import { motion } from 'framer-motion';
 import { getSavedSongs, saveSong, deleteSavedSong, renameSavedSong, canGenerate, recordGeneration, GEN_LIMIT, SavedSong } from '@/lib/practice';
@@ -18,15 +20,11 @@ export default function SongsPage() {
   const [requestQuery, setRequestQuery] = useState('');
   const [generating, setGenerating] = useState(false);
   const [genError, setGenError] = useState<string | null>(null);
-  const [savedSongs, setSavedSongs] = useState<SavedSong[]>([]);
-  const [genStatus, setGenStatus] = useState<ReturnType<typeof canGenerate>>({ allowed: true, remaining: GEN_LIMIT, resetIn: null });
+  // Lazy init from localStorage (SSR-safe via window guards in practice.ts)
+  const [savedSongs, setSavedSongs] = useState<SavedSong[]>(() => getSavedSongs());
+  const [genStatus, setGenStatus] = useState<ReturnType<typeof canGenerate>>(() => canGenerate());
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameVal, setRenameVal] = useState('');
-
-  useEffect(() => {
-    setSavedSongs(getSavedSongs());
-    setGenStatus(canGenerate());
-  }, []);
 
   const refreshSaved = () => {
     setSavedSongs(getSavedSongs());
@@ -163,7 +161,7 @@ export default function SongsPage() {
               <div style={{ display: 'flex', gap: 8, flex: '2 1 280px', minWidth: 240 }}>
                 <input
                   type="text"
-                  placeholder={genStatus.allowed ? "Don't see your song? Type it here..." : `No generations left -- resets in ${genStatus.resetIn}`}
+                  placeholder={genStatus.allowed ? "Don't see your song? Type it here..." : `No generations left · resets in ${genStatus.resetIn}`}
                   value={requestQuery}
                   onChange={e => { setRequestQuery(e.target.value); setGenError(null); }}
                   onKeyDown={e => { if (e.key === 'Enter') handleGenerate(); }}
@@ -174,8 +172,12 @@ export default function SongsPage() {
                 />
                 <button onClick={handleGenerate} disabled={generating || !requestQuery.trim() || !genStatus.allowed} className="btn btn-accent" style={{ height: 42, paddingLeft: 16, paddingRight: 16, flexShrink: 0 }}>
                   {generating ? (
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'currentColor', animation: 'pulse 0.8s ease-in-out infinite' }} />
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <svg width="14" height="14" viewBox="0 0 14 14" style={{ animation: 'spin 1.4s linear infinite' }}>
+                        <circle cx="7" cy="7" r="6" fill="none" stroke="currentColor" strokeWidth="0.6" />
+                        <circle cx="7" cy="7" r="2.4" fill="currentColor" />
+                        <circle cx="7" cy="7" r="0.6" fill="var(--accent)" />
+                      </svg>
                       <span className="btn-text">Generating</span>
                     </span>
                   ) : <span className="btn-text">Generate</span>}
@@ -192,7 +194,7 @@ export default function SongsPage() {
               </div>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', letterSpacing: '0.08em' }}>
                 {genStatus.remaining}/{GEN_LIMIT} FREE GENERATIONS
-                {!genStatus.allowed && genStatus.resetIn && ` -- RESETS IN ${genStatus.resetIn.toUpperCase()}`}
+                {!genStatus.allowed && genStatus.resetIn && ` · resets in ${genStatus.resetIn}`}
               </span>
             </div>
 
@@ -211,6 +213,17 @@ export default function SongsPage() {
               );
             })}
           </div>
+
+          {/* Generating panel: replaces the grid while Claude generates a tab */}
+          {generating && (
+            <div style={{ padding: '48px 24px', background: 'var(--card-bg)', border: '0.5px solid var(--accent-border)', borderRadius: 16, marginBottom: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
+              <p className="eyebrow" style={{ marginBottom: 4 }}>GENERATING TAB</p>
+              <VinylLoader size={96} ticker={['Reading the melody', 'Mapping to the fretboard', 'Choosing playable positions', 'Almost there']} />
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', maxWidth: 280, textAlign: 'center', lineHeight: 1.6, marginTop: 6 }}>
+                {requestQuery.trim()}
+              </p>
+            </div>
+          )}
 
           {/* Song sections grouped by difficulty */}
           {grouped.length === 0 ? (
@@ -316,8 +329,6 @@ export default function SongsPage() {
 }
 
 function SongCard({ song, onPlay, onSave, isSaved }: { song: Song; onPlay: () => void; onSave: () => void; isSaved: boolean }) {
-  const dc = DIFFICULTY_COLORS[song.difficulty];
-  const dd = DIFFICULTY_DIM[song.difficulty];
   const db = DIFFICULTY_BORDER[song.difficulty];
   return (
     <div style={{ background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 14, overflow: 'hidden', transition: 'border-color 0.15s', display: 'flex', flexDirection: 'column' }}
@@ -325,12 +336,8 @@ function SongCard({ song, onPlay, onSave, isSaved }: { song: Song; onPlay: () =>
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; }}
     >
       <button onClick={onPlay} style={{ textAlign: 'left', padding: '16px 16px 10px', background: 'none', border: 'none', cursor: 'pointer', flex: 1 }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
-          <div style={{ width: 32, height: 32, borderRadius: 7, background: dd, border: `0.5px solid ${db}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: dc }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
-            </svg>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10 }}>
+          <SongCover song={song} size={48} />
         </div>
         <p style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.01em', marginBottom: 2 }}>{song.title}</p>
         <p style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 10 }}>{song.artist}</p>

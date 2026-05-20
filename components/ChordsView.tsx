@@ -84,6 +84,7 @@ export function ChordsView() {
     const frame = buildChromagram(freqData, ctx.sampleRate, analyser.fftSize);
     historyRef.current.push(frame);
     if (historyRef.current.length > HISTORY_SIZE) historyRef.current.shift();
+    // eslint-disable-next-line react-hooks/immutability -- recursive RAF
     if (historyRef.current.length < 4) { rafRef.current = requestAnimationFrame(analyze); return; }
 
     const avg = avgChromagram(historyRef.current);

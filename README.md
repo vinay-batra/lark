@@ -2,7 +2,7 @@
 
 **The guitar tutor that listens.**
 
-73 songs with real-time tab follow-along. AI coaching after every session. Tuner, chord detector, metronome, chord library. Free. No download.
+77 songs with real-time note and chord follow-along. Six-stage learning curriculum. AI coaching after every session. Tuner, chord detector, metronome, chord library. Free. No download.
 
 Live: **[lark.coach](https://lark.coach)**
 
@@ -11,7 +11,7 @@ Live: **[lark.coach](https://lark.coach)**
 ## Stack
 
 - **Framework:** Next.js 16 (App Router, Turbopack)
-- **Audio:** Web Audio API + Pitchy v4 (pitch) + @tonaljs/chord-detect (chords)
+- **Audio:** Web Audio API + Pitchy v4 (pitch) + @tonaljs/chord-detect (chromagram chords)
 - **AI:** @anthropic-ai/sdk — claude-sonnet-4-6 for song coaching + AI tab gen, claude-haiku-4-5 for guitar chat
 - **Auth + DB:** Supabase
 - **Animations:** framer-motion
@@ -34,7 +34,7 @@ npm run dev
 NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 ANTHROPIC_API_KEY=...              # AI coaching, tab generation, chat
-SUPABASE_SERVICE_ROLE_KEY=...      # delete account endpoint (optional but needed for /api/delete-account)
+SUPABASE_SERVICE_ROLE_KEY=...      # delete account endpoint
 ```
 
 Run the SQL files in `supabase/migrations/` in the Supabase SQL editor to set up tables.
@@ -43,18 +43,19 @@ Run the SQL files in `supabase/migrations/` in the Supabase SQL editor to set up
 
 | Route | Description |
 |---|---|
-| `/` | Landing — auth-aware hero (Go to App / Start Playing) |
+| `/` | Landing — auth-aware hero |
 | `/pricing` | Free / Pro / Studio tiers |
-| `/changelog` | Horizontal scroll chapter timeline |
+| `/changelog` | Six-chapter horizontal timeline |
 | `/faq` | Accordion FAQ |
 | `/privacy` | Privacy policy |
 | `/terms` | Terms of service |
 | `/settings` | Standalone settings page (auth-gated) |
 | `/auth` | Sign in / sign up / magic link / OAuth |
-| `/tuner` | Public tuner (no auth required) |
-| `/chords` | Public chord detector (no auth required) |
-| `/app` | Dashboard: stats, tools, coming soon |
-| `/app/songs` | Song mode — 73 songs, 4 difficulty levels, AI tab gen |
+| `/tuner` | Public tuner (no auth) |
+| `/chords` | Public chord detector (no auth) |
+| `/app` | Dashboard: stats, tools |
+| `/app/learn` | Six-stage learning curriculum |
+| `/app/songs` | 77 songs, 4 difficulty levels, AI tab gen |
 | `/app/tuner` | Tuner (in app shell) |
 | `/app/chords` | Chord detector (in app shell) |
 | `/app/chord-library` | 120+ chord diagrams |
@@ -63,9 +64,9 @@ Run the SQL files in `supabase/migrations/` in the Supabase SQL editor to set up
 | `/api/coach` | AI song feedback, claude-sonnet-4-6, 20 req/hr |
 | `/api/chat` | Guitar Q&A, claude-haiku-4-5, 30 req/hr |
 | `/api/tabs` | AI tab generation, claude-sonnet-4-6, 10 req/hr |
-| `/api/bug-report` | Bug reports (server-side, bypasses RLS) |
-| `/api/delete-account` | Delete user account (requires service role key) |
+| `/api/bug-report` | Bug reports (server-side) |
+| `/api/delete-account` | Delete user account |
 
 ## Version
 
-v0.9
+v1.0

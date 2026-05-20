@@ -179,10 +179,16 @@ export function MetronomeView() {
     };
   }, []);
 
-  // ── When time sig changes while running, reset beat position ──────────────
+  // ── When time sig changes while running, reset beat position AND realign
+  // the next-click time to the audio clock. Without realignment, the visible
+  // beat counter resets to 0 but the previously-queued click still fires on
+  // the old schedule, producing a perceptible drift between visual + audio.
   useEffect(() => {
-    if (running) {
-      currentBeatRef.current = 0;
+    if (!running) return;
+    currentBeatRef.current = 0;
+    const ctx = audioCtxRef.current;
+    if (ctx) {
+      nextNoteTimeRef.current = ctx.currentTime + 0.05;
     }
   }, [timeSig, running]);
 

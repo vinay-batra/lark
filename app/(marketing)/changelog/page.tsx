@@ -87,6 +87,22 @@ const CHAPTERS = [
     ],
     tags: ['Profile', 'Mobile', 'Security', 'Songs'],
   },
+  {
+    num: '06',
+    name: 'Intelligence & Curriculum',
+    versions: 'v1.0',
+    dateRange: 'May 20, 2026',
+    intro: 'Lark grew a brain and a learning path. Chord detection, a six-stage curriculum, every song cover-arted, every bug audited.',
+    highlights: [
+      'Polyphonic chord detection: chromagram + tonal analysis detects Am, G, C, D and more -- four chord-strum songs added (Knockin\' on Heaven\'s Door, Stand By Me, Let It Be, Three Little Birds)',
+      'Learning path (/app/learn): six-stage curriculum from first riffs to lead solos, unlocks on 70%+ accuracy, tracks progress from session history',
+      'Procedural song cover art: every song gets a unique vinyl or cassette-style SVG cover seeded by its title -- shown in song cards, the play screen, and curriculum tiles',
+      'Beat-aware scoring: per-note timeout scales with BPM, end-of-session breakdown shows on-beat / late / slow counts, real-time ON BEAT pill flashes after each hit during play',
+      'Count-in clicks during 3-2-1 countdown, beginner-friendly note labels (\"High E string (thinnest)\"), stop button during play, mic-denied recovery instructions',
+      'Full security + quality audit: rate limit IP spoofing fixed, 29 lint errors eliminated, settings deduplicated into a shared SettingsPanel, metronome extracted to reusable lib',
+    ],
+    tags: ['Chords', 'Curriculum', 'Audio', 'Polish'],
+  },
 ];
 
 // ── Inline scroll-reveal (no external dep needed, matches Corvo pattern) ──────
@@ -303,7 +319,7 @@ export default function ChangelogPage() {
                 fontWeight: 600,
               }}
             >
-              Five chapters &middot; scroll
+              Six chapters &middot; scroll
             </span>
             <svg width="22" height="10" viewBox="0 0 22 10" fill="none">
               <path d="M2 5h17M14 1l4 4-4 4" stroke="var(--text3)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -559,7 +575,7 @@ export default function ChangelogPage() {
                 margin: '0 auto 32px',
               }}
             >
-              Progress tracking, session history, Stripe for Pro, and a real backend for heavier AI features are all on the roadmap.
+              Stripe for Pro, session replay, and adaptive difficulty tuning based on your real practice data are next on the roadmap.
             </p>
             <div
               style={{

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 const COLUMNS = [
   {
@@ -36,7 +37,7 @@ export function Footer() {
       }} className="footer-grid">
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-            <img src="/lark-logo.png" alt="Lark" width={32} height={32} style={{ display: 'block' }} />
+            <Image src="/lark-logo.png" alt="Lark" width={32} height={32} style={{ display: 'block' }} />
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700, color: 'var(--text)', letterSpacing: '0.04em' }}>Lark</span>
           </div>
           <p style={{ fontSize: 13, color: 'var(--text3)', lineHeight: 1.7, maxWidth: 320 }}>
@@ -61,7 +62,7 @@ export function Footer() {
 
       {/* Watermark logo */}
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 64 }}>
-        <img
+        <Image
           src="/lark-logo.png"
           alt="Lark"
           width={88}

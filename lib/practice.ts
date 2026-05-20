@@ -33,9 +33,11 @@ export interface SavedSong {
 // ── Local helpers ─────────────────────────────────────────────────────────────
 
 function readLocal<T>(key: string, fallback: T): T {
+  if (typeof window === 'undefined') return fallback;
   try { return JSON.parse(localStorage.getItem(key) ?? 'null') ?? fallback; } catch { return fallback; }
 }
 function writeLocal(key: string, val: unknown) {
+  if (typeof window === 'undefined') return;
   try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
 }
 
@@ -91,16 +93,29 @@ export async function loadSessionsFromSupabase(): Promise<void> {
   writeLocal(SESSIONS_KEY, sessions);
 }
 
+// Returns YYYY-MM-DD in the user's local timezone, so streaks don't reset
+// when practicing near midnight or across DST shifts. ISO-UTC bucketing
+// (the previous implementation) miscounts for any user not in UTC.
+function localDateKey(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 export function getStreak(): number {
   const sessions = getSessions();
   if (sessions.length === 0) return 0;
-  const days = Array.from(new Set(sessions.map(s => s.completedAt.slice(0, 10)))).sort().reverse();
-  const today = new Date().toISOString().slice(0, 10);
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const days = Array.from(new Set(sessions.map(s => localDateKey(new Date(s.completedAt))))).sort().reverse();
+  const todayD = new Date();
+  const yesterdayD = new Date(todayD.getTime() - 86400000);
+  const today = localDateKey(todayD);
+  const yesterday = localDateKey(yesterdayD);
   if (days[0] !== today && days[0] !== yesterday) return 0;
   let streak = 1;
   for (let i = 1; i < days.length; i++) {
-    if (Math.round((new Date(days[i - 1]).getTime() - new Date(days[i]).getTime()) / 86400000) === 1) streak++;
+    const diff = Math.round((new Date(days[i - 1]).getTime() - new Date(days[i]).getTime()) / 86400000);
+    if (diff === 1) streak++;
     else break;
   }
   return streak;
@@ -119,8 +134,19 @@ export function getSavedSongs(): SavedSong[] {
 }
 
 export async function saveSong(song: { id?: string; title: string; artist: string; notes: TabNote[]; bpm?: number; generated?: boolean }, customName?: string): Promise<SavedSong> {
+  // Dedupe: if a song with this canonical id (or matching title+artist for
+  // pre-id legacy saves) already exists, return it instead of inserting a
+  // duplicate. Prevents a row-per-retry pileup after refresh.
+  const list = getSavedSongs();
+  const canonicalId = song.id ?? `${song.title}-${song.artist}`.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const existing = list.find(s =>
+    (song.id && s.id === song.id) ||
+    (s.title === song.title && s.artist === song.artist)
+  );
+  if (existing) return existing;
+
   const saved: SavedSong = {
-    id: `saved-${Date.now()}`,
+    id: song.id?.startsWith('saved-') ? song.id : `saved-${canonicalId}-${Date.now()}`,
     title: song.title,
     artist: song.artist,
     customName,
@@ -129,7 +155,6 @@ export async function saveSong(song: { id?: string; title: string; artist: strin
     savedAt: new Date().toISOString(),
     generated: song.generated ?? false,
   };
-  const list = getSavedSongs();
   list.unshift(saved);
   writeLocal(SAVED_KEY, list);
 
@@ -229,12 +254,18 @@ export function getGenCount(): number {
 
 export async function submitBugReport(message: string): Promise<{ ok: boolean; errMsg?: string }> {
   const pageUrl = typeof window !== 'undefined' ? window.location.pathname : null;
-  const userId = supabase ? (await supabase.auth.getUser()).data.user?.id ?? null : null;
+  // Send the user's access token; the server resolves user_id from it. We
+  // deliberately do NOT send userId in the body — it would be spoofable.
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (supabase) {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.access_token) headers['Authorization'] = `Bearer ${session.access_token}`;
+  }
   try {
     const res = await fetch('/api/bug-report', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message, pageUrl, userId }),
+      headers,
+      body: JSON.stringify({ message, pageUrl }),
     });
     const data = await res.json();
     if (!res.ok) return { ok: false, errMsg: data.error ?? 'Failed to send.' };

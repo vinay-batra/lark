@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { ThemeToggle } from './ThemeToggle';
 
 const TOOLS: { id: 'tuner' | 'chords'; label: string; href: string }[] = [
@@ -25,7 +26,7 @@ export function ToolNav({ active }: { active: 'tuner' | 'chords' }) {
       zIndex: 50,
     }}>
       <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-        <img src="/lark-logo.png" alt="Lark" width={26} height={26} style={{ display: 'block' }} />
+        <Image src="/lark-logo.png" alt="Lark" width={26} height={26} style={{ display: 'block' }} priority />
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--text)', letterSpacing: '0.04em' }}>Lark</span>
       </Link>
 

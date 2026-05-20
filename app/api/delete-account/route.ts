@@ -1,7 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit, getClientIP } from '@/lib/rate-limit';
 
 export async function POST(req: NextRequest) {
+  // Hard cap to prevent log spam / abuse: a real user only needs this once.
+  if (!rateLimit(getClientIP(req), 5, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: 'Too many requests.' }, { status: 429 });
+  }
+
   const authHeader = req.headers.get('authorization');
   const token = authHeader?.replace('Bearer ', '');
   if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

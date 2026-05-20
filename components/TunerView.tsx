@@ -65,6 +65,7 @@ export function TunerView() {
       const cents = getCents(pitch, midi);
       setDetected({ note, octave, cents, freq: Math.round(pitch * 10) / 10 });
     }
+    // eslint-disable-next-line react-hooks/immutability -- recursive RAF
     rafRef.current = requestAnimationFrame(detect);
   }, []);
 

@@ -6,6 +6,13 @@ export interface TabNote {
   string: 1 | 2 | 3 | 4 | 5 | 6;
   fret: number;
   midi: number;
+  /**
+   * Optional chord name (e.g., "Am", "C", "Gmaj7"). When present, the song
+   * expects the user to strum this chord rather than play a single note.
+   * The string/fret/midi fields stay as the chord's bass-note anchor but the
+   * audio match uses chromagram + chord detection. See lib/chord-detection.ts.
+   */
+  chord?: string;
 }
 
 export type Difficulty = 'beginner' | 'intermediate' | 'advanced' | 'expert';
@@ -47,6 +54,12 @@ function n(string: 1 | 2 | 3 | 4 | 5 | 6, fret: number): TabNote {
   return { string, fret, midi: OPEN_MIDI[string - 1] + fret };
 }
 
+// Chord-strum helper. string/fret point at the chord's bass note for display;
+// the actual match runs through chromagram detection on the chord name.
+function c(chord: string, string: 1 | 2 | 3 | 4 | 5 | 6, fret: number): TabNote {
+  return { string, fret, midi: OPEN_MIDI[string - 1] + fret, chord };
+}
+
 export const SONGS: Song[] = [
   // ── BEGINNER ─────────────────────────────────────────────────────────────
 
@@ -56,15 +69,15 @@ export const SONGS: Song[] = [
     notes: [
       n(4,0),n(4,3),n(4,5), n(4,0),n(4,3),n(4,6),n(4,5), n(4,0),n(4,3),n(4,5),n(4,3),n(4,0),
       n(4,0),n(4,3),n(4,5), n(4,0),n(4,3),n(4,6),n(4,5), n(4,0),n(4,3),n(4,5),n(4,3),n(4,0),
+      n(4,0),n(4,3),n(4,5),n(4,0),n(4,3),n(4,6),n(4,5),n(4,0),n(4,3),n(4,5),n(4,3),n(4,0),
     ] },
 
-  // Seven Nation Army: string 6 (low E), frets 7-7-10-7-5-3-2 (B-B-D-B-A-G-F#), two reps
+  // Seven Nation Army: A string riff in E minor (E-E-G-E-D-C-B-C-B-A), standard guitar tab octave
   { id: 'seven-nation-army', title: 'Seven Nation Army', artist: 'The White Stripes', difficulty: 'beginner', bpm: 124,
     notes: [
-      n(6,7),n(6,7),n(6,10),n(6,7),n(6,5),n(6,3),n(6,2),
-      n(6,3),n(6,2),n(6,0),
-      n(6,7),n(6,7),n(6,10),n(6,7),n(6,5),n(6,3),n(6,2),
-      n(6,3),n(6,2),n(6,0),
+      n(5,7),n(5,7),n(5,10),n(5,7),n(5,5),n(5,3),n(5,2),n(5,3),n(5,2),n(5,0),
+      n(5,7),n(5,7),n(5,10),n(5,7),n(5,5),n(5,3),n(5,2),n(5,3),n(5,2),n(5,0),
+      n(5,7),n(5,7),n(5,10),n(5,7),n(5,5),n(5,3),n(5,2),n(5,3),n(5,2),n(5,0),n(5,7),n(5,7),n(5,10),n(5,7),n(5,5),n(5,3),
     ] },
 
   // Ode to Joy: E-E-F-G-G-F-E-D-C-C-D-E-E-D-D (Beethoven's classic melody, E4 = str1 open)
@@ -72,6 +85,7 @@ export const SONGS: Song[] = [
     notes: [
       n(1,0),n(1,0),n(1,1),n(1,3),n(1,3),n(1,1),n(1,0),n(2,3),n(2,1),n(2,1),n(2,3),n(1,0),n(1,0),n(2,3),n(2,3),
       n(1,0),n(1,0),n(1,1),n(1,3),n(1,3),n(1,1),n(1,0),n(2,3),n(2,1),n(2,1),
+      n(1,0),n(1,0),n(1,1),n(1,3),n(1,3),n(1,1),n(1,0),n(2,3),n(2,1),n(2,1),n(2,3),
     ] },
 
   // Twinkle Twinkle: C-C-G-G-A-A-G / F-F-E-E-D-D-C (two phrases)
@@ -80,6 +94,7 @@ export const SONGS: Song[] = [
       n(2,1),n(2,1),n(1,3),n(1,3),n(1,5),n(1,5),n(1,3),
       n(1,1),n(1,1),n(1,0),n(1,0),n(2,3),n(2,3),n(2,1),
       n(2,3),n(2,3),n(1,0),n(1,0),n(1,1),n(1,1),n(1,0),
+      n(2,1),n(2,1),n(1,3),n(1,3),n(1,5),n(1,5),n(1,3),n(1,1),n(1,1),n(1,0),n(1,0),n(2,3),n(2,3),n(2,1),n(2,3),
     ] },
 
   // Happy Birthday: G G A G C B / G G A G D C / G G G' E C B A (three phrases on str1)
@@ -88,6 +103,7 @@ export const SONGS: Song[] = [
       n(1,3),n(1,3),n(1,5),n(1,3),n(1,8),n(1,7),
       n(1,3),n(1,3),n(1,5),n(1,3),n(1,10),n(1,8),
       n(1,3),n(1,3),n(1,15),n(1,12),n(1,8),n(1,7),n(1,5),n(1,3),
+      n(1,3),n(1,3),n(1,5),n(1,3),n(1,8),n(1,7),n(1,3),n(1,3),n(1,5),n(1,3),n(1,10),n(1,8),n(1,3),n(1,3),n(1,15),n(1,12),
     ] },
 
   // Nothing Else Matters: Em arpeggio E2-B2-E3-G3-B3-E4 up then back down, twice
@@ -97,6 +113,7 @@ export const SONGS: Song[] = [
       n(2,0),n(3,0),n(4,2),n(5,2),
       n(6,0),n(5,2),n(4,2),n(3,0),n(2,0),n(1,0),
       n(2,0),n(3,0),n(4,2),n(5,2),n(6,0),
+      n(6,0),n(5,2),n(4,2),n(3,0),n(2,0),n(1,0),n(2,0),n(3,0),n(4,2),n(5,2),n(6,0),n(5,2),n(4,2),n(3,0),n(2,0),
     ] },
 
   // Back in Black: Low E string, E-A-B-B-A-G#-E riff (fret4 = G#, NOT fret3 = G), two reps
@@ -105,6 +122,7 @@ export const SONGS: Song[] = [
       n(6,0),n(6,5),n(6,7),n(6,7),n(6,5),n(6,4),n(6,0),
       n(6,5),n(6,7),n(6,7),n(6,5),n(6,4),n(6,0),
       n(6,0),n(6,5),n(6,7),n(6,7),n(6,5),n(6,4),n(6,0),
+      n(6,0),n(6,5),n(6,7),n(6,7),n(6,5),n(6,4),n(6,0),n(6,5),n(6,7),n(6,7),n(6,5),n(6,4),n(6,0),n(6,0),n(6,5),n(6,7),
     ] },
 
   // Eye of the Tiger: C minor riff on str6 -- C-C-G#-Bb-C-G-G#-G-F-G, two reps
@@ -112,6 +130,7 @@ export const SONGS: Song[] = [
     notes: [
       n(6,8),n(6,8),n(6,4),n(6,6),n(6,8),n(6,3),n(6,4),n(6,3),n(6,1),n(6,3),
       n(6,8),n(6,8),n(6,4),n(6,6),n(6,8),n(6,3),n(6,4),n(6,3),n(6,1),n(6,3),
+      n(6,8),n(6,8),n(6,4),n(6,6),n(6,8),n(6,3),n(6,4),n(6,3),n(6,1),n(6,3),n(6,8),n(6,8),n(6,4),n(6,6),n(6,8),n(6,3),
     ] },
 
   // Iron Man: str5 (A string) B-D-E riff then G#-F# walkdown (B2-D3-E3-E3-G#3-F#3)
@@ -120,6 +139,7 @@ export const SONGS: Song[] = [
       n(5,2),n(5,2),n(5,2),n(5,5),n(5,7),n(5,7),n(5,11),n(5,9),n(5,7),
       n(5,2),n(5,2),n(5,2),n(5,5),n(5,7),n(5,7),n(5,11),n(5,9),n(5,7),
       n(5,2),n(5,5),n(5,7),
+      n(5,2),n(5,2),n(5,2),n(5,5),n(5,7),n(5,7),n(5,11),n(5,9),n(5,7),n(5,2),n(5,2),n(5,2),n(5,5),n(5,7),n(5,7),
     ] },
 
   // Paranoid: E-F#-G-F#-E-E-G-F#-E on str6 (all correct), two reps
@@ -128,21 +148,23 @@ export const SONGS: Song[] = [
       n(6,0),n(6,2),n(6,3),n(6,2),n(6,0),n(6,0),n(6,3),n(6,2),n(6,0),
       n(6,2),n(6,3),n(6,2),n(6,0),n(6,0),n(6,3),n(6,2),n(6,0),
       n(6,0),n(6,2),n(6,3),n(6,2),
+      n(6,0),n(6,2),n(6,3),n(6,2),n(6,0),n(6,0),n(6,3),n(6,2),n(6,0),n(6,2),n(6,3),n(6,2),n(6,0),n(6,0),n(6,3),
     ] },
 
-  // Come As You Are: str5 (A string) -- A-B-A-A-C-D-C-B riff in standard tuning, two reps
+  // Come As You Are: low E string riff E-F#-E-E-G-A-G-F#-E in E minor (sounds Eb on Nirvana recording)
   { id: 'come-as-you-are', title: 'Come As You Are', artist: 'Nirvana', difficulty: 'beginner', bpm: 120,
     notes: [
-      n(5,0),n(5,2),n(5,0),n(5,0),n(5,3),n(5,5),n(5,3),n(5,2),
-      n(5,0),n(5,2),n(5,0),n(5,0),n(5,3),n(5,5),n(5,3),n(5,2),
-      n(5,0),n(5,2),n(5,0),n(5,0),
+      n(6,0),n(6,2),n(6,0),n(6,0),n(6,3),n(6,5),n(6,3),n(6,2),n(6,0),n(6,2),
+      n(6,0),n(6,0),n(6,3),n(6,5),n(6,3),n(6,2),n(6,0),n(6,2),n(6,0),n(6,0),
+      n(6,0),n(6,2),n(6,0),n(6,0),n(6,3),n(6,5),n(6,3),n(6,2),n(6,0),n(6,2),n(6,0),n(6,0),n(6,3),n(6,5),n(6,3),n(6,2),
     ] },
 
-  // Brain Stew: str5 descending E3-Eb3-D3-C#3 (frets 7,6,5,4), two reps + return
+  // Brain Stew: descending power chord roots A-G-F#-F-E on low E (whole-half-half-half, not chromatic)
   { id: 'brain-stew', title: 'Brain Stew', artist: 'Green Day', difficulty: 'beginner', bpm: 76,
     notes: [
-      n(5,7),n(5,7),n(5,6),n(5,6),n(5,5),n(5,5),n(5,4),n(5,4),n(5,3),n(5,3),
-      n(5,7),n(5,7),n(5,6),n(5,6),n(5,5),n(5,5),n(5,4),n(5,4),n(5,3),n(5,2),
+      n(6,5),n(6,5),n(6,3),n(6,3),n(6,2),n(6,2),n(6,1),n(6,1),n(6,0),n(6,0),
+      n(6,5),n(6,5),n(6,3),n(6,3),n(6,2),n(6,2),n(6,1),n(6,1),n(6,0),n(6,0),
+      n(6,5),n(6,5),n(6,3),n(6,3),n(6,2),n(6,2),n(6,1),n(6,1),n(6,0),n(6,0),n(6,5),n(6,5),n(6,3),n(6,3),n(6,2),n(6,2),
     ] },
 
   // Boulevard of Broken Dreams: F minor on str6 -- F-F-Ab-Bb-Ab-F riff
@@ -151,6 +173,7 @@ export const SONGS: Song[] = [
       n(6,1),n(6,1),n(6,4),n(6,6),n(6,4),n(6,1),
       n(6,1),n(6,4),n(6,6),n(6,4),n(6,1),
       n(6,1),n(6,4),n(6,6),n(6,4),n(6,6),n(6,8),n(6,6),n(6,4),n(6,1),
+      n(6,1),n(6,1),n(6,4),n(6,6),n(6,4),n(6,1),n(6,1),n(6,4),n(6,6),n(6,4),n(6,1),n(6,1),n(6,4),n(6,6),n(6,4),n(6,6),
     ] },
 
   // Mr. Brightside: Bb-Bb-Bb-A-G-A-Bb-C-C-Bb-A-G on str1, two passes
@@ -158,6 +181,7 @@ export const SONGS: Song[] = [
     notes: [
       n(1,6),n(1,6),n(1,6),n(1,5),n(1,3),n(1,5),n(1,6),n(1,8),n(1,8),n(1,6),n(1,5),n(1,3),
       n(1,5),n(1,6),n(1,8),n(1,6),n(1,5),n(1,3),n(1,5),n(1,6),
+      n(1,6),n(1,6),n(1,6),n(1,5),n(1,3),n(1,5),n(1,6),n(1,8),n(1,8),n(1,6),n(1,5),n(1,3),n(1,5),n(1,6),n(1,8),n(1,6),
     ] },
 
   // Creep: G-B-C-B-G-F#-G-B-C-B on str1 (chord tones G-B-C-Cm), two passes
@@ -165,6 +189,7 @@ export const SONGS: Song[] = [
     notes: [
       n(1,3),n(1,7),n(1,8),n(1,7),n(1,3),n(1,2),n(1,3),n(1,7),n(1,8),n(1,7),
       n(1,3),n(1,7),n(1,8),n(1,7),n(1,3),n(1,2),n(1,3),n(1,7),n(1,3),n(1,0),
+      n(1,3),n(1,7),n(1,8),n(1,7),n(1,3),n(1,2),n(1,3),n(1,7),n(1,8),n(1,7),n(1,3),n(1,7),n(1,8),n(1,7),n(1,3),n(1,2),
     ] },
 
   // Yellow: B-B-B-C#-B-G#-F#-G#-Bb-B on str1 (B major melody), expanded
@@ -172,6 +197,7 @@ export const SONGS: Song[] = [
     notes: [
       n(1,7),n(1,7),n(1,7),n(1,9),n(1,7),n(1,4),n(1,2),n(1,4),n(1,6),n(1,7),
       n(1,7),n(1,7),n(1,9),n(1,7),n(1,4),n(1,2),n(1,4),n(1,6),n(1,7),n(1,9),
+      n(1,7),n(1,7),n(1,7),n(1,9),n(1,7),n(1,4),n(1,2),n(1,4),n(1,6),n(1,7),n(1,7),n(1,7),n(1,9),n(1,7),n(1,4),n(1,2),
     ] },
 
   // With or Without You: D-A-B-G open string arpeggio pattern (D-A-Bm-G chord tones)
@@ -180,6 +206,7 @@ export const SONGS: Song[] = [
       n(4,0),n(5,0),n(2,0),n(3,0), n(4,0),n(5,0),n(2,0),n(3,0),
       n(4,0),n(5,0),n(2,0),n(3,0), n(4,0),n(5,0),n(2,0),n(3,0),
       n(4,0),n(5,0),n(1,0),n(3,0),
+      n(4,0),n(5,0),n(2,0),n(3,0),n(4,0),n(5,0),n(2,0),n(3,0),n(4,0),n(5,0),n(2,0),n(3,0),n(4,0),n(5,0),n(2,0),n(3,0),
     ] },
 
   // In the End: C-D-E-G-E-D-C melody on str1/str2, two passes
@@ -187,6 +214,7 @@ export const SONGS: Song[] = [
     notes: [
       n(2,1),n(2,3),n(1,0),n(1,3),n(1,0),n(2,3),n(2,1),n(1,0),n(2,3),n(2,1),
       n(2,1),n(2,3),n(1,0),n(1,3),n(1,5),n(1,3),n(1,0),n(2,3),n(2,1),n(1,0),
+      n(2,1),n(2,3),n(1,0),n(1,3),n(1,0),n(2,3),n(2,1),n(1,0),n(2,3),n(2,1),n(2,1),n(2,3),n(1,0),n(1,3),n(1,5),n(1,3),
     ] },
 
   // Numb: G#-Bb-C-Eb-C-Bb-G# melody on str1 (Ab minor), two passes
@@ -194,14 +222,15 @@ export const SONGS: Song[] = [
     notes: [
       n(1,4),n(1,6),n(1,8),n(1,11),n(1,8),n(1,6),n(1,4),n(1,6),n(1,4),n(1,3),
       n(1,4),n(1,6),n(1,8),n(1,11),n(1,8),n(1,6),n(1,4),n(1,6),n(1,8),n(1,4),
+      n(1,4),n(1,6),n(1,8),n(1,11),n(1,8),n(1,6),n(1,4),n(1,6),n(1,4),n(1,3),n(1,4),n(1,6),n(1,8),n(1,11),n(1,8),n(1,6),
     ] },
 
-  // Every Breath You Take: A major chord arpeggio A2-E3-A3-C#4-E4 up and down, then F#m arpeggio
+  // Every Breath You Take: Ab/G# major Add9 arpeggio (the actual key, not A major)
   { id: 'every-breath-you-take', title: 'Every Breath You Take', artist: 'The Police', difficulty: 'beginner', bpm: 116,
     notes: [
-      n(5,0),n(4,2),n(3,2),n(2,2),n(1,0), n(2,2),n(3,2),n(4,2),
-      n(5,0),n(4,2),n(3,2),n(2,2),n(1,0), n(2,2),n(3,2),n(4,2),
-      n(5,2),n(4,4),n(3,4),n(2,3),
+      n(3,1),n(3,1),n(2,0),n(3,1),n(4,2),n(3,1),n(3,1),n(2,0),n(3,1),n(4,2),
+      n(4,4),n(4,4),n(3,2),n(4,4),n(4,1),n(4,4),n(4,4),n(3,2),n(4,4),n(4,1),
+      n(3,1),n(3,1),n(2,0),n(3,1),n(4,2),n(3,1),n(3,1),n(2,0),n(3,1),n(4,2),n(4,4),n(4,4),n(3,2),n(4,4),n(4,1),n(4,4),
     ] },
 
   // Wonderful Tonight: G-A-B-A-G-E-D lead melody (correct), two phrases
@@ -210,6 +239,7 @@ export const SONGS: Song[] = [
       n(1,3),n(1,5),n(1,7),n(1,5),n(1,3),n(1,0),n(2,3),
       n(1,3),n(1,5),n(1,7),n(1,5),n(1,3),n(1,0),n(2,3),n(2,1),n(2,3),
       n(1,3),n(1,5),n(1,7),n(1,5),
+      n(1,3),n(1,5),n(1,7),n(1,5),n(1,3),n(1,0),n(2,3),n(1,3),n(1,5),n(1,7),n(1,5),n(1,3),n(1,0),n(2,3),n(2,1),n(2,3),
     ] },
 
   // Sweet Home Alabama: G-A-B-A-G arpeggio on str3+2 (D/G/A chord shapes), expanded
@@ -217,6 +247,7 @@ export const SONGS: Song[] = [
     notes: [
       n(3,2),n(3,0),n(3,2),n(4,0),n(3,0),n(3,2),n(2,3),n(3,2),n(3,0),
       n(3,2),n(3,0),n(3,2),n(4,0),n(4,2),n(3,0),n(3,2),n(2,3),n(3,2),n(3,0),n(4,0),
+      n(3,2),n(3,0),n(3,2),n(4,0),n(3,0),n(3,2),n(2,3),n(3,2),n(3,0),n(3,2),n(3,0),n(3,2),n(4,0),n(4,2),n(3,0),n(3,2),
     ] },
 
   // Good Riddance: G-A-B-C-B-A-G-A-G on str3 (G major), two reps
@@ -224,6 +255,7 @@ export const SONGS: Song[] = [
     notes: [
       n(3,0),n(3,2),n(3,4),n(3,5),n(3,4),n(3,2),n(3,0),n(3,2),n(3,0),
       n(3,0),n(3,2),n(3,4),n(3,5),n(3,4),n(3,2),n(3,0),n(3,4),n(3,5),n(3,7),n(3,5),
+      n(3,0),n(3,2),n(3,4),n(3,5),n(3,4),n(3,2),n(3,0),n(3,2),n(3,0),n(3,0),n(3,2),n(3,4),n(3,5),n(3,4),n(3,2),n(3,0),
     ] },
 
   // Let It Be: E-D-E-G-A-G-E-D-C melody on str1/str2 (C major), two phrases
@@ -231,6 +263,7 @@ export const SONGS: Song[] = [
     notes: [
       n(1,0),n(2,3),n(1,0),n(1,3),n(1,5),n(1,3),n(1,0),n(2,3),n(1,0),n(2,1),
       n(1,0),n(2,3),n(1,0),n(1,3),n(1,5),n(1,3),n(1,0),n(1,0),n(2,3),n(2,1),
+      n(1,0),n(2,3),n(1,0),n(1,3),n(1,5),n(1,3),n(1,0),n(2,3),n(1,0),n(2,1),n(1,0),n(2,3),n(1,0),n(1,3),n(1,5),n(1,3),
     ] },
 
   // Hey Jude: F-G-A-Bb-A-G-F-G-A-C-Bb-A-G-F melody in F major (str1)
@@ -238,6 +271,7 @@ export const SONGS: Song[] = [
     notes: [
       n(1,1),n(1,3),n(1,5),n(1,6),n(1,5),n(1,3),n(1,1),n(1,3),n(1,5),n(1,8),
       n(1,6),n(1,5),n(1,3),n(1,1),n(1,3),n(1,1),n(1,3),n(1,5),n(1,6),n(1,5),
+      n(1,1),n(1,3),n(1,5),n(1,6),n(1,5),n(1,3),n(1,1),n(1,3),n(1,5),n(1,8),n(1,6),n(1,5),n(1,3),n(1,1),n(1,3),n(1,1),
     ] },
 
   // Yesterday: G-A-Bb-C-D-Bb-C-Bb-A-G on str3 (G major transposition of F), expanded
@@ -245,6 +279,7 @@ export const SONGS: Song[] = [
     notes: [
       n(3,0),n(3,2),n(3,3),n(3,5),n(3,7),n(3,3),n(3,5),n(3,3),n(3,2),n(3,0),
       n(3,2),n(3,3),n(3,5),n(3,7),n(3,5),n(3,3),n(3,2),n(3,0),n(3,2),n(3,0),
+      n(3,0),n(3,2),n(3,3),n(3,5),n(3,7),n(3,3),n(3,5),n(3,3),n(3,2),n(3,0),n(3,2),n(3,3),n(3,5),n(3,7),n(3,5),n(3,3),
     ] },
 
   // Jolene: C#-E-F#-G#-A-G#-F#-E-C# melody in C# minor (str2+1), expanded
@@ -252,6 +287,7 @@ export const SONGS: Song[] = [
     notes: [
       n(2,4),n(1,0),n(1,2),n(1,4),n(1,5),n(1,4),n(1,2),n(1,0),n(2,4),n(2,4),
       n(2,4),n(1,0),n(1,2),n(1,4),n(1,5),n(1,4),n(1,2),n(1,0),n(1,2),n(2,4),
+      n(2,4),n(1,0),n(1,2),n(1,4),n(1,5),n(1,4),n(1,2),n(1,0),n(2,4),n(2,4),n(2,4),n(1,0),n(1,2),n(1,4),n(1,5),n(1,4),
     ] },
 
   // Country Roads: G-A-B-D-B-A-G-E-D-B on str1 (G major), expanded
@@ -259,6 +295,7 @@ export const SONGS: Song[] = [
     notes: [
       n(1,3),n(1,5),n(1,7),n(1,10),n(1,7),n(1,5),n(1,3),n(1,0),n(2,3),n(2,0),
       n(1,3),n(1,5),n(1,7),n(1,10),n(1,7),n(1,5),n(1,3),n(1,5),n(1,3),n(1,0),
+      n(1,3),n(1,5),n(1,7),n(1,10),n(1,7),n(1,5),n(1,3),n(1,0),n(2,3),n(2,0),n(1,3),n(1,5),n(1,7),n(1,10),n(1,7),n(1,5),
     ] },
 
   // Hallelujah: E-G-A-B-A-G-A-B-A on str1 (G major), expanded with second phrase
@@ -266,6 +303,7 @@ export const SONGS: Song[] = [
     notes: [
       n(1,0),n(1,3),n(1,5),n(1,7),n(1,5),n(1,3),n(1,5),n(1,7),n(1,5),n(1,3),
       n(1,0),n(1,3),n(1,5),n(1,7),n(1,5),n(1,3),n(1,0),n(2,0),n(2,3),n(1,0),
+      n(1,0),n(1,3),n(1,5),n(1,7),n(1,5),n(1,3),n(1,5),n(1,7),n(1,5),n(1,3),n(1,0),n(1,3),n(1,5),n(1,7),n(1,5),n(1,3),
     ] },
 
   // Let Her Go: B-C-D-E-D-C-B-G-C-D melody on str2/str3 (G major), expanded
@@ -273,6 +311,7 @@ export const SONGS: Song[] = [
     notes: [
       n(2,0),n(2,1),n(2,3),n(2,5),n(2,3),n(2,1),n(2,0),n(3,0),n(2,1),n(2,3),
       n(2,0),n(2,1),n(2,3),n(2,5),n(2,3),n(2,1),n(2,0),n(3,0),n(2,1),n(2,0),
+      n(2,0),n(2,1),n(2,3),n(2,5),n(2,3),n(2,1),n(2,0),n(3,0),n(2,1),n(2,3),n(2,0),n(2,1),n(2,3),n(2,5),n(2,3),n(2,1),
     ] },
 
   // Shallow: D-E-G-A-B-A-G-B-A-G in G major (str3+4), expanded
@@ -280,23 +319,25 @@ export const SONGS: Song[] = [
     notes: [
       n(4,0),n(4,2),n(3,0),n(3,2),n(3,4),n(3,2),n(3,0),n(2,0),n(3,2),n(3,0),
       n(4,0),n(4,2),n(3,0),n(3,2),n(3,4),n(3,2),n(3,0),n(2,0),n(3,4),n(3,2),
+      n(4,0),n(4,2),n(3,0),n(3,2),n(3,4),n(3,2),n(3,0),n(2,0),n(3,2),n(3,0),n(4,0),n(4,2),n(3,0),n(3,2),n(3,4),n(3,2),
     ] },
 
   // ── INTERMEDIATE ─────────────────────────────────────────────────────────
 
-  // Enter Sandman: E pedal + pentatonic riff on str6, two reps
+  // Enter Sandman: E pedal alternating with melody notes on strings 3-5 (E-E3-G3-E-A-...)
   { id: 'enter-sandman', title: 'Enter Sandman', artist: 'Metallica', difficulty: 'intermediate', bpm: 123,
     notes: [
-      n(6,0),n(6,0),n(6,7),n(6,9),n(6,7),n(6,5),n(6,3),n(6,0),n(6,3),n(6,0),
-      n(6,0),n(6,0),n(6,7),n(6,9),n(6,7),n(6,5),n(6,3),n(6,0),n(6,5),n(6,3),
+      n(6,0),n(4,2),n(3,0),n(6,0),n(5,0),n(6,0),n(4,2),n(3,0),n(6,0),n(4,4),n(3,0),
+      n(6,0),n(4,2),n(3,0),n(6,0),n(5,0),n(6,0),n(4,2),n(3,0),n(6,0),n(4,4),n(3,0),
+      n(6,0),n(4,2),n(3,0),n(6,0),n(5,0),n(6,0),n(4,2),n(3,0),n(6,0),n(4,4),n(3,0),n(6,0),n(4,2),n(3,0),
     ] },
 
-  // Thunderstruck: B string ascending then descending run, correctly computed
+  // Thunderstruck: open B (B3) pedal alternating with ascending/descending fretted notes
   { id: 'thunderstruck', title: 'Thunderstruck', artist: 'AC/DC', difficulty: 'intermediate', bpm: 134,
     notes: [
-      n(2,0),n(2,2),n(2,3),n(2,5),n(2,7),n(2,8),n(2,10),n(2,12),
-      n(2,10),n(2,8),n(2,7),n(2,5),n(2,3),n(2,2),n(2,0),
-      n(2,0),n(2,2),n(2,3),n(2,5),n(2,7),
+      n(2,0),n(2,5),n(2,0),n(2,7),n(2,0),n(2,8),n(2,0),n(2,10),n(2,0),n(2,12),n(2,0),
+      n(2,10),n(2,0),n(2,8),n(2,0),n(2,7),n(2,0),n(2,5),n(2,0),n(2,7),n(2,0),n(2,8),
+      n(2,0),n(2,5),n(2,0),n(2,7),n(2,0),n(2,8),n(2,0),n(2,10),n(2,0),n(2,12),n(2,0),n(2,10),n(2,0),n(2,8),
     ] },
 
   // Smells Like Teen Spirit: F-Bb-Ab-Db power chord root pattern on str6, two reps
@@ -305,6 +346,7 @@ export const SONGS: Song[] = [
       n(6,1),n(6,1),n(6,6),n(6,6),n(6,4),n(6,4),n(6,9),n(6,9),
       n(6,1),n(6,1),n(6,6),n(6,6),n(6,4),n(6,4),n(6,9),n(6,9),
       n(6,1),n(6,1),n(6,6),n(6,6),
+      n(6,1),n(6,1),n(6,6),n(6,6),n(6,4),n(6,4),n(6,9),n(6,9),n(6,1),n(6,1),n(6,6),n(6,6),n(6,4),n(6,4),n(6,9),n(6,9),
     ] },
 
   // Sweet Child O' Mine: str4 fret7 (A3) drone with melodic notes on str3/str2
@@ -313,6 +355,7 @@ export const SONGS: Song[] = [
       n(4,7),n(3,7),n(4,7),n(3,5),n(4,7),n(3,5),n(4,7),n(2,5),
       n(4,7),n(2,5),n(4,7),n(2,3),
       n(4,7),n(3,7),n(4,7),n(3,5),n(4,7),n(3,5),n(4,7),n(2,5),
+      n(4,7),n(3,7),n(4,7),n(3,5),n(4,7),n(3,5),n(4,7),n(2,5),n(4,7),n(2,5),n(4,7),n(2,3),n(4,7),n(3,7),n(4,7),n(3,5),
     ] },
 
   // Welcome to the Jungle: A blues riff on str5 (A-C#-D-E), two full reps
@@ -320,14 +363,15 @@ export const SONGS: Song[] = [
     notes: [
       n(5,0),n(5,0),n(5,4),n(5,5),n(5,7),n(5,5),n(5,4),n(5,0),n(5,4),n(5,5),n(5,7),
       n(5,0),n(5,0),n(5,4),n(5,5),n(5,7),n(5,5),n(5,4),n(5,0),n(5,7),
+      n(5,0),n(5,0),n(5,4),n(5,5),n(5,7),n(5,5),n(5,4),n(5,0),n(5,4),n(5,5),n(5,7),n(5,0),n(5,0),n(5,4),n(5,5),n(5,7),
     ] },
 
-  // Crazy Train: A blues riff on str5 (A-E-F#-G), two reps
+  // Crazy Train: F# minor iconic riff F#-A-E-F#-D-F#-E-C#-D-A (was incorrectly in A minor)
   { id: 'crazy-train', title: 'Crazy Train', artist: 'Ozzy Osbourne', difficulty: 'intermediate', bpm: 138,
     notes: [
-      n(5,0),n(5,0),n(5,0),n(5,7),n(5,0),n(5,9),n(5,10),n(5,7),n(5,0),
-      n(5,0),n(5,0),n(5,7),n(5,0),n(5,9),n(5,10),n(5,7),n(5,0),
-      n(5,9),n(5,10),n(5,9),
+      n(4,4),n(3,2),n(4,2),n(4,4),n(4,0),n(4,4),n(4,2),n(5,4),n(4,0),n(5,0),n(4,4),
+      n(3,2),n(4,2),n(4,4),n(4,0),n(4,4),n(4,2),n(5,4),n(4,0),n(5,0),n(4,4),n(3,2),
+      n(4,4),n(3,2),n(4,2),n(4,4),n(4,0),n(4,4),n(4,2),n(5,4),n(4,0),n(5,0),n(4,4),n(3,2),n(4,2),n(4,4),
     ] },
 
   // Highway to Hell: A mixolydian riff on str1 (A-G-A-G-E-G-A-D), expanded
@@ -335,6 +379,7 @@ export const SONGS: Song[] = [
     notes: [
       n(1,5),n(1,5),n(1,3),n(1,5),n(1,3),n(1,0),n(1,3),n(1,5),n(1,5),n(1,10),n(1,8),
       n(1,5),n(1,5),n(1,3),n(1,5),n(1,3),n(1,0),n(1,3),n(1,5),n(1,10),n(1,8),
+      n(1,5),n(1,5),n(1,3),n(1,5),n(1,3),n(1,0),n(1,3),n(1,5),n(1,5),n(1,10),n(1,8),n(1,5),n(1,5),n(1,3),n(1,5),
     ] },
 
   // Don't Stop Believin': E major melody E-F#-B-C#-A-B, expanded
@@ -342,6 +387,7 @@ export const SONGS: Song[] = [
     notes: [
       n(1,0),n(1,2),n(1,7),n(1,9),n(1,5),n(1,7),n(1,2),n(1,0),n(1,0),n(2,0),n(1,2),
       n(1,0),n(1,2),n(1,7),n(1,9),n(1,5),n(1,7),n(1,2),n(1,0),n(1,2),
+      n(1,0),n(1,2),n(1,7),n(1,9),n(1,5),n(1,7),n(1,2),n(1,0),n(1,0),n(2,0),n(1,2),n(1,0),n(1,2),n(1,7),n(1,9),n(1,5),
     ] },
 
   // Losing My Religion: Am mandolin riff on str5/4/3 (A-E-F-G), two reps
@@ -349,6 +395,7 @@ export const SONGS: Song[] = [
     notes: [
       n(5,0),n(4,2),n(4,3),n(3,0),n(5,0),n(3,0),n(4,3),n(4,2),n(5,0),n(4,2),n(3,2),
       n(5,0),n(4,2),n(4,3),n(3,0),n(5,0),n(3,0),n(4,3),n(4,2),n(5,0),
+      n(5,0),n(4,2),n(4,3),n(3,0),n(5,0),n(3,0),n(4,3),n(4,2),n(5,0),n(4,2),n(3,2),n(5,0),n(4,2),n(4,3),n(3,0),n(5,0),
     ] },
 
   // Under the Bridge: E major arpeggio pattern on str1/str2, expanded
@@ -356,13 +403,15 @@ export const SONGS: Song[] = [
     notes: [
       n(1,0),n(1,2),n(1,4),n(1,7),n(1,5),n(1,4),n(1,2),n(1,0),n(2,0),n(2,2),
       n(1,0),n(1,2),n(1,4),n(1,7),n(1,5),n(1,4),n(1,2),n(1,0),n(2,2),n(2,0),
+      n(1,0),n(1,2),n(1,4),n(1,7),n(1,5),n(1,4),n(1,2),n(1,0),n(2,0),n(2,2),n(1,0),n(1,2),n(1,4),n(1,7),n(1,5),n(1,4),
     ] },
 
-  // Wish You Were Here: E major riff on str1, two passes (open-position fingerstyle)
+  // Wish You Were Here: G major intro (was incorrectly in E major), open-position fingerstyle
   { id: 'wish-you-were-here', title: 'Wish You Were Here', artist: 'Pink Floyd', difficulty: 'intermediate', bpm: 63,
     notes: [
-      n(1,0),n(1,0),n(1,4),n(1,4),n(1,5),n(1,4),n(1,0),n(1,0),n(1,2),n(1,0),
-      n(1,0),n(1,4),n(1,4),n(1,5),n(1,4),n(1,0),n(1,0),n(1,2),n(1,0),n(2,0),
+      n(3,0),n(2,0),n(2,3),n(1,3),n(1,0),n(2,3),n(2,0),n(3,0),n(3,2),n(2,0),
+      n(2,3),n(1,3),n(3,0),n(2,0),n(2,3),n(1,3),n(1,0),n(2,3),n(2,0),n(3,0),
+      n(3,0),n(2,0),n(2,3),n(1,3),n(1,0),n(2,3),n(2,0),n(3,0),n(3,2),n(2,0),n(2,3),n(1,3),n(3,0),n(2,0),n(2,3),n(1,3),
     ] },
 
   // Stairway to Heaven: Am arpeggio (A2-E3-G3-C4-E4) twice, then Am7 variation
@@ -371,6 +420,7 @@ export const SONGS: Song[] = [
       n(5,0),n(4,2),n(3,0),n(2,1),n(1,0), n(2,1),n(3,0),n(4,2),
       n(5,0),n(4,2),n(3,0),n(2,0),n(1,0), n(2,0),n(3,0),n(4,2),
       n(5,3),n(4,2),n(3,0),n(2,1),
+      n(5,0),n(4,2),n(3,0),n(2,1),n(1,0),n(2,1),n(3,0),n(4,2),n(5,0),n(4,2),n(3,0),n(2,0),n(1,0),n(2,0),n(3,0),n(4,2),
     ] },
 
   // Hotel California: Bm arpeggio (B3-F#4-A4-E4) and D chord variant, two reps
@@ -378,6 +428,7 @@ export const SONGS: Song[] = [
     notes: [
       n(2,0),n(2,7),n(1,5),n(1,0),n(2,7),n(2,3),n(1,2),n(2,7),n(1,5),n(1,0),
       n(2,0),n(2,7),n(1,5),n(1,0),n(2,7),n(2,3),n(1,2),n(2,7),n(1,5),n(1,0),
+      n(2,0),n(2,7),n(1,5),n(1,0),n(2,7),n(2,3),n(1,2),n(2,7),n(1,5),n(1,0),n(2,0),n(2,7),n(1,5),n(1,0),n(2,7),n(2,3),
     ] },
 
   // Walk This Way: A blues riff on str5 (A-C-D-A-C-E-D-C), two reps
@@ -386,6 +437,7 @@ export const SONGS: Song[] = [
       n(5,0),n(5,3),n(5,5),n(5,0),n(5,3),n(5,7),n(5,5),n(5,3),n(5,0),
       n(5,0),n(5,3),n(5,5),n(5,0),n(5,3),n(5,7),n(5,5),n(5,3),n(5,0),
       n(5,3),n(5,5),
+      n(5,0),n(5,3),n(5,5),n(5,0),n(5,3),n(5,7),n(5,5),n(5,3),n(5,0),n(5,0),n(5,3),n(5,5),n(5,0),n(5,3),n(5,7),n(5,5),
     ] },
 
   // Blackbird: G major ascending + high notes, extended phrase
@@ -393,6 +445,7 @@ export const SONGS: Song[] = [
     notes: [
       n(3,0),n(3,2),n(3,3),n(3,5),n(3,7),n(3,8),n(1,0),n(1,3),n(1,0),n(3,8),n(3,7),
       n(3,5),n(3,3),n(3,2),n(3,0),n(3,2),n(3,5),n(3,7),n(3,8),n(1,0),
+      n(3,0),n(3,2),n(3,3),n(3,5),n(3,7),n(3,8),n(1,0),n(1,3),n(1,0),n(3,8),n(3,7),n(3,5),n(3,3),n(3,2),n(3,0),n(3,2),
     ] },
 
   // Wonderwall: Em7 open-string arpeggio G3-B3-E4-B3, two reps + extra
@@ -400,6 +453,7 @@ export const SONGS: Song[] = [
     notes: [
       n(3,0),n(2,0),n(1,0),n(2,0),n(3,0),n(2,0),n(1,0),n(2,0),n(3,0),n(2,0),
       n(3,0),n(2,0),n(1,0),n(2,0),n(3,2),n(2,3),n(1,3),n(2,3),n(3,0),n(2,0),
+      n(3,0),n(2,0),n(1,0),n(2,0),n(3,0),n(2,0),n(1,0),n(2,0),n(3,0),n(2,0),n(3,0),n(2,0),n(1,0),n(2,0),n(3,2),n(2,3),
     ] },
 
   // Iris: A-B-C#-B-A-G#-A-B-C#-E ascending/descending in A major, expanded
@@ -407,6 +461,7 @@ export const SONGS: Song[] = [
     notes: [
       n(1,5),n(1,7),n(1,9),n(1,7),n(1,5),n(1,4),n(1,5),n(1,7),n(1,9),n(1,12),
       n(1,9),n(1,7),n(1,5),n(1,4),n(1,5),n(1,7),n(1,9),n(1,12),n(1,9),n(1,7),
+      n(1,5),n(1,7),n(1,9),n(1,7),n(1,5),n(1,4),n(1,5),n(1,7),n(1,9),n(1,12),n(1,9),n(1,7),n(1,5),n(1,4),n(1,5),n(1,7),
     ] },
 
   // Zombie: E-F#-G-A-A-G-F#-E-F#-G on str1, two full passes
@@ -414,6 +469,7 @@ export const SONGS: Song[] = [
     notes: [
       n(1,0),n(1,2),n(1,3),n(1,5),n(1,5),n(1,3),n(1,2),n(1,0),n(1,2),n(1,3),
       n(1,0),n(1,2),n(1,3),n(1,5),n(1,5),n(1,3),n(1,2),n(1,0),n(1,2),n(1,0),
+      n(1,0),n(1,2),n(1,3),n(1,5),n(1,5),n(1,3),n(1,2),n(1,0),n(1,2),n(1,3),n(1,0),n(1,2),n(1,3),n(1,5),n(1,5),n(1,3),
     ] },
 
   // Whole Lotta Love: E blues riff on str6 (E-G-A with G#-A chromatic), expanded
@@ -421,6 +477,7 @@ export const SONGS: Song[] = [
     notes: [
       n(6,0),n(6,0),n(6,3),n(6,5),n(6,0),n(6,0),n(6,3),n(6,5),n(6,4),n(6,5),
       n(6,0),n(6,0),n(6,3),n(6,5),n(6,0),n(6,0),n(6,3),n(6,5),n(6,4),n(6,0),
+      n(6,0),n(6,0),n(6,3),n(6,5),n(6,0),n(6,0),n(6,3),n(6,5),n(6,4),n(6,5),n(6,0),n(6,0),n(6,3),n(6,5),n(6,0),n(6,0),
     ] },
 
   // Sunshine of Your Love: D-D-C#-D-C-D-Bb-C-D chromatic riff on str4+5
@@ -428,6 +485,7 @@ export const SONGS: Song[] = [
     notes: [
       n(4,0),n(4,0),n(5,4),n(4,0),n(5,3),n(4,0),n(5,1),n(5,3),n(4,0),n(4,0),
       n(4,0),n(5,4),n(4,0),n(5,3),n(4,0),n(5,1),n(5,3),n(4,0),n(4,0),n(5,0),
+      n(4,0),n(4,0),n(5,4),n(4,0),n(5,3),n(4,0),n(5,1),n(5,3),n(4,0),n(4,0),n(4,0),n(5,4),n(4,0),n(5,3),n(4,0),n(5,1),
     ] },
 
   // House of the Rising Sun: Am arpeggio A2-A3-C4-E4 up and down, two reps
@@ -436,6 +494,7 @@ export const SONGS: Song[] = [
       n(5,0),n(3,2),n(2,1),n(1,0), n(5,0),n(3,2),n(2,1),n(1,0),
       n(5,2),n(3,2),n(2,0),n(1,0), n(5,0),n(3,2),n(2,1),n(1,0),
       n(5,0),n(3,2),n(2,1),n(1,0),
+      n(5,0),n(3,2),n(2,1),n(1,0),n(5,0),n(3,2),n(2,1),n(1,0),n(5,2),n(3,2),n(2,0),n(1,0),n(5,0),n(3,2),n(2,1),n(1,0),
     ] },
 
   // Paint It Black: A string ascending pentatonic (A-B-C#-D-E) then descending, two reps
@@ -443,6 +502,7 @@ export const SONGS: Song[] = [
     notes: [
       n(5,0),n(5,2),n(5,4),n(5,5),n(5,7),n(5,4),n(5,5),n(5,4),n(5,2),n(5,0),
       n(5,0),n(5,2),n(5,4),n(5,5),n(5,7),n(5,9),n(5,7),n(5,5),n(5,4),n(5,2),
+      n(5,0),n(5,2),n(5,4),n(5,5),n(5,7),n(5,4),n(5,5),n(5,4),n(5,2),n(5,0),n(5,0),n(5,2),n(5,4),n(5,5),n(5,7),n(5,9),
     ] },
 
   // More Than Words: G major arpeggio G3-B3-D4-G4-B4-G4-D4-B3-G3, two reps
@@ -451,6 +511,7 @@ export const SONGS: Song[] = [
       n(3,0),n(2,0),n(2,3),n(1,3),n(1,7),n(1,3),n(2,3),n(2,0),n(3,0),
       n(3,0),n(2,0),n(2,3),n(1,3),n(1,7),n(1,3),n(2,3),n(2,0),n(3,0),
       n(3,2),n(3,0),
+      n(3,0),n(2,0),n(2,3),n(1,3),n(1,7),n(1,3),n(2,3),n(2,0),n(3,0),n(3,0),n(2,0),n(2,3),n(1,3),n(1,7),n(1,3),n(2,3),
     ] },
 
   // My Hero: B-D-E power chord roots on str6 then E pedal riff, expanded
@@ -459,6 +520,7 @@ export const SONGS: Song[] = [
       n(6,7),n(6,7),n(6,10),n(6,0),n(6,0),n(6,3),n(6,5),n(6,0),
       n(6,7),n(6,7),n(6,10),n(6,0),n(6,0),n(6,3),n(6,5),n(6,0),
       n(6,7),n(6,10),n(6,7),n(6,5),
+      n(6,7),n(6,7),n(6,10),n(6,0),n(6,0),n(6,3),n(6,5),n(6,0),n(6,7),n(6,7),n(6,10),n(6,0),n(6,0),n(6,3),n(6,5),n(6,0),
     ] },
 
   // ── ADVANCED ─────────────────────────────────────────────────────────────
@@ -468,6 +530,7 @@ export const SONGS: Song[] = [
     notes: [
       n(1,11),n(1,11),n(1,9),n(1,8),n(1,9),n(1,11),n(1,9),n(1,8),n(1,6),n(1,8),n(1,9),n(1,11),n(1,8),n(1,6),n(1,4),
       n(1,11),n(1,11),n(1,9),n(1,8),n(1,9),n(1,11),
+      n(1,11),n(1,11),n(1,9),n(1,8),n(1,9),n(1,11),n(1,9),n(1,8),n(1,6),n(1,8),n(1,9),n(1,11),n(1,8),n(1,6),n(1,4),
     ] },
 
   // Sultans of Swing: Dm pentatonic riff D-A-B-C-D-C-B-A, then upper notes
@@ -475,6 +538,7 @@ export const SONGS: Song[] = [
     notes: [
       n(4,0),n(3,2),n(3,4),n(3,5),n(3,7),n(3,5),n(3,4),n(3,2),n(4,0),n(3,4),n(3,5),n(3,7),n(1,5),n(1,7),n(1,8),
       n(1,7),n(1,5),n(3,7),n(3,5),n(3,4),
+      n(4,0),n(3,2),n(3,4),n(3,5),n(3,7),n(3,5),n(3,4),n(3,2),n(4,0),n(3,4),n(3,5),n(3,7),n(1,5),n(1,7),n(1,8),n(1,7),
     ] },
 
   // Layla Intro: Dm riff D5-C5-Bb4-A4-G4 on str1, then same on str2, two passes
@@ -483,13 +547,15 @@ export const SONGS: Song[] = [
       n(1,10),n(1,8),n(1,6),n(1,5),n(1,3),n(1,5),n(1,6),n(1,8),n(1,10),
       n(2,10),n(2,8),n(2,6),n(2,5),n(2,3),
       n(1,10),n(1,8),n(1,6),n(1,5),n(1,3),n(1,5),
+      n(1,10),n(1,8),n(1,6),n(1,5),n(1,3),n(1,5),n(1,6),n(1,8),n(1,10),n(2,10),n(2,8),n(2,6),n(2,5),n(2,3),n(1,10),n(1,8),
     ] },
 
-  // La Grange: A blues boogie on str5 then same on str6, two reps
+  // La Grange: A blues with the blue note (D#/Eb), classic A minor pentatonic riff
   { id: 'la-grange', title: 'La Grange', artist: 'ZZ Top', difficulty: 'advanced', bpm: 140,
     notes: [
-      n(5,0),n(5,3),n(5,5),n(5,7),n(5,5),n(5,3),n(5,0),n(5,3),n(6,0),n(6,3),n(6,5),n(6,7),
-      n(5,0),n(5,3),n(5,5),n(5,7),n(5,5),n(5,3),n(5,0),n(5,3),
+      n(5,0),n(5,3),n(4,0),n(4,1),n(4,2),n(3,0),n(3,2),n(3,0),n(4,2),n(4,0),
+      n(5,3),n(5,0),n(5,3),n(4,0),n(4,1),n(4,2),n(3,0),n(4,2),n(4,0),n(5,3),
+      n(5,0),n(5,3),n(4,0),n(4,1),n(4,2),n(3,0),n(3,2),n(3,0),n(4,2),n(4,0),n(5,3),n(5,0),n(5,3),n(4,0),n(4,1),n(4,2),
     ] },
 
   // Pride and Joy: E blues walking bass E2-B2-C3-D3-E3 on str6/5, two reps
@@ -497,6 +563,7 @@ export const SONGS: Song[] = [
     notes: [
       n(6,0),n(5,2),n(5,3),n(5,5),n(5,7),n(5,5),n(5,3),n(5,2),n(6,0),n(5,2),n(5,3),n(5,5),
       n(6,0),n(5,2),n(5,3),n(5,5),n(5,7),n(5,5),n(5,3),n(5,2),
+      n(6,0),n(5,2),n(5,3),n(5,5),n(5,7),n(5,5),n(5,3),n(5,2),n(6,0),n(5,2),n(5,3),n(5,5),n(6,0),n(5,2),n(5,3),n(5,5),
     ] },
 
   // Fade to Black: Bm arpeggio B2-F#3-A3-D4-F#4, two reps + Em transition
@@ -505,6 +572,7 @@ export const SONGS: Song[] = [
       n(5,2),n(4,4),n(3,2),n(2,3),n(1,2),n(2,3),n(3,2),n(4,4),
       n(5,2),n(4,4),n(3,2),n(2,0),n(1,0),n(2,0),n(3,2),n(4,4),
       n(5,2),n(4,4),n(3,4),n(2,3),n(1,2),
+      n(5,2),n(4,4),n(3,2),n(2,3),n(1,2),n(2,3),n(3,2),n(4,4),n(5,2),n(4,4),n(3,2),n(2,0),n(1,0),n(2,0),n(3,2),
     ] },
 
   // Hotel California Solo: Bm solo notes F#5-E5-F#5-E5-Eb5 on str1, then str2, then str3
@@ -512,6 +580,7 @@ export const SONGS: Song[] = [
     notes: [
       n(1,14),n(1,12),n(1,14),n(1,12),n(1,11),n(2,14),n(2,12),n(2,14),n(2,12),n(2,10),n(3,12),n(3,11),n(3,9),
       n(3,11),n(3,12),n(2,10),n(2,12),n(1,11),n(1,12),n(1,14),
+      n(1,14),n(1,12),n(1,14),n(1,12),n(1,11),n(2,14),n(2,12),n(2,14),n(2,12),n(2,10),n(3,12),n(3,11),n(3,9),n(3,11),n(3,12),n(2,10),
     ] },
 
   // Little Wing: Em chord fragments and single notes (correct pitches preserved)
@@ -519,6 +588,7 @@ export const SONGS: Song[] = [
     notes: [
       n(1,0),n(2,8),n(1,8),n(1,7),n(2,8),n(1,5),n(1,7),n(2,5),n(1,5),n(1,3),n(2,5),n(1,3),n(2,3),n(1,0),
       n(2,8),n(1,8),n(1,7),n(2,8),n(1,5),n(1,7),
+      n(1,0),n(2,8),n(1,8),n(1,7),n(2,8),n(1,5),n(1,7),n(2,5),n(1,5),n(1,3),n(2,5),n(1,3),n(2,3),n(1,0),n(2,8),n(1,8),
     ] },
 
   // One (Metallica): Em/Bm arpeggio E2-B2-D3-A3-B3-A3-D3-B2-E2 expanded
@@ -526,6 +596,7 @@ export const SONGS: Song[] = [
     notes: [
       n(6,0),n(5,2),n(4,0),n(3,2),n(2,0),n(3,2),n(4,0),n(5,2),n(6,0),n(5,0),n(4,2),n(3,0),n(2,1),n(1,0),
       n(2,1),n(3,0),n(4,2),n(5,0),n(6,0),n(5,2),
+      n(6,0),n(5,2),n(4,0),n(3,2),n(2,0),n(3,2),n(4,0),n(5,2),n(6,0),n(5,0),n(4,2),n(3,0),n(2,1),n(1,0),n(2,1),n(3,0),
     ] },
 
   // Eruption Opening: Descending run on str1 from A5 down to B4 (tapping/descending scale)
@@ -533,6 +604,7 @@ export const SONGS: Song[] = [
     notes: [
       n(1,17),n(1,17),n(1,15),n(1,17),n(1,15),n(1,14),n(1,12),n(1,14),n(1,12),n(1,10),n(1,12),n(1,10),n(1,9),n(1,7),
       n(1,9),n(1,7),n(1,5),n(1,7),n(1,5),n(1,3),
+      n(1,17),n(1,17),n(1,15),n(1,17),n(1,15),n(1,14),n(1,12),n(1,14),n(1,12),n(1,10),n(1,12),n(1,10),n(1,9),n(1,7),n(1,9),n(1,7),
     ] },
 
   // While My Guitar Gently Weeps: Am/A arpeggio (A2-E3-A3-C#4-E4) and C transition
@@ -540,6 +612,7 @@ export const SONGS: Song[] = [
     notes: [
       n(5,0),n(4,2),n(3,2),n(2,2),n(1,0),n(2,2),n(3,2),n(4,2),n(5,3),n(4,5),n(3,4),n(2,5),n(1,3),
       n(2,5),n(3,4),n(4,5),n(5,3),n(4,2),n(3,2),n(2,2),
+      n(5,0),n(4,2),n(3,2),n(2,2),n(1,0),n(2,2),n(3,2),n(4,2),n(5,3),n(4,5),n(3,4),n(2,5),n(1,3),n(2,5),n(3,4),n(4,5),
     ] },
 
   // Voodoo Child: E blues riff on str6/5/4/3 (E-C-E-A-B), two reps
@@ -547,6 +620,7 @@ export const SONGS: Song[] = [
     notes: [
       n(6,0),n(5,3),n(4,2),n(3,2),n(2,0),n(3,2),n(6,0),n(5,3),n(4,2),n(3,2),n(2,3),n(2,0),
       n(6,0),n(5,3),n(4,2),n(3,2),n(2,0),n(3,2),n(4,2),n(5,3),
+      n(6,0),n(5,3),n(4,2),n(3,2),n(2,0),n(3,2),n(6,0),n(5,3),n(4,2),n(3,2),n(2,3),n(2,0),n(6,0),n(5,3),n(4,2),n(3,2),
     ] },
 
   // ── EXPERT ───────────────────────────────────────────────────────────────
@@ -556,6 +630,7 @@ export const SONGS: Song[] = [
     notes: [
       n(6,0),n(6,0),n(6,0),n(6,0),n(6,1),n(6,0),n(6,1),n(6,0),n(6,1),n(6,0),n(6,0),n(6,3),n(6,2),n(6,0),n(6,3),n(6,2),
       n(6,0),n(6,0),n(6,1),n(6,0),n(6,1),
+      n(6,0),n(6,0),n(6,0),n(6,0),n(6,1),n(6,0),n(6,1),n(6,0),n(6,1),n(6,0),n(6,0),n(6,3),n(6,2),n(6,0),n(6,3),
     ] },
 
   // Through the Fire and Flames: E minor pentatonic ascending/descending run on str1
@@ -563,13 +638,15 @@ export const SONGS: Song[] = [
     notes: [
       n(1,0),n(1,3),n(1,5),n(1,7),n(1,8),n(1,7),n(1,5),n(1,3),n(1,5),n(1,7),n(1,8),n(1,10),n(1,12),n(1,10),n(1,8),n(1,7),
       n(1,5),n(1,3),n(1,5),n(1,7),
+      n(1,0),n(1,3),n(1,5),n(1,7),n(1,8),n(1,7),n(1,5),n(1,3),n(1,5),n(1,7),n(1,8),n(1,10),n(1,12),n(1,10),n(1,8),n(1,7),
     ] },
 
-  // Raining Blood: E-Bb-Ab-G diminished riff on str6 (fret4=Ab not fret5=A), two reps + outro
+  // Raining Blood: chromatic E-F-G-G#-A ascent on low E (iconic Slayer opening)
   { id: 'raining-blood', title: 'Raining Blood', artist: 'Slayer', difficulty: 'expert', bpm: 200,
     notes: [
-      n(6,0),n(6,0),n(6,0),n(6,6),n(6,4),n(6,3),n(6,0),n(6,0),n(6,6),n(6,4),n(6,3),n(6,0),
-      n(6,5),n(6,4),n(6,3),n(6,0),n(6,0),n(6,0),n(6,6),n(6,4),n(6,3),
+      n(6,0),n(6,1),n(6,3),n(6,4),n(6,0),n(6,1),n(6,3),n(6,4),n(6,0),n(6,1),
+      n(6,3),n(6,4),n(6,5),n(6,0),n(6,1),n(6,3),n(6,4),n(6,5),n(6,6),n(6,7),
+      n(6,0),n(6,1),n(6,3),n(6,4),n(6,0),n(6,1),n(6,3),n(6,4),n(6,0),n(6,1),n(6,3),n(6,4),n(6,5),n(6,0),n(6,1),n(6,3),
     ] },
 
   // Eruption Full: Full descending tapping run A5 down to E4 on str1
@@ -577,6 +654,7 @@ export const SONGS: Song[] = [
     notes: [
       n(1,17),n(1,17),n(1,15),n(1,17),n(1,12),n(1,15),n(1,12),n(1,10),n(1,12),n(1,10),n(1,9),n(1,7),n(1,9),n(1,7),n(1,5),n(1,7),n(1,5),n(1,3),n(1,0),
       n(1,17),n(1,15),
+      n(1,17),n(1,17),n(1,15),n(1,17),n(1,12),n(1,15),n(1,12),n(1,10),n(1,12),n(1,10),n(1,9),n(1,7),n(1,9),n(1,7),n(1,5),
     ] },
 
   // Holy Wars: E Phrygian riff on str6 (E-F#-G-A-Bb-G-A), expanded
@@ -584,6 +662,7 @@ export const SONGS: Song[] = [
     notes: [
       n(6,0),n(6,2),n(6,3),n(6,5),n(6,6),n(6,3),n(6,5),n(6,0),n(6,2),n(6,3),n(6,5),n(6,6),n(6,8),n(6,7),n(6,5),
       n(6,0),n(6,2),n(6,3),n(6,5),n(6,6),
+      n(6,0),n(6,2),n(6,3),n(6,5),n(6,6),n(6,3),n(6,5),n(6,0),n(6,2),n(6,3),n(6,5),n(6,6),n(6,8),n(6,7),n(6,5),n(6,0),
     ] },
 
   // Tornado of Souls Solo: E minor pentatonic solo runs on str1, two reps
@@ -591,5 +670,47 @@ export const SONGS: Song[] = [
     notes: [
       n(1,12),n(1,15),n(1,17),n(1,15),n(1,12),n(1,15),n(1,12),n(1,10),n(1,12),n(1,10),n(1,9),n(1,12),n(1,9),n(1,7),n(1,9),n(1,7),
       n(1,12),n(1,15),n(1,17),n(1,15),
+      n(1,12),n(1,15),n(1,17),n(1,15),n(1,12),n(1,15),n(1,12),n(1,10),n(1,12),n(1,10),n(1,9),n(1,12),n(1,9),n(1,7),n(1,9),n(1,7),
+    ] },
+
+  // ── CHORD SONGS ──────────────────────────────────────────────────────────
+  // First batch of chord-strum support. Detection runs on chromagram + tonal
+  // chord-detect (see lib/chord-detection.ts). String/fret on the chord helper
+  // point at the chord's bass note for display only.
+
+  // Knockin' on Heaven's Door: G - D - Am7 (verse), then G - D - C
+  { id: 'knockin-on-heavens-door', title: "Knockin' on Heaven's Door", artist: 'Bob Dylan', difficulty: 'beginner', bpm: 64,
+    notes: [
+      c('G',6,3),c('D',4,0),c('Am',5,0),c('G',6,3),
+      c('G',6,3),c('D',4,0),c('Am',5,0),c('G',6,3),
+      c('G',6,3),c('D',4,0),c('C',5,3),c('G',6,3),
+      c('G',6,3),c('D',4,0),c('Am',5,0),c('G',6,3),
+    ] },
+
+  // Stand By Me: G - Em - C - D, classic 50s progression
+  { id: 'stand-by-me', title: 'Stand By Me', artist: 'Ben E. King', difficulty: 'beginner', bpm: 119,
+    notes: [
+      c('G',6,3),c('G',6,3),c('Em',6,0),c('Em',6,0),
+      c('C',5,3),c('D',4,0),c('G',6,3),c('G',6,3),
+      c('G',6,3),c('G',6,3),c('Em',6,0),c('Em',6,0),
+      c('C',5,3),c('D',4,0),c('G',6,3),c('G',6,3),
+    ] },
+
+  // Let It Be: C - G - Am - F (verse progression)
+  { id: 'let-it-be-chords', title: 'Let It Be (Chords)', artist: 'The Beatles', difficulty: 'beginner', bpm: 76,
+    notes: [
+      c('C',5,3),c('G',6,3),c('Am',5,0),c('F',6,1),
+      c('C',5,3),c('G',6,3),c('F',6,1),c('C',5,3),
+      c('C',5,3),c('G',6,3),c('Am',5,0),c('F',6,1),
+      c('C',5,3),c('G',6,3),c('F',6,1),c('C',5,3),
+    ] },
+
+  // Three Little Birds: A - D - A - E (classic reggae progression)
+  { id: 'three-little-birds', title: 'Three Little Birds', artist: 'Bob Marley', difficulty: 'beginner', bpm: 76,
+    notes: [
+      c('A',5,0),c('A',5,0),c('D',4,0),c('A',5,0),
+      c('A',5,0),c('E',6,0),c('A',5,0),c('A',5,0),
+      c('A',5,0),c('A',5,0),c('D',4,0),c('A',5,0),
+      c('A',5,0),c('E',6,0),c('A',5,0),c('A',5,0),
     ] },
 ];

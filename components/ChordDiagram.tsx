@@ -20,7 +20,7 @@ const PADDING_BOT_RATIO   = 0.12; // space for string labels
 
 const FRET_COUNT = 4; // visible frets in the window
 const STRING_COUNT = 6;
-const STRING_LABELS = ['E', 'A', 'D', 'G', 'B', 'e'];
+const DIAGRAM_STRING_LABELS = ['E', 'A', 'D', 'G', 'B', 'e'];
 
 export function ChordDiagram({ voicing, name, size = 'md' }: ChordDiagramProps) {
   const totalWidth  = SIZE_MAP[size];
@@ -195,7 +195,7 @@ export function ChordDiagram({ voicing, name, size = 'md' }: ChordDiagramProps) 
       })}
 
       {/* ── String labels at bottom ── */}
-      {STRING_LABELS.map((label, si) => (
+      {DIAGRAM_STRING_LABELS.map((label, si) => (
         <text
           key={`label-${si}`}
           x={sx(si)}

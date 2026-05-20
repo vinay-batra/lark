@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
@@ -10,6 +11,7 @@ import { loadSessionsFromSupabase, loadSavedSongsFromSupabase } from '@/lib/prac
 
 const NAV = [
   { href: '/app',              label: 'Home',       tourId: '',               icon: <path d="M3 12L12 3l9 9M5 10v10h14V10"/> },
+  { href: '/app/learn',        label: 'Learn',      tourId: 'tour-learn',     icon: <><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></> },
   { href: '/app/tuner',        label: 'Tuner',      tourId: '',               icon: <path d="M2 12h3l3-9 4 18 3-9 3 5 4-5"/> },
   { href: '/app/chords',       label: 'Chords',     tourId: '',               icon: <><rect x="3" y="6" width="18" height="12" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="3" y1="14" x2="21" y2="14"/><line x1="8" y1="6" x2="8" y2="18"/><line x1="14" y1="6" x2="14" y2="18"/></> },
   { href: '/app/songs',        label: 'Songs',      tourId: 'tour-songs',     icon: <><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></> },
@@ -56,7 +58,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return () => sub.subscription.unsubscribe();
   }, [router]);
 
+  // Pathname-based close is the right pattern here (no good lazy-init alternative).
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setMobileNavOpen(false); }, [pathname]);
+
+  // Global Esc to close the drawer + restore focus
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMobileNavOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [mobileNavOpen]);
 
   const signOut = async () => {
     if (!supabase) return;
@@ -81,7 +93,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* Sidebar */}
         <aside style={{ background: 'var(--card-bg)', borderRight: '0.5px solid var(--border)', padding: '20px 16px', display: 'flex', flexDirection: 'column', gap: 4, position: 'sticky', top: 0, height: '100vh', overflowY: 'auto' }} className="app-sidebar">
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '8px 12px', marginBottom: 18, textDecoration: 'none' }}>
-            <img src="/lark-logo.png" alt="Lark" width={28} height={28} style={{ display: 'block' }} />
+            <Image src="/lark-logo.png" alt="Lark" width={28} height={28} style={{ display: 'block' }} priority />
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 700, color: 'var(--text)', letterSpacing: '0.04em' }}>Lark</span>
           </Link>
 
@@ -168,10 +180,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         {/* Mobile drawer */}
         {mobileNavOpen && (
-          <div onClick={() => setMobileNavOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex' }}>
+          <div
+            onClick={() => setMobileNavOpen(false)}
+            onKeyDown={e => { if (e.key === 'Escape') setMobileNavOpen(false); }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation"
+            tabIndex={-1}
+            style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex' }}
+          >
             <div onClick={e => e.stopPropagation()} style={{ width: 260, background: 'var(--card-bg)', padding: '20px 16px', display: 'flex', flexDirection: 'column', gap: 4, overflowY: 'auto' }}>
               <Link href="/" onClick={() => setMobileNavOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '8px 12px', marginBottom: 14, textDecoration: 'none' }}>
-                <img src="/lark-logo.png" alt="Lark" width={28} height={28} style={{ display: 'block' }} />
+                <Image src="/lark-logo.png" alt="Lark" width={28} height={28} style={{ display: 'block' }} priority />
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 700, color: 'var(--text)', letterSpacing: '0.04em' }}>Lark</span>
               </Link>
               {NAV.map(item => {

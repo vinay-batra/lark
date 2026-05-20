@@ -37,14 +37,24 @@ export function rateLimit(key: string, limit: number, windowMs: number): boolean
 }
 
 /**
- * Extracts the real client IP from a Next.js request.
- * Takes the leftmost non-private IP from X-Forwarded-For as a best effort.
- * Note: X-Forwarded-For can be spoofed unless the hosting platform strips it.
- * Vercel prepends its own verified IP, so the rightmost entry is most trusted;
- * for simplicity we use the whole header as a fingerprint key.
+ * Extracts the verified client IP from a Vercel-deployed Next.js request.
+ *
+ * On Vercel, the proxy APPENDS the verified client IP as the RIGHTMOST entry
+ * in X-Forwarded-For. Any IPs to the left of it are caller-supplied and can
+ * be spoofed (e.g. `X-Forwarded-For: 1.1.1.1, 2.2.2.2` from curl). Using the
+ * full header as a fingerprint lets an attacker mint a fresh rate-limit bucket
+ * per request and burn through Claude tokens. We use ONLY the rightmost hop.
+ *
+ * For local dev (no XFF header), fall back to `x-real-ip` or the literal
+ * "local" so the limiter still scopes per machine.
  */
 export function getClientIP(req: Request): string {
   const xff = req.headers.get('x-forwarded-for');
-  if (xff) return xff.split(',').map(s => s.trim()).join(',');
-  return 'unknown';
+  if (xff) {
+    const parts = xff.split(',').map(s => s.trim()).filter(Boolean);
+    if (parts.length > 0) return parts[parts.length - 1];
+  }
+  const realIp = req.headers.get('x-real-ip');
+  if (realIp) return realIp.trim();
+  return 'local';
 }

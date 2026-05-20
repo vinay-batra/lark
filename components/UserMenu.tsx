@@ -64,6 +64,7 @@ export function UserMenu({ email, displayName, avatarUrl, onSignOut, onReplayTou
           {/* Avatar circle */}
           <div style={{ width: 26, height: 26, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: 'var(--accent-dim)', border: '1px solid var(--accent-border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element -- base64 data URL, next/image adds no value
               <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--accent)' }}>{initial}</span>
@@ -90,7 +91,8 @@ export function UserMenu({ email, displayName, avatarUrl, onSignOut, onReplayTou
             <div style={{ padding: '12px 16px 10px', borderBottom: '0.5px solid var(--border)', display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', background: 'var(--accent-dim)', border: '1px solid var(--accent-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 {avatarUrl ? (
-                  <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  // eslint-disable-next-line @next/next/no-img-element -- base64 data URL, next/image adds no value
+              <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--accent)' }}>{initial}</span>
                 )}

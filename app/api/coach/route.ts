@@ -67,7 +67,10 @@ export async function POST(req: NextRequest) {
     ? Math.round(hitEvents.reduce((sum, e) => sum + Math.abs(e.centsOff!), 0) / hitEvents.length)
     : 0;
 
-  const beatMs = bpm ? 60000 / bpm : null;
+  // Validate BPM: a client-supplied 0, negative, or non-finite value would
+  // make beatMs = Infinity / NaN and the resulting prompt nonsensical.
+  const validBpm = typeof bpm === 'number' && Number.isFinite(bpm) && bpm > 0 && bpm < 400 ? bpm : null;
+  const beatMs = validBpm ? 60000 / validBpm : null;
   const onTimeHits = beatMs != null
     ? events.filter(e => e.hit && e.timingMs != null && e.timingMs! <= beatMs).length
     : null;
@@ -76,7 +79,7 @@ export async function POST(req: NextRequest) {
   const system = `You are Lark, an AI guitar tutor. Give specific, actionable feedback on the student's practice session. Be encouraging but honest. Use guitar-specific language. Keep it under 120 words. Write 2-3 short conversational sentences -- no bullet points. Address intonation, missed notes, and one concrete tip. Never use em dashes.`;
 
   const timingLine = timingPct != null
-    ? `\nRhythm: ${timingPct}% of hit notes played within 1 beat${bpm ? ` at ${bpm} BPM` : ''}`
+    ? `\nRhythm: ${timingPct}% of hit notes played within 1 beat${validBpm ? ` at ${validBpm} BPM` : ''}`
     : '';
   const userMsg = `Song: "${song}"
 Accuracy: ${accuracy}% (${hits}/${totalNotes} notes hit)

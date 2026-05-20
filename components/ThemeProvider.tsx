@@ -16,12 +16,14 @@ const ThemeContext = createContext<ThemeContextValue>({
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('dark');
+  // Lazy init: read localStorage once on mount instead of after first render.
+  // SSR-safe via the typeof window guard inside getStoredTheme.
+  const [theme, setThemeState] = useState<Theme>(() => getStoredTheme());
 
   useEffect(() => {
-    const stored = getStoredTheme();
-    setThemeState(stored);
-    applyTheme(stored);
+    applyTheme(theme);
+    // theme only changes via setTheme below; we just want first-paint sync.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

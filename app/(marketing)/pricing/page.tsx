@@ -109,7 +109,7 @@ export default function PricingPage() {
               marginBottom: 24,
             }}
           >
-            Free to learn.<br />Pro when you're ready.
+            Free to learn.<br />Pro when you&apos;re ready.
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 10 }}

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -79,7 +80,7 @@ function AuthInner() {
 
       {/* Back to home */}
       <Link href="/" style={{ position: 'absolute', top: 24, left: 28, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-        <img src="/lark-logo.png" alt="Lark" width={26} height={26} />
+        <Image src="/lark-logo.png" alt="Lark" width={26} height={26} priority />
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 15, fontWeight: 700, color: 'var(--text)', letterSpacing: '0.04em' }}>Lark</span>
       </Link>
 
@@ -112,7 +113,7 @@ function AuthInner() {
             marginBottom: 16,
             boxShadow: '0 0 24px rgba(var(--accent-rgb),0.15)',
           }}>
-            <img src="/lark-logo.png" alt="Lark" width={34} height={34} />
+            <Image src="/lark-logo.png" alt="Lark" width={34} height={34} priority />
           </div>
           <h1 style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.02em', marginBottom: 6 }}>
             {mode === 'signin' ? 'Welcome back.' : mode === 'signup' ? 'Create your account.' : mode === 'magic' ? 'Magic link.' : 'Reset password.'}

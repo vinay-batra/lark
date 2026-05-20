@@ -123,7 +123,7 @@ export default function LandingPage() {
 
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.42 }}
               style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', marginTop: 22, letterSpacing: '0.08em' }}>
-              NO CREDIT CARD -- NO DOWNLOAD -- WORKS IN YOUR BROWSER
+              NO CREDIT CARD · NO DOWNLOAD · WORKS IN YOUR BROWSER
             </motion.p>
           </div>
 

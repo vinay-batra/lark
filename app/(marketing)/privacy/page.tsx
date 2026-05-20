@@ -155,7 +155,7 @@ export default function PrivacyPage() {
               <div style={{ marginBottom: 52 }}>
                 <p className="eyebrow" style={{ marginBottom: 20 }}>{section.eyebrow}</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                  {section.items.map((item, ii) => (
+                  {section.items.map((item) => (
                     <div
                       key={item.title}
                       style={{

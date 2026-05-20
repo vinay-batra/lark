@@ -6,56 +6,58 @@ Guitar AI tutor. Hears you play, shows you what to play, gives feedback.
 
 ## Current Focus
 
-**Last shipped: v0.9 (May 19, 2026) — Full platform polish: auth-aware nav, settings with avatar, song corrections, mobile audit, security.**
+**Last shipped: v1.0 (May 20, 2026) — Chord detection, curriculum, full audit, 77 songs (4 chord songs added), 36 notes each.**
 
 Live at: `https://lark.coach`
 Supabase project: `ebsddbpbvjbcdwfldubx`
 
-Routes (20 total):
+Routes (22 total):
 - `/` — Landing. Auth-aware: "GO TO APP" when signed in, "START PLAYING" -> signup when not.
-- `/pricing` — 3-tier (Free / Pro $8 / Studio $24, paid coming soon). "Free to learn. Pro when you're ready."
-- `/changelog` — Horizontal scroll-snap chapter timeline (4 chapters, Corvo pattern)
-- `/faq` — Accordion FAQ with aria-expanded
+- `/pricing` — 3-tier (Free / Pro $8 / Studio $24, paid coming soon).
+- `/changelog` — Horizontal scroll-snap chapter timeline (6 chapters).
+- `/faq` — Accordion FAQ with aria-expanded.
 - `/auth` — Sign in / sign up / magic link / reset. Google + GitHub OAuth live.
-- `/settings` — Standalone settings page (auth-gated): display name, avatar upload (canvas resize -> base64 -> user_metadata), theme, audio prefs, danger zone (sign out + delete account)
-- `/privacy` — Privacy policy page
-- `/terms` — Terms of service page
-- `/tuner` — Public tuner (no auth)
-- `/chords` — Public chord detector (no auth)
-- `/app` — Dashboard: Your Stats (sessions, streak, accuracy, tabs) -> Live Tools -> Coming Soon
-- `/app/tuner` — Tuner inside AppShell
-- `/app/chords` — Chord detector inside AppShell
-- `/app/chord-library` — 120+ chord diagrams, searchable, expandable cards
-- `/app/songs` — 73 songs (4 difficulty levels), song library, AI tab generation
-- `/app/metronome` — Web Audio metronome (look-ahead scheduler, tap tempo, time signatures)
-- `/app/settings` — In-app settings (same as /settings)
-- `/api/coach` — POST: Claude AI song feedback (rate limited 20/hr)
-- `/api/chat` — POST: Guitar Q&A chat, claude-haiku-4-5 (rate limited 30/hr, 5/day client-side)
-- `/api/tabs` — POST: AI tab generation, claude-sonnet-4-6 (rate limited 10/hr)
-- `/api/bug-report` — POST: Saves bug reports server-side (bypasses RLS)
-- `/api/delete-account` — POST: Deletes user via service role key (requires SUPABASE_SERVICE_ROLE_KEY)
+- `/settings` — Standalone auth-gated settings (SettingsPanel layout="standalone").
+- `/privacy`, `/terms` — Policy pages.
+- `/tuner`, `/chords` — Public audio tools (no auth).
+- `/app` — Dashboard: stats, tools, coming soon.
+- `/app/learn` — Learning path: 6-stage curriculum (First sounds -> Lead playing).
+- `/app/tuner`, `/app/chords`, `/app/chord-library`, `/app/songs`, `/app/metronome` — Authenticated tools.
+- `/app/settings` — In-app settings (SettingsPanel layout="in-app").
+- `/api/coach` — Claude AI song feedback, 20/hr.
+- `/api/chat` — Guitar Q&A, claude-haiku-4-5, 30/hr.
+- `/api/tabs` — AI tab gen (note-names-first), claude-sonnet-4-6, 10/hr.
+- `/api/bug-report` — Server-side bug reports, rate limited, derives userId from token.
+- `/api/delete-account` — Delete user via service role key.
 
-### Key decisions made in v0.9 session
+### Key decisions made in v1.0
 
-**Auth-aware PublicNav**: When signed in shows avatar pill (photo or initial) + display name + chevron dropdown with "Go to App" / "Settings" / "Sign out". When not signed in shows "Sign in" + "Get Started". Same dropdown pattern in AppShell UserMenu.
+**Chord detection**: `lib/chord-detection.ts` -- chromagram + @tonaljs/chord-detect. `TabNote.chord?` optional field. When set, SongFollowView switches from Pitchy pitch detection to chromagram + chordMatches() (loose: Am matches Am7). 4 chord songs added: Knockin' on Heaven's Door, Stand By Me, Let It Be (Chords), Three Little Birds.
 
-**Avatar upload**: Uses canvas resize (200x200 center-crop, JPEG 0.85) -> base64 stored directly in user_metadata.avatar_url. No Supabase Storage bucket needed.
+**Curriculum** (`/app/learn`): 6-stage linear ladder (First sounds, Open strings, First chords, Folk chords, Power chords, Lead playing). Unlock rule: any song in prior stage at >= 70% accuracy. Progress tracked from practice.ts session history. `lib/curriculum.ts` + `app/app/learn/page.tsx`.
 
-**Song corrections**: 14 songs had wrong pitches (Seven Nation Army was on wrong strings entirely, Back in Black had G instead of G#, Comfortably Numb was 4 frets too high). All 73 songs expanded to 20-25 notes.
+**Beat-aware scoring**: Per-note timeout = max(4 beats, 2.5s). End-of-session timing broken into on-beat / late / slow buckets. Real-time ON BEAT / LATE / SLOW pill flashes after each hit during play.
 
-**Mobile breakpoint**: Everything was at 880px (wrong). All breakpoints corrected to 768px.
+**Song covers**: `SongCover` component generates deterministic per-song album art (vinyl or cassette variant, difficulty-colored, title initials). Shown 48px in SongCard, 120px in SongFollowView idle, 36px in curriculum cards.
 
-**Rate limiting**: All 3 API routes (coach/chat/tabs) have server-side in-memory sliding window limiter via lib/rate-limit.ts.
+**Vinyl loader**: `VinylLoader` component replaces dot pulses during AI generation (tab gen panel: 96px + rotating ticker text; AI coach analyzing: 44px; generate button: 14px mini-record).
 
-**Danger zone**: /settings page has two-step delete account confirmation -> POST /api/delete-account -> requires SUPABASE_SERVICE_ROLE_KEY env var.
+**Songs expanded**: All 73 single-note songs expanded from 20-25 notes to 36 notes each. 4 chord songs added (16 chord events each). Total: 77 songs.
 
-**Bug reports**: Routed through /api/bug-report (server-side) to bypass Supabase RLS. Table: lark_bug_reports -- run supabase/migrations/20260519100000_lark_bug_reports.sql.
+**Settings dedup**: Both `/settings` and `/app/settings` now render `<SettingsPanel layout="standalone|in-app" />`. Each page is a 4-line wrapper. SettingsPanel.tsx is the single source of truth for all settings UI.
+
+**Metronome extracted**: `lib/metronome-scheduler.ts` -- lookahead Web Audio scheduler pulled out of SongFollowView. Reusable. Handles beat-flash buffering via setTimeout array cleared on stop.
+
+**Audio fixes**: mountedRef guard prevents mic/context leak on unmount during getUserMedia. AudioContext double-close guarded (ctx.state check). armedRef stays true on miss-timeout (only disarms on hit). Count-in clicks at 660/660/660/1320 Hz before first note.
+
+**Security hardened**: Rate limit uses rightmost XFF hop (Vercel-verified). bug-report derives userId from Bearer token, rate limited 5/hr, generic error responses. tabs route wraps req.json() in try/catch. delete-account rate limited. Avatar validates data:image/ prefix + 100KB cap. Display name capped at 60 chars.
+
+**0 lint errors**: Down from 29 (15 errors + 14 warnings) to 0.
 
 ### Next up
 1. Stripe for Pro tier (needs parent for under-18 TOS)
-2. Add SUPABASE_SERVICE_ROLE_KEY to Vercel env vars (needed for delete account)
-3. Create lark_bug_reports table in Supabase (run migration SQL)
-4. Expand song notes further -- 20-25 is good, 30-40 would be better for learning full songs
+2. Get 5 beta users playing and watch Stage 1 of the curriculum
+3. Polyphonic chord songs need real-world testing -- chromagram accuracy varies by room noise
 
 ---
 
@@ -118,9 +120,9 @@ lark/
       layout.tsx
       page.tsx              <- / (landing, auth-aware hero)
       pricing/page.tsx      <- /pricing
-      changelog/page.tsx    <- /changelog (horizontal timeline)
+      changelog/page.tsx    <- /changelog (horizontal timeline, 6 chapters)
       faq/page.tsx          <- /faq
-      settings/page.tsx     <- /settings (standalone auth-gated settings)
+      settings/page.tsx     <- /settings -- renders <SettingsPanel layout="standalone" />
       privacy/page.tsx      <- /privacy
       terms/page.tsx        <- /terms
     auth/page.tsx           <- /auth (own layout, no nav)
@@ -129,26 +131,30 @@ lark/
     app/
       layout.tsx            <- AppShell wrapper
       page.tsx              <- /app (dashboard: stats -> tools -> coming soon)
-      songs/page.tsx        <- /app/songs (73 songs, library, AI gen)
+      learn/page.tsx        <- /app/learn (6-stage curriculum, stage cards, song picker)
+      songs/page.tsx        <- /app/songs (77 songs incl chord songs, library, AI gen)
       chord-library/page.tsx <- /app/chord-library
       metronome/page.tsx    <- /app/metronome
       tuner/page.tsx        <- /app/tuner
       chords/page.tsx       <- /app/chords
-      settings/page.tsx     <- /app/settings
+      settings/page.tsx     <- /app/settings -- renders <SettingsPanel layout="in-app" />
     api/
       coach/route.ts        <- AI song feedback (rate limited 20/hr)
       chat/route.ts         <- Guitar Q&A, claude-haiku-4-5 (30/hr)
-      tabs/route.ts         <- AI tab gen, claude-sonnet-4-6 (10/hr)
-      bug-report/route.ts   <- Bug reports (server-side, bypasses RLS)
-      delete-account/route.ts <- Delete user via service role key
+      tabs/route.ts         <- AI tab gen note-names-first, claude-sonnet-4-6 (10/hr)
+      bug-report/route.ts   <- Bug reports, rate limited, derives userId from token
+      delete-account/route.ts <- Delete user via service role key, rate limited
   components/
     AppShell.tsx            <- sidebar + topbar, auth state, UserMenu
     PublicNav.tsx           <- auth-aware: avatar pill when signed in
     UserMenu.tsx            <- avatar + name pill + dropdown
-    LarkChat.tsx            <- floating AI chat (id="tour-chat-btn")
+    SettingsPanel.tsx       <- all settings UI (deduped), layout prop: standalone | in-app
+    LarkChat.tsx            <- floating AI chat, hides during song play
     FeedbackButton.tsx      <- flag button, calls /api/bug-report
     GlobalUI.tsx            <- mounts LarkChat + FeedbackButton globally
-    SongFollowView.tsx      <- song play UI: pitch detection + metronome beat
+    SongFollowView.tsx      <- song play: pitch + chord detection, metronome, timing
+    SongCover.tsx           <- deterministic per-song album art (vinyl/cassette SVG)
+    VinylLoader.tsx         <- spinning vinyl record loader with ticker text
     MetronomeView.tsx       <- standalone metronome
     TunerView.tsx           <- pitch detection UI
     ChordsView.tsx          <- chromagram chord detection
@@ -158,10 +164,15 @@ lark/
     Reveal.tsx              <- IntersectionObserver scroll-triggered fade-up
   lib/
     supabase.ts             <- browser client singleton
-    songs.ts                <- 73 songs (Song interface with bpm field)
-    practice.ts             <- session tracking, saved songs, bug reports
-    rate-limit.ts           <- in-memory sliding window rate limiter
-    version.ts              <- VERSION string
+    songs.ts                <- 77 songs: 73 note-melodies + 4 chord-strum songs
+    practice.ts             <- session tracking, saved songs, bug reports, gen limit
+    rate-limit.ts           <- in-memory sliding window rate limiter (rightmost XFF hop)
+    note-mapping.ts         <- note name -> MIDI -> tab position (with preferredString)
+    song-session.ts         <- pure helpers: noteTimeoutMs, classifyTiming, STRING_DESCRIPTIONS
+    metronome-scheduler.ts  <- lookahead Web Audio metronome, reusable handle
+    chord-detection.ts      <- buildChromagram, detectChordFromChroma, chordMatches
+    curriculum.ts           <- STAGES array, getCurriculumProgress, getNextSong
+    version.ts              <- VERSION string (currently v1.0)
   proxy.ts                  <- SSR auth refresh (Next.js 16 renamed middleware)
   supabase/migrations/      <- SQL files to run in Supabase SQL editor
 ```
@@ -249,39 +260,56 @@ analyser.getFloatFrequencyData(freqData as Float32Array<ArrayBuffer>);
 
 ---
 
-## Song Mode (v0.4)
+## Song Mode (v1.0)
 
 ### Architecture
-- `lib/songs.ts` — `Song` + `SongNote` types. Each note has a display name (e.g. `E4`) and MIDI number for frequency comparison.
-- `components/SongFollowView.tsx` — score-following component. Uses same Pitchy pitch detection as Tuner.
-- `app/app/songs/page.tsx` — song list UI + SongFollowView when a song is selected.
-- `app/api/coach/route.ts` — POST endpoint. Sends session stats to `claude-sonnet-4-6`, returns 2-3 sentence feedback.
+- `lib/songs.ts` — `Song` + `TabNote` types. `TabNote.chord?` optional field enables chord-strum mode.
+- `lib/song-session.ts` — pure helpers: `noteTimeoutMs`, `classifyTiming`, `STRING_DESCRIPTIONS`, `ordinalFret`, shared constants.
+- `lib/metronome-scheduler.ts` — reusable lookahead Web Audio metronome. Returns a `MetronomeHandle` with `.stop()`.
+- `lib/chord-detection.ts` — `buildChromagram`, `avgChromagram`, `detectChordFromChroma`, `chordMatches`.
+- `components/SongFollowView.tsx` — score-following + chord detection + real-time timing pill.
+- `app/app/songs/page.tsx` — song library, difficulty filter, AI tab gen with VinylLoader.
+- `app/api/coach/route.ts` — claude-sonnet-4-6, 200 tokens, beat-aware timing in prompt.
 
-### Score-following logic (incremental, not full DTW)
-- Note tolerance: 100 cents (1 semitone) — generous for beginners
-- Clarity threshold: 0.88 (slightly looser than Tuner's 0.92)
-- Per-note timeout: 4 seconds. If user doesn't play the right note in time, auto-advance as a miss.
-- `advancedRef` prevents double-advance race between RAF loop and timeout.
-- Refs (`noteIndexRef`, `sessionNotesRef`) are the source of truth inside the RAF loop. State is synced for rendering.
+### Score-following logic
+- Note tolerance: 100 cents (1 semitone)
+- Clarity threshold: 0.88
+- Per-note timeout: `max(4 * beatMs, 2500)` — scales with song tempo
+- `armedRef` + release detection: sustained note won't double-count. Disarms on hit, stays armed on miss.
+- `advancedRef` race guard prevents concurrent `advanceNote` calls.
+- Refs are the source of truth inside the RAF loop; state is synced for rendering.
+
+### Chord detection mode
+When `target.chord` is set, the detect loop switches from Pitchy pitch detection to:
+1. `getFloatFrequencyData` at fftSize 4096 (bumped from 2048 for chord songs)
+2. `buildChromagram` -> 10-frame rolling average
+3. `detectChordFromChroma` (threshold 0.45, tonaljs chord-detect)
+4. `chordMatches(detected, target.chord)` — loose match: same root + same minor/major family
+5. On match, clears chord history and calls `advanceNote(true, 0)`
 
 ### AI Coach
-- Requires `ANTHROPIC_API_KEY` env var (server-side only, never `NEXT_PUBLIC_`).
-- Gracefully degrades: returns a setup message if key is missing.
-- Called once per session after all notes are played.
-- Input: song title, per-note hit/miss + cents offset, totals.
-- Model: `claude-sonnet-4-6`, max 200 tokens.
+- 30s timeout with `AbortController` + `cancelled` flag prevents setState after unmount.
+- `claude-sonnet-4-6`, 200 tokens. Beat-aware timing injected into prompt.
+- Gracefully degrades if `ANTHROPIC_API_KEY` missing.
 
 ### Songs
-Defined in `lib/songs.ts`: Ode to Joy, Seven Nation Army, Smoke on the Water, Happy Birthday, Twinkle Twinkle. All beginner difficulty. Add more by appending to the `SONGS` array.
+77 songs total in `lib/songs.ts`:
+- 73 note-melody songs (beginner/intermediate/advanced/expert), each 36 notes
+- 4 chord-strum songs: Knockin' on Heaven's Door, Stand By Me, Let It Be (Chords), Three Little Birds
+- Add note songs via `n(string, fret)` helper
+- Add chord songs via `c(chord, string, fret)` helper
+
+### Curriculum
+`lib/curriculum.ts` — 6-stage linear ladder, unlocks on 70%+ accuracy in prior stage.
+`app/app/learn/page.tsx` — stage cards with progress, song tiles, lock/unlock state.
 
 ---
 
 ## Deployment
 
-- **Frontend**: push to `main` → Vercel auto-deploys
-- **Backend**: none yet. Will be Railway + FastAPI when AI features ship.
-- **Domain**: lark.fm (preferred) or lark.app on Vercel dashboard
-- **Env vars on Vercel**: add the two Supabase vars under Project Settings → Environment Variables
+- **Frontend**: push to `main` -> Vercel auto-deploys
+- **Domain**: lark.coach
+- **Env vars on Vercel**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `ANTHROPIC_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
 
 ---
 
