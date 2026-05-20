@@ -8,7 +8,15 @@ interface ChatMessage {
 }
 
 function getToday(): string {
-  return new Date().toISOString().slice(0, 10);
+  // Use local date, not UTC. toISOString() gives UTC which means the limit
+  // doesn't reset at local midnight for users west of UTC (e.g. US users hit
+  // 11pm, sleep, wake up at 9am — still blocked because it's still the same
+  // UTC date until 5-8am local time).
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
 function getStorageKey(): string {
@@ -134,6 +142,10 @@ export function LarkChat() {
           width: 60,
           height: 60,
           borderRadius: '50%',
+          // overflow: hidden + translateZ(0) fixes a Safari WebKit bug where
+          // position:fixed elements with border-radius render as squares.
+          overflow: 'hidden',
+          WebkitTransform: 'translateZ(0)',
           background: 'var(--accent)',
           border: 'none',
           color: 'var(--bg)',
@@ -143,6 +155,7 @@ export function LarkChat() {
           cursor: 'pointer',
           transition: 'transform 0.15s, box-shadow 0.15s',
           boxShadow: '0 4px 16px rgba(var(--accent-rgb), 0.35)',
+          flexShrink: 0,
         }}
         onMouseEnter={e => {
           (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)';
@@ -301,7 +314,7 @@ export function LarkChat() {
                   lineHeight: 1.6,
                 }}
               >
-                5 free messages used today. Try again tomorrow.
+                {DAILY_LIMIT} free messages used today. Try again tomorrow.
               </p>
             )}
 
@@ -342,7 +355,7 @@ export function LarkChat() {
                   marginTop: 4,
                 }}
               >
-                5 free messages used today. Try again tomorrow.
+                {DAILY_LIMIT} free messages used today. Try again tomorrow.
               </p>
             )}
 
