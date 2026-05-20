@@ -1,10 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { PitchDetector } from 'pitchy';
 import { Song } from '@/lib/songs';
-import { TabView } from './TabView';
+import { TabStaff } from './TabStaff';
 import { saveSession, saveSong, getSavedSongs } from '@/lib/practice';
 import { startMetronome, MetronomeHandle } from '@/lib/metronome-scheduler';
 import { buildChromagram, detectChordFromChroma, chordMatches } from '@/lib/chord-detection';
@@ -19,7 +19,6 @@ import {
   ordinalFret,
   TOLERANCE_CENTS,
   CLARITY_THRESHOLD,
-  NOTES_PER_LINE,
   RELEASE_FRAMES,
   NOTE_NAMES,
   getCents,
@@ -46,7 +45,6 @@ export function SongFollowView({ song }: { song: Song }) {
   const [countdown, setCountdown] = useState(3);
   const [notes, setNotes] = useState<SessionNote[]>([]);
   const [noteIndex, setNoteIndex] = useState(0);
-  const [lineIndex, setLineIndex] = useState(0);
   const [wrongFlash, setWrongFlash] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [loadingFeedback, setLoadingFeedback] = useState(false);
@@ -166,8 +164,6 @@ export function SongFollowView({ song }: { song: Song }) {
     setNoteIndex(next);
     noteStartTimeRef.current = performance.now();
 
-    const newLine = Math.floor(next / NOTES_PER_LINE);
-    setLineIndex(newLine);
 
     if (next >= updated.length) {
       setMode('finished');
@@ -265,7 +261,6 @@ export function SongFollowView({ song }: { song: Song }) {
     setNotes(sessionNotes);
     noteIndexRef.current = 0;
     setNoteIndex(0);
-    setLineIndex(0);
     advancedRef.current = false;
     armedRef.current = true;
     releaseFramesRef.current = 0;
@@ -360,7 +355,6 @@ export function SongFollowView({ song }: { song: Song }) {
     setMode('idle');
     setNotes([]);
     setNoteIndex(0);
-    setLineIndex(0);
     setFeedback(null);
     setLoadingFeedback(false);
     setWrongFlash(false);
@@ -438,10 +432,6 @@ export function SongFollowView({ song }: { song: Song }) {
   for (const n of hitNotes) timingCounts[classifyTiming(n.timingMs!, song.bpm)]++;
   const timingPct = hitNotes.length > 0 ? Math.round((timingCounts.on / hitNotes.length) * 100) : null;
 
-  const lineStart = lineIndex * NOTES_PER_LINE;
-  const lineEnd = Math.min(lineStart + NOTES_PER_LINE, notes.length);
-  const lineNotes = notes.slice(lineStart, lineEnd);
-  const currentInLine = noteIndex - lineStart;
   const currentNote = notes[noteIndex];
 
   return (
@@ -622,39 +612,22 @@ export function SongFollowView({ song }: { song: Song }) {
             </div>
           )}
 
-          {/* Tab with line transitions */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={lineIndex}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              style={{ padding: '16px 14px', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 14 }}
-            >
-              <TabView notes={lineNotes} currentIndex={currentInLine} wrongFlash={wrongFlash} />
-              <div style={{ display: 'flex', justifyContent: 'center', gap: 5, marginTop: 12 }}>
-                {Array.from({ length: Math.ceil(notes.length / NOTES_PER_LINE) }).map((_, i) => (
-                  <div key={i} style={{
-                    width: i === lineIndex ? 16 : 5,
-                    height: 5,
-                    borderRadius: 99,
-                    background: i <= lineIndex ? 'var(--accent)' : 'var(--border2)',
-                    opacity: i === lineIndex ? 1 : 0.5,
-                    transition: 'all 0.25s',
-                  }} />
-                ))}
-              </div>
-            </motion.div>
-          </AnimatePresence>
+          {/* Scrolling tab staff */}
+          <div style={{ width: '100%', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 14, padding: '12px 0', overflow: 'hidden' }}>
+            <TabStaff
+              notes={notes}
+              currentIndex={noteIndex}
+              wrongFlash={wrongFlash}
+            />
+          </div>
         </div>
       )}
 
       {/* FINISHED */}
       {mode === 'finished' && (
         <div style={{ width: '100%', maxWidth: 560 }}>
-          <div style={{ padding: '14px', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 14, marginBottom: 20, opacity: 0.7 }}>
-            <TabView notes={lineNotes} currentIndex={-1} wrongFlash={false} />
+          <div style={{ background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 14, marginBottom: 20, opacity: 0.5, padding: '12px 0', overflow: 'hidden' }}>
+            <TabStaff notes={notes} currentIndex={notes.length - 1} wrongFlash={false} />
           </div>
 
           {/* Score card */}
