@@ -59,11 +59,6 @@ const DIFFICULTY_LABELS = [
 
 const AI_FEEDBACK_EXAMPLE = `"Nice run through Seven Nation Army. Your E string is clean and you nailed all 9 notes. Watch your intonation on the C -- you are consistently about 18 cents flat there, which suggests your index finger needs to sit closer to the fret. One tip: slow the tempo down to 60% and focus just on that C note until your muscle memory locks it in."`;
 
-const STEPS = [
-  { num: '01', title: 'Pick a song', desc: 'Choose from 50 songs across 4 difficulty levels, or generate tabs for any song with AI.' },
-  { num: '02', title: 'Play along', desc: 'Lark listens through your mic and scores each note in real time as you play.' },
-  { num: '03', title: 'Get coached', desc: 'When you finish, Claude gives you specific, actionable feedback on what to fix and how.' },
-];
 
 export default function LandingPage() {
   return (
@@ -302,30 +297,6 @@ export default function LandingPage() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section style={{ padding: '80px 24px' }}>
-        <div style={{ maxWidth: 960, margin: '0 auto' }}>
-          <Reveal>
-            <div style={{ textAlign: 'center', marginBottom: 52 }}>
-              <p className="eyebrow" style={{ marginBottom: 14 }}>HOW IT WORKS</p>
-              <h2 style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(26px, 4.5vw, 44px)', fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-                Three steps to better playing.
-              </h2>
-            </div>
-          </Reveal>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
-            {STEPS.map((step, i) => (
-              <Reveal key={step.num} delay={i * 0.09}>
-                <div style={{ padding: '28px 24px', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 16, height: '100%' }}>
-                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: 38, fontWeight: 700, color: 'var(--accent)', lineHeight: 1, marginBottom: 18, letterSpacing: '-0.02em', textShadow: '0 0 20px rgba(var(--accent-rgb),0.4)' }}>{step.num}</p>
-                  <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>{step.title}</h3>
-                  <p style={{ fontSize: 14, color: 'var(--text3)', lineHeight: 1.65 }}>{step.desc}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* TRUST */}
       <section style={{ padding: '80px 24px' }}>
         <div style={{ maxWidth: 860, margin: '0 auto' }}>
