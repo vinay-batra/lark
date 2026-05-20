@@ -112,20 +112,13 @@ export default function LandingPage() {
 
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.32 }}
               style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap' }}>
-              {signedIn ? (
-                <Link href="/app" className="btn btn-accent btn-lg" style={{ boxShadow: '0 0 24px rgba(var(--accent-rgb),0.3)' }}>
-                  GO TO DASHBOARD
-                </Link>
-              ) : (
-                <>
-                  <Link href="/auth?mode=signup" className="btn btn-accent btn-lg" style={{ boxShadow: '0 0 24px rgba(var(--accent-rgb),0.3)' }}>
-                    START PLAYING
-                  </Link>
-                  <Link href="/auth?mode=signin" className="btn btn-ghost btn-lg">
-                    SIGN IN
-                  </Link>
-                </>
-              )}
+              <Link
+                href={signedIn ? '/app' : '/auth?mode=signup'}
+                className="btn btn-accent btn-lg"
+                style={{ boxShadow: '0 0 24px rgba(var(--accent-rgb),0.3)' }}
+              >
+                {signedIn ? 'GO TO APP' : 'START PLAYING'}
+              </Link>
             </motion.div>
 
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.42 }}

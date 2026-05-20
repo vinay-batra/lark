@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/components/ThemeProvider';
 import { supabase } from '@/lib/supabase';
-import { Reveal } from '@/components/Reveal';
 import { VERSION } from '@/lib/version';
 import { TOUR_KEY } from '@/components/OnboardingTour';
 
@@ -15,17 +14,20 @@ const PREF_KEYS = {
   showFreq:        'lark_pref_show_freq',
 };
 
-function Section({ eyebrow, title, children }: { eyebrow: string; title: string; children: React.ReactNode }) {
+function Section({ eyebrow, title, children, delay = 0 }: { eyebrow: string; title: string; children: React.ReactNode; delay?: number }) {
   return (
-    <Reveal>
-      <div style={{ background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 16, padding: '24px 26px', marginBottom: 18 }}>
-        <div style={{ marginBottom: 22 }}>
-          <p className="eyebrow" style={{ marginBottom: 6 }}>{eyebrow}</p>
-          <h2 style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.01em' }}>{title}</h2>
-        </div>
-        {children}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay, ease: [0.16, 1, 0.3, 1] }}
+      style={{ background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 16, padding: '24px 26px', marginBottom: 18 }}
+    >
+      <div style={{ marginBottom: 22 }}>
+        <p className="eyebrow" style={{ marginBottom: 6 }}>{eyebrow}</p>
+        <h2 style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.01em' }}>{title}</h2>
       </div>
-    </Reveal>
+      {children}
+    </motion.div>
   );
 }
 
@@ -65,6 +67,9 @@ export default function SettingsPage() {
   const [highSensitivity, setHighSensitivity] = useState(false);
   const [showFreq, setShowFreq] = useState(true);
   const [defaultTuning, setDefaultTuning] = useState('standard');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   useEffect(() => {
     if (!supabase) { router.replace('/auth?mode=signin'); return; }
@@ -112,6 +117,20 @@ export default function SettingsPage() {
 
   const setPref = (key: string, val: string) => { try { localStorage.setItem(key, val); } catch {} };
 
+  const deleteAccount = async () => {
+    if (!supabase) return;
+    setDeleting(true);
+    setDeleteError('');
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    if (!token) { setDeleteError('Not signed in.'); setDeleting(false); return; }
+    const res = await fetch('/api/delete-account', { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+    const data = await res.json();
+    if (!res.ok) { setDeleteError(data.error ?? 'Could not delete account.'); setDeleting(false); return; }
+    await supabase.auth.signOut();
+    router.push('/');
+  };
+
   if (loading) return null;
 
   const initial = (displayName?.[0] ?? email?.[0] ?? '?').toUpperCase();
@@ -127,7 +146,7 @@ export default function SettingsPage() {
         </motion.div>
 
         {/* Profile */}
-        <Section eyebrow="PROFILE" title="Your profile">
+        <Section eyebrow="PROFILE" title="Your profile" delay={0.1}>
           {/* Avatar */}
           <Row label="Profile picture" hint="Shown in the top-right corner on every page.">
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -190,7 +209,7 @@ export default function SettingsPage() {
         </Section>
 
         {/* Appearance */}
-        <Section eyebrow="APPEARANCE" title="Theme">
+        <Section eyebrow="APPEARANCE" title="Theme" delay={0.18}>
           <Row label="Color mode" hint="Choose how Lark looks.">
             <div style={{ display: 'flex', gap: 6, padding: 4, background: 'var(--bg3)', borderRadius: 10, border: '0.5px solid var(--border)' }}>
               {(['dark', 'light'] as const).map(t => (
@@ -203,7 +222,7 @@ export default function SettingsPage() {
         </Section>
 
         {/* Detection */}
-        <Section eyebrow="DETECTION" title="Audio preferences">
+        <Section eyebrow="DETECTION" title="Audio preferences" delay={0.26}>
           <Row label="High sensitivity" hint="Detect quieter notes. May increase false positives from background noise.">
             <Toggle on={highSensitivity} onChange={v => { setHighSensitivity(v); setPref(PREF_KEYS.highSensitivity, v ? '1' : '0'); }} />
           </Row>
@@ -221,27 +240,77 @@ export default function SettingsPage() {
         </Section>
 
         {/* Account */}
-        <Section eyebrow="ACCOUNT" title="Session">
+        <Section eyebrow="ACCOUNT" title="Session" delay={0.34}>
           <Row label="App tour" hint="Replay the onboarding walkthrough inside the dashboard.">
-            <button className="btn btn-ghost btn-sm" onClick={() => { localStorage.removeItem(TOUR_KEY); router.push('/app'); }}>
-              REPLAY TOUR
-            </button>
+            <button className="btn btn-ghost btn-sm" onClick={() => { localStorage.removeItem(TOUR_KEY); router.push('/app'); }}>REPLAY TOUR</button>
           </Row>
           <Row label="Go to App" hint="Open the full practice dashboard.">
             <button className="btn btn-accent btn-sm" onClick={() => router.push('/app')}>OPEN APP</button>
           </Row>
           <Row label="Sign out" hint="End your session on this device.">
-            <button className="btn btn-ghost btn-sm" onClick={async () => { if (supabase) { await supabase.auth.signOut(); router.push('/'); } }}>
-              SIGN OUT
-            </button>
+            <button className="btn btn-ghost btn-sm" onClick={async () => {
+              if (window.confirm('Sign out of Lark?') && supabase) { await supabase.auth.signOut(); router.push('/'); }
+            }}>SIGN OUT</button>
           </Row>
         </Section>
 
-        <Reveal>
-          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', letterSpacing: '0.1em', textAlign: 'center', marginTop: 32 }}>
-            {VERSION}
+        {/* Danger zone */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.42, ease: [0.16, 1, 0.3, 1] }}
+          style={{ background: 'var(--card-bg)', border: '0.5px solid rgba(239,68,68,0.3)', borderRadius: 16, padding: '24px 26px', marginBottom: 18 }}
+        >
+          <div style={{ marginBottom: 22 }}>
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, letterSpacing: '0.22em', color: 'var(--danger, #ef4444)', textTransform: 'uppercase', marginBottom: 6 }}>DANGER ZONE</p>
+            <h2 style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.01em' }}>Delete account</h2>
+          </div>
+          <p style={{ fontSize: 13, color: 'var(--text3)', lineHeight: 1.6, marginBottom: 18 }}>
+            This permanently deletes your account and all associated data. There is no going back.
           </p>
-        </Reveal>
+          {!showDeleteConfirm ? (
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              style={{ padding: '10px 20px', borderRadius: 9, background: 'rgba(239,68,68,0.08)', border: '0.5px solid rgba(239,68,68,0.4)', color: 'var(--danger, #ef4444)', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', cursor: 'pointer', transition: 'background 0.15s' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(239,68,68,0.15)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(239,68,68,0.08)'; }}
+            >
+              DELETE MY ACCOUNT
+            </button>
+          ) : (
+            <div style={{ background: 'rgba(239,68,68,0.06)', border: '0.5px solid rgba(239,68,68,0.25)', borderRadius: 12, padding: '18px 20px' }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 16 }}>
+                Are you sure? This cannot be undone.
+              </p>
+              {deleteError && <p style={{ fontSize: 12, color: 'var(--danger, #ef4444)', fontFamily: 'var(--font-mono)', marginBottom: 12 }}>{deleteError}</p>}
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button
+                  onClick={deleteAccount}
+                  disabled={deleting}
+                  style={{ padding: '10px 20px', borderRadius: 9, background: 'var(--danger, #ef4444)', border: 'none', color: '#fff', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', cursor: deleting ? 'not-allowed' : 'pointer', opacity: deleting ? 0.6 : 1 }}
+                >
+                  {deleting ? 'DELETING...' : 'YES, DELETE'}
+                </button>
+                <button
+                  onClick={() => { setShowDeleteConfirm(false); setDeleteError(''); }}
+                  disabled={deleting}
+                  className="btn btn-ghost btn-sm"
+                >
+                  CANCEL
+                </button>
+              </div>
+            </div>
+          )}
+        </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', letterSpacing: '0.1em', textAlign: 'center', marginTop: 32 }}
+        >
+          {VERSION}
+        </motion.p>
 
       </div>
     </div>
