@@ -103,6 +103,7 @@ export function LarkChat() {
 
       {/* Toggle button */}
       <button
+        id="tour-chat-btn"
         onClick={() => setOpen(prev => !prev)}
         aria-label={open ? 'Close Lark chat' : 'Open Lark chat'}
         style={{

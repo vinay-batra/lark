@@ -58,7 +58,6 @@ export default function SettingsPage() {
 
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState('');
   const [nameSaved, setNameSaved] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -77,7 +76,6 @@ export default function SettingsPage() {
       const u = data.user;
       if (!u) { router.replace('/auth?mode=signin'); return; }
       setEmail(u.email ?? null);
-      setUserId(u.id);
       setDisplayName(u.user_metadata?.display_name ?? '');
       setAvatarUrl(u.user_metadata?.avatar_url ?? null);
       setLoading(false);
@@ -96,23 +94,46 @@ export default function SettingsPage() {
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !supabase || !userId) return;
-    if (file.size > 2 * 1024 * 1024) { setAvatarError('Image must be under 2MB.'); return; }
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) { setAvatarError('JPG, PNG or WebP only.'); return; }
+    if (!file || !supabase) return;
+    if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type)) {
+      setAvatarError('JPG, PNG or WebP only.');
+      return;
+    }
 
     setAvatarError('');
     setAvatarUploading(true);
-    const ext = file.type === 'image/png' ? 'png' : file.type === 'image/webp' ? 'webp' : 'jpg';
-    const path = `${userId}/avatar.${ext}`;
 
-    const { error: upErr } = await supabase.storage.from('avatars').upload(path, file, { upsert: true });
-    if (upErr) { setAvatarError('Upload failed. Make sure the "avatars" storage bucket exists in Supabase.'); setAvatarUploading(false); return; }
+    // Resize to 200x200 and convert to compressed JPEG base64
+    // Stored directly in user_metadata — no Supabase Storage bucket needed
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const SIZE = 200;
+          const canvas = document.createElement('canvas');
+          canvas.width = SIZE;
+          canvas.height = SIZE;
+          const ctx = canvas.getContext('2d')!;
+          // Cover crop: center the image
+          const scale = Math.max(SIZE / img.width, SIZE / img.height);
+          const w = img.width * scale;
+          const h = img.height * scale;
+          ctx.drawImage(img, (SIZE - w) / 2, (SIZE - h) / 2, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.85));
+        };
+        img.onerror = reject;
+        img.src = ev.target?.result as string;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
 
-    const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path);
-    const url = urlData.publicUrl + `?t=${Date.now()}`;
-    await supabase.auth.updateUser({ data: { avatar_url: url } });
-    setAvatarUrl(url);
+    await supabase.auth.updateUser({ data: { avatar_url: dataUrl } });
+    setAvatarUrl(dataUrl);
     setAvatarUploading(false);
+    // Reset input so the same file can be re-selected
+    if (fileRef.current) fileRef.current.value = '';
   };
 
   const setPref = (key: string, val: string) => { try { localStorage.setItem(key, val); } catch {} };
@@ -148,7 +169,7 @@ export default function SettingsPage() {
         {/* Profile */}
         <Section eyebrow="PROFILE" title="Your profile" delay={0.1}>
           {/* Avatar */}
-          <Row label="Profile picture" hint="Shown in the top-right corner on every page.">
+          <Row label="Profile picture" hint="Shown in the top-right corner on every page. Automatically cropped and compressed.">
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               {/* Avatar preview */}
               <div style={{ width: 48, height: 48, borderRadius: '50%', overflow: 'hidden', background: 'var(--accent-dim)', border: '1.5px solid var(--accent-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>

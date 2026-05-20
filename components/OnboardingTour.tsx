@@ -14,26 +14,40 @@ interface Step {
 const STEPS: Step[] = [
   {
     title: 'Welcome to Lark',
-    desc: 'Your AI-powered guitar tutor. Let\'s take a quick look around -- takes 30 seconds.',
+    desc: 'Your AI guitar tutor. It listens while you play and tells you exactly what to fix. Quick tour -- 8 steps.',
   },
   {
     title: 'Song Mode',
-    desc: '73 songs from Beginner to Expert. Play note-by-note, get scored in real time, and get AI coaching when you finish.',
+    desc: '73 songs from Beginner to Expert. Lark listens through your mic and scores each note in real time. Green means hit, red means miss.',
+    targetId: 'tour-songs',
+  },
+  {
+    title: 'Save to your library',
+    desc: 'After finishing a song, tap "Save to Library" and it shows up under Your Library. Your sessions, streak, and accuracy are tracked on the home screen.',
     targetId: 'tour-songs',
   },
   {
     title: 'Chord Book',
-    desc: '120+ chord diagrams with fingerings. Look up any chord instantly -- open chords, barre chords, sevenths, power chords.',
+    desc: '120+ chord diagrams with fingerings -- open chords, barre chords, power chords, sevenths. Tap any card to see alternate voicings.',
     targetId: 'tour-chord-book',
   },
   {
     title: 'Metronome',
-    desc: 'Precision Web Audio metronome. Tap tempo, multiple time signatures. Practice at any speed.',
+    desc: 'Precision Web Audio metronome with tap tempo and multiple time signatures. Songs now also show a live beat indicator while you play.',
     targetId: 'tour-metronome',
   },
   {
+    title: 'Ask Lark anything',
+    desc: 'The green button in the bottom right is your AI guitar tutor. Ask about chords, scales, technique, or theory. 5 free questions per day.',
+    targetId: 'tour-chat-btn',
+  },
+  {
+    title: 'Settings and feedback',
+    desc: 'Set your display name and profile picture in Settings -- top-right dropdown. The flag button next to the chat button lets you report a bug anytime.',
+  },
+  {
     title: "You're all set",
-    desc: 'Replay this tour anytime from the top-right menu. Now go play something.',
+    desc: 'Replay this tour anytime from the top-right dropdown. Now pick a song and start playing.',
   },
 ];
 
