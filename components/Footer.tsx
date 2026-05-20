@@ -16,7 +16,6 @@ const COLUMNS = [
     links: [
       { href: '/auth?mode=signin', label: 'Sign in' },
       { href: '/auth?mode=signup', label: 'Create account' },
-      { href: '/app/settings', label: 'Settings' },
     ],
   },
 ];
@@ -60,6 +59,7 @@ export function Footer() {
         ))}
       </div>
 
+      {/* Bottom bar */}
       <div style={{
         maxWidth: 'var(--max-content)',
         margin: '48px auto 0',
@@ -74,17 +74,20 @@ export function Footer() {
         <p style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', letterSpacing: '0.08em' }}>
           © {new Date().getFullYear()} Lark. Built for guitarists.
         </p>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
-          <Link href="/privacy" className="footer-link" style={{ fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em' }}>
-            Privacy
-          </Link>
-          <Link href="/terms" className="footer-link" style={{ fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em' }}>
-            Terms
-          </Link>
-          <p style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', margin: 0 }}>
-            {VERSION}
-          </p>
-        </div>
+        <p style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', margin: 0 }}>
+          {VERSION}
+        </p>
+      </div>
+
+      {/* Watermark logo */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 40 }}>
+        <img
+          src="/lark-logo.png"
+          alt="Lark"
+          width={88}
+          height={88}
+          style={{ opacity: 0.18, filter: 'drop-shadow(0 2px 10px rgba(var(--accent-rgb), 0.18))' }}
+        />
       </div>
 
       <style>{`
