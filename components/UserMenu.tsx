@@ -53,22 +53,29 @@ export function UserMenu({ email, displayName, avatarUrl, onSignOut, onReplayTou
           onClick={() => setOpen(v => !v)}
           title={name}
           style={{
-            width: 32, height: 32, borderRadius: '50%', overflow: 'hidden',
-            background: avatarUrl ? 'transparent' : (open ? 'var(--accent)' : 'var(--accent-dim)'),
-            border: `1.5px solid ${open ? 'var(--accent)' : 'var(--accent-border)'}`,
-            color: open ? '#061b0e' : 'var(--accent)',
-            fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700,
-            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'all 0.15s', padding: 0,
+            display: 'flex', alignItems: 'center', gap: 8,
+            background: 'var(--bg3)', border: `0.5px solid ${open ? 'var(--accent-border)' : 'var(--border2)'}`,
+            borderRadius: 9999, padding: '4px 10px 4px 4px',
+            cursor: 'pointer', transition: 'border-color 0.15s',
           }}
-          onMouseEnter={e => { if (!open) { e.currentTarget.style.borderColor = 'var(--accent)'; } }}
-          onMouseLeave={e => { if (!open) { e.currentTarget.style.borderColor = 'var(--accent-border)'; } }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent-border)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = open ? 'var(--accent-border)' : 'var(--border2)'; }}
         >
-          {avatarUrl ? (
-            <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          ) : (
-            initial
-          )}
+          {/* Avatar circle */}
+          <div style={{ width: 26, height: 26, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: 'var(--accent-dim)', border: '1px solid var(--accent-border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--accent)' }}>{initial}</span>
+            )}
+          </div>
+          {/* Display name */}
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--text)', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {name}
+          </span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" strokeWidth="2.5" strokeLinecap="round" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s', flexShrink: 0 }}>
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
         </button>
 
         {open && (

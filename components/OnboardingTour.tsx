@@ -43,7 +43,8 @@ const STEPS: Step[] = [
   },
   {
     title: 'Settings and feedback',
-    desc: 'Set your display name and profile picture in Settings -- top-right dropdown. The flag button next to the chat button lets you report a bug anytime.',
+    desc: 'Set your display name and profile picture in Settings. The flag button next to the chat button in the bottom right lets you report a bug anytime.',
+    targetId: 'tour-settings-nav',
   },
   {
     title: "You're all set",
@@ -80,6 +81,8 @@ export function OnboardingTour({ onDone }: { onDone: () => void }) {
   }, []);
 
   // Pulsing ring on target element
+  // NOTE: never override `position` — fixed elements (like the chat FAB)
+  // will jump into document flow if position is changed to 'relative'
   useEffect(() => {
     if (!current.targetId || isMobile) return;
     const el = document.getElementById(current.targetId);
@@ -87,14 +90,12 @@ export function OnboardingTour({ onDone }: { onDone: () => void }) {
       el.style.boxShadow = '0 0 0 3px var(--accent), 0 0 16px rgba(var(--accent-rgb), 0.4)';
       el.style.borderRadius = '8px';
       el.style.zIndex = '1002';
-      el.style.position = 'relative';
     }
     return () => {
       if (el) {
         el.style.boxShadow = '';
         el.style.borderRadius = '';
         el.style.zIndex = '';
-        el.style.position = '';
       }
     };
   }, [step, current.targetId, isMobile]);
