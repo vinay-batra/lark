@@ -32,7 +32,7 @@ export function FeedbackButton() {
         title="Report a bug"
         aria-label="Report a bug"
         style={{
-          position: 'fixed', bottom: 24, right: 24, zIndex: 200,
+          position: 'fixed', bottom: 24, right: 96, zIndex: 200,
           width: 44, height: 44, borderRadius: '50%',
           background: 'var(--card-bg)', border: '0.5px solid var(--border2)',
           color: 'var(--text3)', display: 'flex', alignItems: 'center', justifyContent: 'center',

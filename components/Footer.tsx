@@ -3,18 +3,12 @@ import { VERSION } from '@/lib/version';
 
 const COLUMNS = [
   {
-    label: 'Product',
-    links: [
-      { href: '/tuner', label: 'Tuner' },
-      { href: '/chords', label: 'Chord Detector' },
-      { href: '/pricing', label: 'Pricing' },
-    ],
-  },
-  {
     label: 'Company',
     links: [
       { href: '/changelog', label: 'Changelog' },
       { href: '/faq', label: 'FAQ' },
+      { href: '/privacy', label: 'Privacy' },
+      { href: '/terms', label: 'Terms' },
     ],
   },
   {
@@ -39,7 +33,7 @@ export function Footer() {
         maxWidth: 'var(--max-content)',
         margin: '0 auto',
         display: 'grid',
-        gridTemplateColumns: '1.4fr repeat(3, 1fr)',
+        gridTemplateColumns: '1.4fr repeat(2, 1fr)',
         gap: 48,
       }} className="footer-grid">
         <div>

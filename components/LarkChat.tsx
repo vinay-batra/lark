@@ -42,12 +42,7 @@ export function LarkChat() {
     setUsedCount(getUsedCount());
   }, [open]);
 
-  useEffect(() => {
-    const el = messagesRef.current;
-    if (el) {
-      el.scrollTop = el.scrollHeight;
-    }
-  }, [messages]);
+  // Intentionally no auto-scroll on response -- user scrolls manually
 
   const limitReached = usedCount >= DAILY_LIMIT;
   const remaining = Math.max(0, DAILY_LIMIT - usedCount);
@@ -97,17 +92,26 @@ export function LarkChat() {
 
   return (
     <>
+      {/* Click-outside backdrop */}
+      {open && (
+        <div
+          onClick={() => setOpen(false)}
+          style={{ position: 'fixed', inset: 0, zIndex: 198 }}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Toggle button */}
       <button
         onClick={() => setOpen(prev => !prev)}
         aria-label={open ? 'Close Lark chat' : 'Open Lark chat'}
         style={{
           position: 'fixed',
-          bottom: 80,
+          bottom: 24,
           right: 24,
-          zIndex: 200,
-          width: 52,
-          height: 52,
+          zIndex: 201,
+          width: 60,
+          height: 60,
           borderRadius: '50%',
           background: 'var(--accent)',
           border: 'none',
@@ -143,13 +147,14 @@ export function LarkChat() {
       {/* Chat panel */}
       {open && (
         <div
+          onClick={e => e.stopPropagation()}
           style={{
             position: 'fixed',
-            bottom: 140,
+            bottom: 96,
             right: 24,
-            zIndex: 200,
-            width: 340,
-            maxHeight: 480,
+            zIndex: 201,
+            width: 400,
+            maxHeight: 560,
             background: 'var(--card-bg)',
             border: '0.5px solid var(--border2)',
             borderRadius: 16,
@@ -226,18 +231,40 @@ export function LarkChat() {
             }}
           >
             {messages.length === 0 && !limitReached && (
-              <p
-                style={{
-                  textAlign: 'center',
-                  color: 'var(--text3)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 12,
-                  margin: 'auto',
-                  letterSpacing: '0.03em',
-                }}
-              >
-                Ask anything about guitar.
-              </p>
+              <div style={{ margin: 'auto', textAlign: 'center', padding: '8px 0' }}>
+                <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--accent-dim)', border: '0.5px solid var(--accent-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+                  </svg>
+                </div>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>Ask Lark</p>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text3)', marginBottom: 20, letterSpacing: '0.03em' }}>Guitar questions answered instantly.</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {['How do I play a B chord?', 'What scales work over minor chords?', 'How do I improve my picking speed?'].map(q => (
+                    <button
+                      key={q}
+                      onClick={() => { setInput(q); }}
+                      style={{
+                        background: 'var(--bg3)',
+                        border: '0.5px solid var(--border2)',
+                        borderRadius: 9,
+                        padding: '9px 12px',
+                        fontSize: 12,
+                        color: 'var(--text2)',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        lineHeight: 1.4,
+                        transition: 'border-color 0.15s, background 0.15s',
+                        fontFamily: '-apple-system, BlinkMacSystemFont, Inter, sans-serif',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent-border)'; e.currentTarget.style.background = 'var(--accent-dim)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border2)'; e.currentTarget.style.background = 'var(--bg3)'; }}
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
 
             {limitReached && messages.length === 0 && (
@@ -411,7 +438,7 @@ export function LarkChat() {
         }
         @media (max-width: 639px) {
           .lark-chat-panel {
-            bottom: 80px !important;
+            bottom: 92px !important;
             right: 0 !important;
             left: 0 !important;
             width: 100% !important;
