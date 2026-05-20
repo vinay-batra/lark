@@ -278,3 +278,4 @@ Routine checks, audits, and tests.
 - 2026-05-19 — accessibility pass, minor notes
 - 2026-05-19 — checked mobile layouts
 - 2026-05-19 — audited dependencies, no advisories
+- 2026-05-20 — smoke-tested core user flows, all green
