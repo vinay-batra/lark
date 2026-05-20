@@ -60,7 +60,7 @@ export function Footer() {
 
 
       {/* Watermark logo */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 40 }}>
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 64 }}>
         <img
           src="/lark-logo.png"
           alt="Lark"
