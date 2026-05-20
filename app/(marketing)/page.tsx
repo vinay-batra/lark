@@ -1,9 +1,11 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Reveal } from '@/components/Reveal';
 import { WaitlistForm } from '@/components/WaitlistForm';
+import { supabase } from '@/lib/supabase';
 
 const FEATURES = [
   {
@@ -61,6 +63,17 @@ const AI_FEEDBACK_EXAMPLE = `"Nice run through Seven Nation Army. Your E string 
 
 
 export default function LandingPage() {
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    if (!supabase) return;
+    supabase.auth.getUser().then(({ data }) => { if (data.user) setSignedIn(true); });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setSignedIn(!!session?.user);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
   return (
     <main style={{ overflowX: 'hidden' }}>
 
@@ -99,12 +112,20 @@ export default function LandingPage() {
 
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.32 }}
               style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap' }}>
-              <Link href="/app" className="btn btn-accent btn-lg" style={{ boxShadow: '0 0 24px rgba(var(--accent-rgb),0.3)' }}>
-                START PLAYING
-              </Link>
-              <Link href="/auth?mode=signup" className="btn btn-ghost btn-lg">
-                CREATE ACCOUNT
-              </Link>
+              {signedIn ? (
+                <Link href="/app" className="btn btn-accent btn-lg" style={{ boxShadow: '0 0 24px rgba(var(--accent-rgb),0.3)' }}>
+                  GO TO DASHBOARD
+                </Link>
+              ) : (
+                <>
+                  <Link href="/auth?mode=signup" className="btn btn-accent btn-lg" style={{ boxShadow: '0 0 24px rgba(var(--accent-rgb),0.3)' }}>
+                    START PLAYING
+                  </Link>
+                  <Link href="/auth?mode=signin" className="btn btn-ghost btn-lg">
+                    SIGN IN
+                  </Link>
+                </>
+              )}
             </motion.div>
 
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.42 }}
