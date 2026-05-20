@@ -285,3 +285,4 @@ Routine checks, audits, and tests.
 - 2026-05-20 — checked mobile layouts
 - 2026-05-20 — reviewed dependency updates
 - 2026-05-20 — e2e sanity check passed
+- 2026-05-20 — reviewed env and config
