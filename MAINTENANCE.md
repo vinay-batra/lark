@@ -280,3 +280,4 @@ Routine checks, audits, and tests.
 - 2026-05-19 — audited dependencies, no advisories
 - 2026-05-20 — smoke-tested core user flows, all green
 - 2026-05-20 — verified API responses
+- 2026-05-20 — ran regression pass, no regressions
