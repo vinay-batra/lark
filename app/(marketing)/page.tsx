@@ -22,7 +22,7 @@ const FEATURES = [
   },
   {
     eyebrow: 'SONG MODE',
-    title: '50 songs to follow along',
+    title: '73 songs to follow along',
     desc: 'Scrolling tab with live pitch detection. Green when you nail it, red when you miss. Every note scored.',
     href: '/app/songs',
     icon: <><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></>,
@@ -192,7 +192,7 @@ export default function LandingPage() {
             <div style={{ textAlign: 'center', marginBottom: 44 }}>
               <p className="eyebrow" style={{ marginBottom: 14 }}>SONG LIBRARY</p>
               <h2 style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(26px, 4.5vw, 44px)', fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 14 }}>
-                50 songs. 4 difficulty levels.
+                73 songs. 4 difficulty levels.
               </h2>
               <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 480, margin: '0 auto' }}>
                 From Twinkle Twinkle to Master of Puppets. Or ask the AI to generate tabs for any song not in the library.

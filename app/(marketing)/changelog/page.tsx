@@ -32,7 +32,7 @@ const CHAPTERS = [
     highlights: [
       'Lark logo and brand system: favicon, apple-touch-icon, og-image',
       'Security headers, mobile-optimized layouts, email waitlist',
-      '50 songs with real-time tab score-following -- green on hit, red on miss',
+      '73 songs with real-time tab score-following -- green on hit, red on miss',
       'AI Coach powered by Claude: specific guitar feedback after each song session',
       'AI tab generation -- type any song name, get playable tabs instantly',
       'Per-note timeout and RAF-loop score-following with hit/miss tracking',
