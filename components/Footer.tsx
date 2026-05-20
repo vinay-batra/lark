@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { VERSION } from '@/lib/version';
 
 const COLUMNS = [
   {
@@ -59,25 +58,6 @@ export function Footer() {
         ))}
       </div>
 
-      {/* Bottom bar */}
-      <div style={{
-        maxWidth: 'var(--max-content)',
-        margin: '48px auto 0',
-        paddingTop: 24,
-        borderTop: '0.5px solid var(--border)',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        gap: 14,
-        flexWrap: 'wrap',
-      }}>
-        <p style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', letterSpacing: '0.08em' }}>
-          © {new Date().getFullYear()} Lark. Built for guitarists.
-        </p>
-        <p style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', margin: 0 }}>
-          {VERSION}
-        </p>
-      </div>
 
       {/* Watermark logo */}
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 40 }}>
