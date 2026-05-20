@@ -149,7 +149,7 @@ export function PublicNav() {
                     overflow: 'hidden', zIndex: 200,
                   }}>
                     {[
-                      { label: 'Go to Dashboard', href: '/app' },
+                      { label: 'Go to App', href: '/app' },
                       { label: 'Settings', href: '/settings' },
                     ].map(item => (
                       <Link
@@ -235,7 +235,7 @@ export function PublicNav() {
           <div style={{ height: 1, background: 'var(--border)', margin: '14px 0' }} />
           {user ? (
             <>
-              <Link href="/app" className="btn btn-accent" style={{ marginBottom: 8 }}>Go to Dashboard</Link>
+              <Link href="/app" className="btn btn-accent" style={{ marginBottom: 8 }}>Go to App</Link>
               <Link href="/settings" className="btn btn-ghost">Settings</Link>
               <button onClick={signOut} className="btn btn-ghost" style={{ color: 'var(--danger, #ef4444)', marginTop: 8 }}>Sign out</button>
             </>

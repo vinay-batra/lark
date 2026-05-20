@@ -227,7 +227,7 @@ export default function SettingsPage() {
               REPLAY TOUR
             </button>
           </Row>
-          <Row label="Go to dashboard" hint="Open the full practice dashboard.">
+          <Row label="Go to App" hint="Open the full practice dashboard.">
             <button className="btn btn-accent btn-sm" onClick={() => router.push('/app')}>OPEN APP</button>
           </Row>
           <Row label="Sign out" hint="End your session on this device.">
