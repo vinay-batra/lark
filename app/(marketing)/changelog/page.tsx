@@ -71,6 +71,22 @@ const CHAPTERS = [
     ],
     tags: ['Onboarding', 'Security', 'Bug Fix', 'Polish'],
   },
+  {
+    num: '05',
+    name: 'Platform Polish',
+    versions: 'v0.9',
+    dateRange: 'May 19, 2026',
+    intro: 'Profile pictures, auth-aware nav everywhere, 14 corrected songs, 38 mobile issues fixed, and a full security audit across all API routes.',
+    highlights: [
+      'Avatar upload: canvas resize to 200x200, compressed to JPEG, stored in account -- shows in nav and dashboard on every page',
+      'Auth-aware PublicNav and AppShell: signed-in users see name + avatar pill with Go to App, Settings, Sign Out dropdown',
+      'Standalone /settings page with display name, profile picture, theme, audio prefs, and danger zone (delete account)',
+      '14 song pitch errors corrected (Seven Nation Army was on wrong strings, Back in Black had G instead of G#); all 73 songs expanded to 20-25 notes',
+      'Rate limiting on all 3 API routes; server-side bug reports; delete account via Supabase service role',
+      'Mobile audit: 880px breakpoints fixed to 768px, touch targets enlarged, hero fixed for short screens, chat panel overflow corrected',
+    ],
+    tags: ['Profile', 'Mobile', 'Security', 'Songs'],
+  },
 ];
 
 // ── Inline scroll-reveal (no external dep needed, matches Corvo pattern) ──────
@@ -287,7 +303,7 @@ export default function ChangelogPage() {
                 fontWeight: 600,
               }}
             >
-              Four chapters &middot; scroll
+              Five chapters &middot; scroll
             </span>
             <svg width="22" height="10" viewBox="0 0 22 10" fill="none">
               <path d="M2 5h17M14 1l4 4-4 4" stroke="var(--text3)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />

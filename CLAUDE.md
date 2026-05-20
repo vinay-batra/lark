@@ -6,32 +6,56 @@ Guitar AI tutor. Hears you play, shows you what to play, gives feedback.
 
 ## Current Focus
 
-**Last shipped: v0.4 (May 18, 2026) — Song Mode with score-following + AI Coach via Claude API.**
+**Last shipped: v0.9 (May 19, 2026) — Full platform polish: auth-aware nav, settings with avatar, song corrections, mobile audit, security.**
 
-Live at: `https://lark-git-main-vinay-batras-projects.vercel.app`
-Supabase project: `ebsddbpbvjbcdwfldubx` (auth live, waitlist table needs migration)
+Live at: `https://lark.coach`
+Supabase project: `ebsddbpbvjbcdwfldubx`
 
-13 routes:
-- `/` — Cinematic landing. Single OPEN APP CTA. Green CSS multi-gradient bg. Email waitlist.
-- `/pricing` — 3-tier (Free / Pro $8 / Studio $24, paid coming soon)
-- `/changelog` — Timeline with v0.1 / v0.2 / v0.3 entries
-- `/faq` — Accordion FAQ, 4 sections
+Routes (20 total):
+- `/` — Landing. Auth-aware: "GO TO APP" when signed in, "START PLAYING" -> signup when not.
+- `/pricing` — 3-tier (Free / Pro $8 / Studio $24, paid coming soon). "Free to learn. Pro when you're ready."
+- `/changelog` — Horizontal scroll-snap chapter timeline (4 chapters, Corvo pattern)
+- `/faq` — Accordion FAQ with aria-expanded
 - `/auth` — Sign in / sign up / magic link / reset. Google + GitHub OAuth live.
+- `/settings` — Standalone settings page (auth-gated): display name, avatar upload (canvas resize -> base64 -> user_metadata), theme, audio prefs, danger zone (sign out + delete account)
+- `/privacy` — Privacy policy page
+- `/terms` — Terms of service page
 - `/tuner` — Public tuner (no auth)
 - `/chords` — Public chord detector (no auth)
-- `/app` — Auth-gated dashboard (redirects to /auth if not signed in)
+- `/app` — Dashboard: Your Stats (sessions, streak, accuracy, tabs) -> Live Tools -> Coming Soon
 - `/app/tuner` — Tuner inside AppShell
-- `/app/chords` — Chords inside AppShell
-- `/app/songs` — Song Mode: pick a song, play note-by-note, get AI coaching
-- `/app/settings` — Theme, audio prefs, account, version
-- `/api/coach` — POST endpoint: sends session data to Claude, returns guitar feedback
+- `/app/chords` — Chord detector inside AppShell
+- `/app/chord-library` — 120+ chord diagrams, searchable, expandable cards
+- `/app/songs` — 73 songs (4 difficulty levels), song library, AI tab generation
+- `/app/metronome` — Web Audio metronome (look-ahead scheduler, tap tempo, time signatures)
+- `/app/settings` — In-app settings (same as /settings)
+- `/api/coach` — POST: Claude AI song feedback (rate limited 20/hr)
+- `/api/chat` — POST: Guitar Q&A chat, claude-haiku-4-5 (rate limited 30/hr, 5/day client-side)
+- `/api/tabs` — POST: AI tab generation, claude-sonnet-4-6 (rate limited 10/hr)
+- `/api/bug-report` — POST: Saves bug reports server-side (bypasses RLS)
+- `/api/delete-account` — POST: Deletes user via service role key (requires SUPABASE_SERVICE_ROLE_KEY)
+
+### Key decisions made in v0.9 session
+
+**Auth-aware PublicNav**: When signed in shows avatar pill (photo or initial) + display name + chevron dropdown with "Go to App" / "Settings" / "Sign out". When not signed in shows "Sign in" + "Get Started". Same dropdown pattern in AppShell UserMenu.
+
+**Avatar upload**: Uses canvas resize (200x200 center-crop, JPEG 0.85) -> base64 stored directly in user_metadata.avatar_url. No Supabase Storage bucket needed.
+
+**Song corrections**: 14 songs had wrong pitches (Seven Nation Army was on wrong strings entirely, Back in Black had G instead of G#, Comfortably Numb was 4 frets too high). All 73 songs expanded to 20-25 notes.
+
+**Mobile breakpoint**: Everything was at 880px (wrong). All breakpoints corrected to 768px.
+
+**Rate limiting**: All 3 API routes (coach/chat/tabs) have server-side in-memory sliding window limiter via lib/rate-limit.ts.
+
+**Danger zone**: /settings page has two-step delete account confirmation -> POST /api/delete-account -> requires SUPABASE_SERVICE_ROLE_KEY env var.
+
+**Bug reports**: Routed through /api/bug-report (server-side) to bypass Supabase RLS. Table: lark_bug_reports -- run supabase/migrations/20260519100000_lark_bug_reports.sql.
 
 ### Next up
-1. Run waitlist migration in Supabase SQL editor (`supabase/migrations/20260518000000_waitlist.sql`)
-2. Add ANTHROPIC_API_KEY to Vercel env vars (Project Settings -> Environment Variables)
-3. Stripe for Pro tier (needs parent for under-18 TOS)
-4. Progress tracking (session history, stats in /app dashboard)
-5. Backend (Railway + FastAPI) when needed for heavier AI features
+1. Stripe for Pro tier (needs parent for under-18 TOS)
+2. Add SUPABASE_SERVICE_ROLE_KEY to Vercel env vars (needed for delete account)
+3. Create lark_bug_reports table in Supabase (run migration SQL)
+4. Expand song notes further -- 20-25 is good, 30-40 would be better for learning full songs
 
 ---
 
@@ -88,35 +112,58 @@ Supabase project: `ebsddbpbvjbcdwfldubx` (auth live, waitlist table needs migrat
 ```
 lark/
   app/
-    layout.tsx              ← root, ThemeProvider + theme script
-    globals.css             ← all themes + utility classes
-    (marketing)/            ← route group: PublicNav + Footer wrap
+    layout.tsx              <- root, ThemeProvider + theme script + GlobalUI
+    globals.css             <- all themes + utility classes
+    (marketing)/            <- route group: PublicNav + Footer wrap
       layout.tsx
-      page.tsx              ← /  (landing)
-      about/page.tsx        ← /about
-      pricing/page.tsx      ← /pricing
-      faq/page.tsx          ← /faq
-    auth/page.tsx           ← /auth  (own layout, no nav)
-    tuner/page.tsx          ← /tuner (ToolNav)
-    chords/page.tsx         ← /chords (ToolNav)
+      page.tsx              <- / (landing, auth-aware hero)
+      pricing/page.tsx      <- /pricing
+      changelog/page.tsx    <- /changelog (horizontal timeline)
+      faq/page.tsx          <- /faq
+      settings/page.tsx     <- /settings (standalone auth-gated settings)
+      privacy/page.tsx      <- /privacy
+      terms/page.tsx        <- /terms
+    auth/page.tsx           <- /auth (own layout, no nav)
+    tuner/page.tsx          <- /tuner (ToolNav)
+    chords/page.tsx         <- /chords (ToolNav)
     app/
-      layout.tsx            ← AppShell wrapper
-      page.tsx              ← /app (dashboard)
-      settings/page.tsx     ← /app/settings
+      layout.tsx            <- AppShell wrapper
+      page.tsx              <- /app (dashboard: stats -> tools -> coming soon)
+      songs/page.tsx        <- /app/songs (73 songs, library, AI gen)
+      chord-library/page.tsx <- /app/chord-library
+      metronome/page.tsx    <- /app/metronome
+      tuner/page.tsx        <- /app/tuner
+      chords/page.tsx       <- /app/chords
+      settings/page.tsx     <- /app/settings
+    api/
+      coach/route.ts        <- AI song feedback (rate limited 20/hr)
+      chat/route.ts         <- Guitar Q&A, claude-haiku-4-5 (30/hr)
+      tabs/route.ts         <- AI tab gen, claude-sonnet-4-6 (10/hr)
+      bug-report/route.ts   <- Bug reports (server-side, bypasses RLS)
+      delete-account/route.ts <- Delete user via service role key
   components/
-    Card.tsx                ← reusable card w/ hover lift (from Corvo)
-    PublicNav.tsx           ← hide-on-scroll, theme toggle, mobile drawer
-    Footer.tsx              ← 4-col grid, links, version
-    ThemeProvider.tsx       ← context + provider
-    ThemeToggle.tsx         ← sun/moon icon button
-    AppShell.tsx            ← /app sidebar + topbar
-    ToolNav.tsx             ← /tuner + /chords mini-nav
-    Reveal.tsx              ← scroll-triggered fade-up
+    AppShell.tsx            <- sidebar + topbar, auth state, UserMenu
+    PublicNav.tsx           <- auth-aware: avatar pill when signed in
+    UserMenu.tsx            <- avatar + name pill + dropdown
+    LarkChat.tsx            <- floating AI chat (id="tour-chat-btn")
+    FeedbackButton.tsx      <- flag button, calls /api/bug-report
+    GlobalUI.tsx            <- mounts LarkChat + FeedbackButton globally
+    SongFollowView.tsx      <- song play UI: pitch detection + metronome beat
+    MetronomeView.tsx       <- standalone metronome
+    TunerView.tsx           <- pitch detection UI
+    ChordsView.tsx          <- chromagram chord detection
+    OnboardingTour.tsx      <- 8-step spotlight tour (TOUR_KEY in localStorage)
+    ChordDiagram.tsx        <- SVG chord fingering diagrams
+    Footer.tsx              <- 3-col: brand / Company / Account + bird watermark
+    Reveal.tsx              <- IntersectionObserver scroll-triggered fade-up
   lib/
-    supabase.ts             ← browser client, isSupabaseConfigured
-    theme.ts                ← Theme type, applyTheme, getStoredTheme
-  proxy.ts                  ← SSR auth refresh (was middleware.ts; Next.js 16 renamed)
-  .env.local.example        ← Supabase env var template
+    supabase.ts             <- browser client singleton
+    songs.ts                <- 73 songs (Song interface with bpm field)
+    practice.ts             <- session tracking, saved songs, bug reports
+    rate-limit.ts           <- in-memory sliding window rate limiter
+    version.ts              <- VERSION string
+  proxy.ts                  <- SSR auth refresh (Next.js 16 renamed middleware)
+  supabase/migrations/      <- SQL files to run in Supabase SQL editor
 ```
 
 ---
