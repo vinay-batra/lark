@@ -74,9 +74,17 @@ export function Footer() {
         <p style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', letterSpacing: '0.08em' }}>
           © {new Date().getFullYear()} Lark. Built for guitarists.
         </p>
-        <p style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', letterSpacing: '0.08em' }}>
-          {VERSION}
-        </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+          <Link href="/privacy" className="footer-link" style={{ fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em' }}>
+            Privacy
+          </Link>
+          <Link href="/terms" className="footer-link" style={{ fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em' }}>
+            Terms
+          </Link>
+          <p style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', margin: 0 }}>
+            {VERSION}
+          </p>
+        </div>
       </div>
 
       <style>{`
