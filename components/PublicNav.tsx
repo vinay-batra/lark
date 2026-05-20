@@ -23,17 +23,17 @@ export function PublicNav() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Auth state
-  const [user, setUser] = useState<{ email: string; displayName: string | null } | null>(null);
+  const [user, setUser] = useState<{ email: string; displayName: string | null; avatarUrl: string | null } | null>(null);
 
   useEffect(() => {
     if (!supabase) return;
     supabase.auth.getUser().then(({ data }) => {
       const u = data.user;
-      if (u) setUser({ email: u.email ?? '', displayName: u.user_metadata?.display_name ?? null });
+      if (u) setUser({ email: u.email ?? '', displayName: u.user_metadata?.display_name ?? null, avatarUrl: u.user_metadata?.avatar_url ?? null });
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       const u = session?.user;
-      if (u) setUser({ email: u.email ?? '', displayName: u.user_metadata?.display_name ?? null });
+      if (u) setUser({ email: u.email ?? '', displayName: u.user_metadata?.display_name ?? null, avatarUrl: u.user_metadata?.avatar_url ?? null });
       else setUser(null);
     });
     return () => sub.subscription.unsubscribe();
@@ -126,13 +126,12 @@ export function PublicNav() {
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent-border)'; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border2)'; }}
                 >
-                  <div style={{
-                    width: 26, height: 26, borderRadius: '50%',
-                    background: 'var(--accent)', color: 'var(--bg)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, flexShrink: 0,
-                  }}>
-                    {initial}
+                  <div style={{ width: 26, height: 26, borderRadius: '50%', overflow: 'hidden', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    {user?.avatarUrl ? (
+                      <img src={user.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--bg)' }}>{initial}</span>
+                    )}
                   </div>
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text)', fontWeight: 600, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {name}
@@ -151,7 +150,7 @@ export function PublicNav() {
                   }}>
                     {[
                       { label: 'Go to Dashboard', href: '/app' },
-                      { label: 'Settings', href: '/app/settings' },
+                      { label: 'Settings', href: '/settings' },
                     ].map(item => (
                       <Link
                         key={item.href}
@@ -237,7 +236,7 @@ export function PublicNav() {
           {user ? (
             <>
               <Link href="/app" className="btn btn-accent" style={{ marginBottom: 8 }}>Go to Dashboard</Link>
-              <Link href="/app/settings" className="btn btn-ghost">Settings</Link>
+              <Link href="/settings" className="btn btn-ghost">Settings</Link>
               <button onClick={signOut} className="btn btn-ghost" style={{ color: 'var(--danger, #ef4444)', marginTop: 8 }}>Sign out</button>
             </>
           ) : (

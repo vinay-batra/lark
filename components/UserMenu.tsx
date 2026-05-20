@@ -7,11 +7,12 @@ import { ThemeToggle } from './ThemeToggle';
 interface UserMenuProps {
   email: string | null;
   displayName: string | null;
+  avatarUrl?: string | null;
   onSignOut: () => void;
   onReplayTour: () => void;
 }
 
-export function UserMenu({ email, displayName, onSignOut, onReplayTour }: UserMenuProps) {
+export function UserMenu({ email, displayName, avatarUrl, onSignOut, onReplayTour }: UserMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -52,18 +53,22 @@ export function UserMenu({ email, displayName, onSignOut, onReplayTour }: UserMe
           onClick={() => setOpen(v => !v)}
           title={name}
           style={{
-            width: 32, height: 32, borderRadius: '50%',
-            background: open ? 'var(--accent)' : 'var(--accent-dim)',
+            width: 32, height: 32, borderRadius: '50%', overflow: 'hidden',
+            background: avatarUrl ? 'transparent' : (open ? 'var(--accent)' : 'var(--accent-dim)'),
             border: `1.5px solid ${open ? 'var(--accent)' : 'var(--accent-border)'}`,
             color: open ? '#061b0e' : 'var(--accent)',
             fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700,
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'all 0.15s',
+            transition: 'all 0.15s', padding: 0,
           }}
           onMouseEnter={e => { if (!open) { e.currentTarget.style.borderColor = 'var(--accent)'; } }}
           onMouseLeave={e => { if (!open) { e.currentTarget.style.borderColor = 'var(--accent-border)'; } }}
         >
-          {initial}
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            initial
+          )}
         </button>
 
         {open && (
@@ -75,15 +80,24 @@ export function UserMenu({ email, displayName, onSignOut, onReplayTour }: UserMe
             zIndex: 300, overflow: 'hidden',
           }}>
             {/* Identity */}
-            <div style={{ padding: '12px 16px 10px', borderBottom: '0.5px solid var(--border)' }}>
-              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, color: 'var(--text)', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {name}
-              </p>
-              {email && <p style={{ fontSize: 11, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email}</p>}
+            <div style={{ padding: '12px 16px 10px', borderBottom: '0.5px solid var(--border)', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', background: 'var(--accent-dim)', border: '1px solid var(--accent-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--accent)' }}>{initial}</span>
+                )}
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, color: 'var(--text)', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {name}
+                </p>
+                {email && <p style={{ fontSize: 11, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email}</p>}
+              </div>
             </div>
 
             <Link
-              href="/app/settings"
+              href="/settings"
               onClick={() => setOpen(false)}
               style={{ display: 'flex', alignItems: 'center', padding: '10px 16px', fontSize: 13, color: 'var(--text2)', textDecoration: 'none', transition: 'background 0.12s' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg3)'; }}

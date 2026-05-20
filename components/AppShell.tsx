@@ -23,6 +23,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [email, setEmail] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [signedIn, setSignedIn] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [showTour, setShowTour] = useState(false);
@@ -34,6 +35,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       if (isSupabaseConfigured && !u) { router.push('/auth?mode=signin'); return; }
       setEmail(u?.email ?? null);
       setDisplayName(u?.user_metadata?.display_name ?? null);
+      setAvatarUrl(u?.user_metadata?.avatar_url ?? null);
       setSignedIn(!!u);
       if (u) {
         loadSessionsFromSupabase();
@@ -48,6 +50,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       const u = session?.user;
       setEmail(u?.email ?? null);
       setDisplayName(u?.user_metadata?.display_name ?? null);
+      setAvatarUrl(u?.user_metadata?.avatar_url ?? null);
       setSignedIn(!!u);
     });
     return () => sub.subscription.unsubscribe();
@@ -146,6 +149,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <UserMenu
                 email={email}
                 displayName={displayName}
+                avatarUrl={avatarUrl}
                 onSignOut={signOut}
                 onReplayTour={replayTour}
               />
