@@ -299,3 +299,4 @@ Routine checks, audits, and tests.
 - 2026-05-21 — verified production build output
 - 2026-05-21 — reviewed error logging
 - 2026-05-21 — ran regression pass, no regressions
+- 2026-05-21 — verified API responses
