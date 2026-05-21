@@ -291,3 +291,4 @@ Routine checks, audits, and tests.
 - 2026-05-21 — general housekeeping
 - 2026-05-21 — reviewed env and config
 - 2026-05-21 — lint + format clean
+- 2026-05-21 — reviewed env and config
