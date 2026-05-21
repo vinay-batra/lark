@@ -305,3 +305,4 @@ Routine checks, audits, and tests.
 - 2026-05-21 — e2e sanity check passed
 - 2026-05-21 — ran regression pass, no regressions
 - 2026-05-21 — reviewed dependency updates
+- 2026-05-21 — smoke-tested core user flows, all green
