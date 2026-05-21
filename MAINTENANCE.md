@@ -293,3 +293,4 @@ Routine checks, audits, and tests.
 - 2026-05-21 — lint + format clean
 - 2026-05-21 — reviewed env and config
 - 2026-05-21 — audited dependencies, no advisories
+- 2026-05-21 — smoke-tested core user flows, all green
