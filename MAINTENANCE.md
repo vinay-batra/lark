@@ -287,3 +287,4 @@ Routine checks, audits, and tests.
 - 2026-05-20 — e2e sanity check passed
 - 2026-05-20 — reviewed env and config
 - 2026-05-20 — lint + format clean
+- 2026-05-21 — verified API responses
