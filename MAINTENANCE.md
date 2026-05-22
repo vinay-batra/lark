@@ -325,3 +325,4 @@ Routine checks, audits, and tests.
 - 2026-05-21 — ran regression pass, no regressions
 - 2026-05-22 — checked mobile layouts
 - 2026-05-22 — reviewed dependency updates
+- 2026-05-22 — verified API responses
