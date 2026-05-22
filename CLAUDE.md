@@ -6,10 +6,11 @@ Guitar AI tutor. Hears you play, shows you what to play, gives feedback.
 
 ## Current Focus
 
-**Last shipped: v1.0 (May 20, 2026) — Chord detection, curriculum, full audit, 77 songs (4 chord songs added), 36 notes each.**
+**Last shipped: v1.0 (May 20, 2026) — Songsterr-style scrolling tab, chord detection, 6-stage curriculum, three-tier tab generation, full security/UX audit.**
 
 Live at: `https://lark.coach`
 Supabase project: `ebsddbpbvjbcdwfldubx`
+Last commit: dd9955f (Fix LarkChat FAB: square rendering + always visible in song mode)
 
 Routes (22 total):
 - `/` — Landing. Auth-aware: "GO TO APP" when signed in, "START PLAYING" -> signup when not.
@@ -54,10 +55,22 @@ Routes (22 total):
 
 **0 lint errors**: Down from 29 (15 errors + 14 warnings) to 0.
 
+### Recent additions since v1.0
+**TabStaff**: `components/TabStaff.tsx` -- replaces page-by-page TabView. Songsterr-style continuous 6-string staff with fixed green playhead. Notes scroll left past the bar; past notes fade, current note glows. All notes rendered in one strip, scroll position driven by `currentIndex`.
+
+**LarkChat fixes**: FAB button uses `clip-path: circle(50%)` instead of overflow:hidden (fixes Safari/Chrome square rendering when stacking contexts are active). Button always visible during song play; only the chat panel auto-closes.
+
+**Song regeneration**: All 73 note-melody songs regenerated with Claude note-names-first pipeline. Spot-checked: Smoke on the Water (G-Bb-C correct), Seven Nation Army, Brain Stew, Come As You Are, Nothing Else Matters all verified correct.
+
+**Three-tier tab generation** (`/api/tabs`):
+1. bitmidi.com -- real MIDI files, guitar channel via GM program 24-31, monophonic melody extraction, consecutive dedup
+2. Songsterr metadata -- correct title/artist, non-standard tuning detection (Drop D, Eb, etc.)
+3. Claude note-names-first -- fallback only
+
 ### Next up
 1. Stripe for Pro tier (needs parent for under-18 TOS)
-2. Get 5 beta users playing and watch Stage 1 of the curriculum
-3. Polyphonic chord songs need real-world testing -- chromagram accuracy varies by room noise
+2. Get 5 real users playing curriculum Stage 1 and watch them
+3. Song accuracy: tabs are Claude-generated. Fix options: license Songsterr/UG API commercially, or manual song-by-song verification
 
 ---
 
@@ -152,6 +165,7 @@ lark/
     LarkChat.tsx            <- floating AI chat, hides during song play
     FeedbackButton.tsx      <- flag button, calls /api/bug-report
     GlobalUI.tsx            <- mounts LarkChat + FeedbackButton globally
+    TabStaff.tsx            <- Songsterr-style scrolling 6-string staff with green playhead
     SongFollowView.tsx      <- song play: pitch + chord detection, metronome, timing
     SongCover.tsx           <- deterministic per-song album art (vinyl/cassette SVG)
     VinylLoader.tsx         <- spinning vinyl record loader with ticker text
@@ -179,18 +193,7 @@ lark/
 
 ---
 
-## Component Patterns (from Corvo)
-
-### Card
-```tsx
-<Card trackColor="var(--accent)">
-  <CardHeader eyebrow="Optional" title="Title" />
-  ...
-</Card>
-```
-- `0.5px solid var(--border)`, `border-radius: 14`, `padding: 22px 24px`
-- Hover: green left border accent + deeper shadow + transition
-- Use `trackColor` prop for a permanent status stripe
+## Component Patterns
 
 ### Eyebrow
 `<p className="eyebrow">SOME LABEL</p>`

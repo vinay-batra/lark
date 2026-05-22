@@ -2,7 +2,7 @@
 
 **The guitar tutor that listens.**
 
-77 songs with real-time note and chord follow-along. Six-stage learning curriculum. AI coaching after every session. Tuner, chord detector, metronome, chord library. Free. No download.
+Lark hears every note you play, scores you in real time, and gives AI coaching when you finish. 77 songs, 4 difficulty levels, Songsterr-style scrolling tab, 6-stage learning curriculum. Free. No download.
 
 Live: **[lark.coach](https://lark.coach)**
 
@@ -11,9 +11,9 @@ Live: **[lark.coach](https://lark.coach)**
 ## Stack
 
 - **Framework:** Next.js 16 (App Router, Turbopack)
-- **Audio:** Web Audio API + Pitchy v4 (pitch) + @tonaljs/chord-detect (chromagram chords)
-- **AI:** @anthropic-ai/sdk — claude-sonnet-4-6 for song coaching + AI tab gen, claude-haiku-4-5 for guitar chat
-- **Auth + DB:** Supabase
+- **Audio:** Web Audio API + Pitchy v4 (pitch) + @tonaljs/chord-detect (chromagram) + midi-file (MIDI parsing)
+- **AI:** @anthropic-ai/sdk — claude-sonnet-4-6 for coaching + tab gen, claude-haiku-4-5 for guitar chat
+- **Auth + DB:** Supabase (browser client + @supabase/ssr)
 - **Animations:** framer-motion
 - **Deploy:** Vercel (push to main auto-deploys)
 
@@ -53,7 +53,7 @@ Run the SQL files in `supabase/migrations/` in the Supabase SQL editor to set up
 | `/auth` | Sign in / sign up / magic link / OAuth |
 | `/tuner` | Public tuner (no auth) |
 | `/chords` | Public chord detector (no auth) |
-| `/app` | Dashboard: stats, tools |
+| `/app` | Dashboard: stats, live tools |
 | `/app/learn` | Six-stage learning curriculum |
 | `/app/songs` | 77 songs, 4 difficulty levels, AI tab gen |
 | `/app/tuner` | Tuner (in app shell) |
@@ -61,11 +61,11 @@ Run the SQL files in `supabase/migrations/` in the Supabase SQL editor to set up
 | `/app/chord-library` | 120+ chord diagrams |
 | `/app/metronome` | Web Audio metronome |
 | `/app/settings` | Settings (in app shell) |
-| `/api/coach` | AI song feedback, claude-sonnet-4-6, 20 req/hr |
+| `/api/coach` | Post-session AI feedback, claude-sonnet-4-6, 20 req/hr |
 | `/api/chat` | Guitar Q&A, claude-haiku-4-5, 30 req/hr |
-| `/api/tabs` | AI tab generation, claude-sonnet-4-6, 10 req/hr |
-| `/api/bug-report` | Bug reports (server-side) |
-| `/api/delete-account` | Delete user account |
+| `/api/tabs` | Tab generation (MIDI → Songsterr → Claude), 10 req/hr |
+| `/api/bug-report` | Bug reports (server-side, rate limited) |
+| `/api/delete-account` | Delete user account (requires service role key) |
 
 ## Version
 
