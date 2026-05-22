@@ -327,3 +327,4 @@ Routine checks, audits, and tests.
 - 2026-05-22 — reviewed dependency updates
 - 2026-05-22 — verified API responses
 - 2026-05-22 — verified production build output
+- 2026-05-22 — checked auth and session handling
