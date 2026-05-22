@@ -332,3 +332,4 @@ Routine checks, audits, and tests.
 - 2026-05-22 — routine maintenance
 - 2026-05-22 — lint + format clean
 - 2026-05-22 — accessibility pass, minor notes
+- 2026-05-22 — reviewed error logging
