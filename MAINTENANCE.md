@@ -322,3 +322,4 @@ Routine checks, audits, and tests.
 - 2026-05-21 — smoke-tested core user flows, all green
 - 2026-05-21 — audited dependencies, no advisories
 - 2026-05-21 — audited dependencies, no advisories
+- 2026-05-21 — ran regression pass, no regressions
