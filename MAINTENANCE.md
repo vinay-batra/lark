@@ -320,3 +320,4 @@ Routine checks, audits, and tests.
 - 2026-05-21 — checked auth and session handling
 - 2026-05-21 — lint + format clean
 - 2026-05-21 — smoke-tested core user flows, all green
+- 2026-05-21 — audited dependencies, no advisories
