@@ -313,3 +313,4 @@ Routine checks, audits, and tests.
 - 2026-05-21 — verified API responses
 - 2026-05-21 — verified production build output
 - 2026-05-21 — verified API responses
+- 2026-05-21 — audited dependencies, no advisories
