@@ -46,9 +46,6 @@ export function LarkChat() {
   // to fill in the count. Re-reads when the chat opens (in the effect below)
   // so cross-tab updates stay accurate.
   const [usedCount, setUsedCount] = useState(() => getUsedCount());
-  // Hidden during an active song session so it doesn't overlap the playing UI
-  // on mobile (the floating button sits over the tab + countdown bar at 60x60).
-  const [songPlaying, setSongPlaying] = useState(false);
 
   const messagesRef = useRef<HTMLDivElement>(null);
 
@@ -59,16 +56,15 @@ export function LarkChat() {
   }, [open]);
 
   useEffect(() => {
+    // Close the chat panel when a song starts playing so it doesn't block the
+    // tab staff. The FAB button stays visible so the user can still tap it.
     const handler = (e: Event) => {
       const ce = e as CustomEvent<{ playing: boolean }>;
-      setSongPlaying(!!ce.detail?.playing);
       if (ce.detail?.playing) setOpen(false);
     };
     window.addEventListener('lark:song-state', handler);
     return () => window.removeEventListener('lark:song-state', handler);
   }, []);
-
-  if (songPlaying) return null;
 
   // Intentionally no auto-scroll on response -- user scrolls manually
 
@@ -142,10 +138,12 @@ export function LarkChat() {
           width: 60,
           height: 60,
           borderRadius: '50%',
-          // overflow: hidden + translateZ(0) fixes a Safari WebKit bug where
-          // position:fixed elements with border-radius render as squares.
-          overflow: 'hidden',
-          WebkitTransform: 'translateZ(0)',
+          // clip-path:circle() is the reliable cross-browser fix for the
+          // position:fixed + border-radius = square rendering bug in Safari/Chrome.
+          // overflow:hidden alone can fail when a stacking context (e.g. the
+          // onboarding tour overlay) is painted above the element.
+          clipPath: 'circle(50%)',
+          WebkitClipPath: 'circle(50%)',
           background: 'var(--accent)',
           border: 'none',
           color: 'var(--bg)',
