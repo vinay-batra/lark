@@ -335,3 +335,4 @@ Routine checks, audits, and tests.
 - 2026-05-22 — reviewed error logging
 - 2026-05-22 — ran regression pass, no regressions
 - 2026-05-22 — reviewed error logging
+- 2026-05-22 — general housekeeping
