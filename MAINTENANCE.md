@@ -344,3 +344,4 @@ Routine checks, audits, and tests.
 - 2026-05-23 — verified API responses
 - 2026-05-23 — checked mobile layouts
 - 2026-05-23 — smoke-tested core user flows, all green
+- 2026-05-23 — reviewed error logging
