@@ -342,3 +342,4 @@ Routine checks, audits, and tests.
 - 2026-05-23 — accessibility pass, minor notes
 - 2026-05-23 — checked auth and session handling
 - 2026-05-23 — verified API responses
+- 2026-05-23 — checked mobile layouts
