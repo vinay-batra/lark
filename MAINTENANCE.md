@@ -347,3 +347,4 @@ Routine checks, audits, and tests.
 - 2026-05-23 — reviewed error logging
 - 2026-05-23 — reviewed error logging
 - 2026-05-23 — audited dependencies, no advisories
+- 2026-05-24 — e2e sanity check passed
