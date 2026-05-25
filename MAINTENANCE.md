@@ -376,3 +376,4 @@ Routine checks, audits, and tests.
 - 2026-05-25 — general housekeeping
 - 2026-05-25 — reviewed env and config
 - 2026-05-25 — reviewed error logging
+- 2026-05-25 — smoke-tested core user flows, all green
