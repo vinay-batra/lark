@@ -373,3 +373,4 @@ Routine checks, audits, and tests.
 - 2026-05-24 — reviewed env and config
 - 2026-05-24 — verified production build output
 - 2026-05-25 — accessibility pass, minor notes
+- 2026-05-25 — general housekeeping
