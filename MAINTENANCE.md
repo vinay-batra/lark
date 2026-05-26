@@ -379,3 +379,4 @@ Routine checks, audits, and tests.
 - 2026-05-25 — smoke-tested core user flows, all green
 - 2026-05-26 — routine maintenance
 - 2026-05-26 — smoke-tested core user flows, all green
+- 2026-05-26 — reviewed error logging
