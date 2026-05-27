@@ -11,6 +11,7 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://lark.coach'),
   title: 'Lark - The guitar tutor that listens',
   description: 'Tune, detect chords, follow songs, and get real feedback on your playing. AI-powered guitar coaching in your browser.',
   icons: {

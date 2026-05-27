@@ -88,7 +88,7 @@ Notes most missed: ${missedSummary}${avgCentsOff > 0 ? `\nAverage intonation off
   try {
     const client = new Anthropic();
     const message = await client.messages.create({
-      model: 'claude-haiku-4-5',
+      model: 'claude-sonnet-4-6',
       max_tokens: 200,
       system,
       messages: [{ role: 'user', content: userMsg }],

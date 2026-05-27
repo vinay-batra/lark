@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { SONGS, Song, Difficulty, DIFFICULTY_COLORS, DIFFICULTY_DIM, DIFFICULTY_BORDER, DIFFICULTY_ORDER } from '@/lib/songs';
 import { SongFollowView } from '@/components/SongFollowView';
 import { SongCover } from '@/components/SongCover';
@@ -25,6 +25,10 @@ export default function SongsPage() {
   const [genStatus, setGenStatus] = useState<ReturnType<typeof canGenerate>>(() => canGenerate());
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameVal, setRenameVal] = useState('');
+  const genControllerRef = useRef<AbortController | null>(null);
+
+  // Abort any in-flight generation request on unmount
+  useEffect(() => () => { genControllerRef.current?.abort(); }, []);
 
   const refreshSaved = () => {
     setSavedSongs(getSavedSongs());
@@ -50,6 +54,7 @@ export default function SongsPage() {
     setGenerating(true);
     setGenError(null);
     const controller = new AbortController();
+    genControllerRef.current = controller;
     try {
       const res = await fetch('/api/tabs', {
         method: 'POST',

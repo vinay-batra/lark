@@ -9,10 +9,13 @@ import { SongCover } from '@/components/SongCover';
 import { Reveal } from '@/components/Reveal';
 
 export default function LearnPage() {
-  // Lazy init from localStorage. The progress only changes when the user
-  // completes a session, which navigates back here via SongFollowView's reset.
-  const [progress] = useState<StageProgress[]>(() => getCurriculumProgress());
+  const [progress, setProgress] = useState<StageProgress[]>(() => getCurriculumProgress());
   const [selectedSongId, setSelectedSongId] = useState<string | null>(null);
+
+  const handleBack = () => {
+    setProgress(getCurriculumProgress());
+    setSelectedSongId(null);
+  };
 
   const selectedSong = selectedSongId ? SONGS.find(s => s.id === selectedSongId) : null;
 
@@ -21,7 +24,7 @@ export default function LearnPage() {
       <div style={{ maxWidth: 640, margin: '0 auto' }}>
         <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
           <button
-            onClick={() => setSelectedSongId(null)}
+            onClick={handleBack}
             style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', color: 'var(--text3)', background: 'none', border: 'none', padding: 0, cursor: 'pointer', transition: 'color 0.15s' }}
             onMouseEnter={e => { e.currentTarget.style.color = 'var(--text)'; }}
             onMouseLeave={e => { e.currentTarget.style.color = 'var(--text3)'; }}
