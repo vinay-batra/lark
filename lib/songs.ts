@@ -373,10 +373,10 @@ export const SONGS: Song[] = [
       n(5,0),n(5,0),n(5,4),n(5,5),n(5,7),n(5,5),n(5,4),n(5,0),n(5,4),n(5,5),n(5,7),n(5,0),n(5,0),n(5,4),n(5,5),n(5,7),
     ] },
 
-  // Crazy Train: F# minor iconic riff F#-A-E-F#-D-F#-E-C#-D-A (was incorrectly in A minor)
+  // Crazy Train: F# minor riff F#2-A2-B2-C#3-B2 on str6/5 (str5 f4=C#3, not f3=C natural)
   { id: 'crazy-train', title: 'Crazy Train', artist: 'Ozzy Osbourne', difficulty: 'intermediate', bpm: 138,
     notes: [
-      n(6,2),n(5,0),n(5,2),n(6,2),n(5,0),n(5,3),n(5,2),n(6,2),n(5,0),n(5,2),n(4,2),n(4,0),n(6,2),n(5,0),n(5,2),n(6,2),n(5,0),n(5,3),n(5,2),n(6,2),n(5,0),n(5,2),n(4,2),n(4,0),n(6,2),n(5,0),n(5,2),n(6,2),n(5,0),n(5,3),n(5,2),n(6,2),n(5,0),n(5,2),n(4,2),n(4,0),
+      n(6,2),n(5,0),n(5,2),n(6,2),n(5,0),n(5,4),n(5,2),n(6,2),n(5,0),n(5,2),n(4,2),n(4,0),n(6,2),n(5,0),n(5,2),n(6,2),n(5,0),n(5,4),n(5,2),n(6,2),n(5,0),n(5,2),n(4,2),n(4,0),n(6,2),n(5,0),n(5,2),n(6,2),n(5,0),n(5,4),n(5,2),n(6,2),n(5,0),n(5,2),n(4,2),n(4,0),
     ] },
 
   // Highway to Hell: A mixolydian riff on str1 (A-G-A-G-E-G-A-D), expanded
@@ -447,10 +447,10 @@ export const SONGS: Song[] = [
       n(2,0),n(2,3),n(2,3),n(2,0),n(2,3),n(2,3),n(2,0),n(2,3),n(3,0),n(2,0),n(2,3),n(2,3),n(2,0),n(2,3),n(2,3),n(2,0),n(2,3),n(3,0),n(2,0),n(2,3),n(2,3),n(2,0),n(2,3),n(2,3),n(2,0),n(2,3),n(3,0),n(2,0),n(2,3),n(2,3),n(2,0),n(2,3),n(2,3),n(2,0),n(2,3),n(3,0),
     ] },
 
-  // Zombie: E-F#-G-A-A-G-F#-E-F#-G on str1, two full passes
+  // Zombie: Em-C-G-D power chord root pattern (E2-C3-G3-D3), two full reps + partial
   { id: 'zombie', title: 'Zombie', artist: 'The Cranberries', difficulty: 'intermediate', bpm: 120,
     notes: [
-      n(6,0),n(6,0),n(6,0),n(6,0),n(6,3),n(6,3),n(6,3),n(6,3),n(4,0),n(4,0),n(4,0),n(4,0),n(5,0),n(5,0),n(5,0),n(5,0),n(6,0),n(6,0),n(6,0),n(6,0),n(6,3),n(6,3),n(6,3),n(6,3),n(4,0),n(4,0),n(4,0),n(4,0),n(5,0),n(5,0),n(5,0),n(5,0),n(6,0),n(6,0),n(6,3),n(6,3),
+      n(6,0),n(6,0),n(6,0),n(6,0),n(5,3),n(5,3),n(5,3),n(5,3),n(3,0),n(3,0),n(3,0),n(3,0),n(4,0),n(4,0),n(4,0),n(4,0),n(6,0),n(6,0),n(6,0),n(6,0),n(5,3),n(5,3),n(5,3),n(5,3),n(3,0),n(3,0),n(3,0),n(3,0),n(4,0),n(4,0),n(4,0),n(4,0),n(6,0),n(6,0),n(5,3),n(5,3),
     ] },
 
   // Whole Lotta Love: E blues riff on str6 (E-G-A with G#-A chromatic), expanded
@@ -483,18 +483,21 @@ export const SONGS: Song[] = [
       n(3,0),n(2,0),n(2,3),n(1,3),n(2,0),n(2,3),n(3,0),n(2,0),n(2,3),n(1,3),n(2,0),n(2,3),n(2,1),n(1,0),n(1,3),n(2,1),n(1,0),n(1,3),n(2,3),n(1,2),n(1,5),n(2,3),n(1,2),n(1,5),n(3,0),n(2,0),n(2,3),n(1,3),n(2,0),n(2,3),n(2,1),n(1,0),n(1,3),n(2,3),n(3,0),n(3,0),
     ] },
 
-  // My Hero: B-D-E power chord roots on str6 then E pedal riff, expanded
+  // My Hero: E-D-A power chord root riff on str6/4/5 (E2-D3-A2), four reps
   { id: 'my-hero', title: 'My Hero', artist: 'Foo Fighters', difficulty: 'intermediate', bpm: 200,
     notes: [
-      n(6,0),n(6,3),n(5,0),n(5,3),n(4,0),n(4,2),n(3,0),n(3,2),n(6,0),n(6,3),n(5,0),n(5,3),n(4,0),n(4,2),n(3,0),n(3,2),n(6,0),n(6,3),n(5,0),n(5,3),n(4,0),n(4,2),n(3,0),n(3,2),n(6,0),n(6,3),n(5,0),n(5,3),n(4,0),n(4,2),n(3,0),n(3,2),
+      n(6,0),n(6,0),n(6,0),n(4,0),n(4,0),n(4,0),n(5,0),n(5,0),n(5,0),n(4,0),n(6,0),n(6,0),n(6,0),n(4,0),n(4,0),n(4,0),n(5,0),n(5,0),n(5,0),n(4,0),n(6,0),n(6,0),n(6,0),n(4,0),n(4,0),n(4,0),n(5,0),n(5,0),n(5,0),n(4,0),n(6,0),n(6,0),n(6,0),n(4,0),n(5,0),n(4,0),
     ] },
 
   // ── ADVANCED ─────────────────────────────────────────────────────────────
 
-  // Comfortably Numb Solo: Bb key -- Eb5-Eb5-Db5-C5-Db5-Eb5 (frets 11,11,9,8 on str1), two reps
+  // Comfortably Numb Solo: Bb key -- Eb5-Eb5-Db5-C5-Db5-Eb5-Db5-Bb4 (str1 frets 11,11,9,8,9,11,9,6), two reps + runs
   { id: 'comfortably-numb-solo', title: 'Comfortably Numb (Solo)', artist: 'Pink Floyd', difficulty: 'advanced', bpm: 63,
     notes: [
-      n(2,0),n(2,3),n(1,0),n(2,3),n(2,0),n(2,3),n(1,0),n(2,3),n(2,0),n(3,0),n(3,2),n(2,0),n(3,0),n(4,2),n(3,0),n(3,2),n(2,0),n(2,3),n(1,0),n(2,3),n(2,0),n(2,3),n(1,0),n(2,3),n(2,0),n(3,0),n(3,2),n(2,0),n(3,0),n(4,2),n(3,0),n(3,2),n(2,0),n(2,3),n(1,0),n(2,3),
+      n(1,11),n(1,11),n(1,9),n(1,8),n(1,9),n(1,11),n(1,9),n(1,6),
+      n(1,6),n(1,8),n(1,9),n(1,11),n(1,13),n(1,11),n(1,9),n(1,8),
+      n(1,6),n(1,6),n(1,9),n(1,11),n(1,9),n(1,6),n(1,8),n(1,9),
+      n(1,11),n(1,11),n(1,9),n(1,8),n(1,9),n(1,11),n(1,9),n(1,6),n(1,8),n(1,11),n(1,9),n(1,6),
     ] },
 
   // Sultans of Swing: Dm pentatonic riff D-A-B-C-D-C-B-A, then upper notes
@@ -521,16 +524,20 @@ export const SONGS: Song[] = [
       n(6,0),n(6,3),n(6,5),n(6,0),n(6,3),n(6,5),n(6,0),n(6,3),n(6,5),n(6,7),n(6,5),n(6,3),n(6,0),n(6,3),n(6,5),n(6,0),n(6,3),n(6,5),n(6,0),n(6,3),n(6,5),n(6,7),n(6,5),n(6,3),n(6,0),n(6,3),n(6,5),n(6,0),n(6,3),n(6,5),n(6,0),n(6,3),n(6,5),n(6,7),n(6,5),n(6,3),
     ] },
 
-  // Fade to Black: Bm arpeggio B2-F#3-A3-D4-F#4, two reps + Em transition
+  // Fade to Black: Bm arpeggio B2-F#3-B3 (str5f2-str4f4-str2f0), G section B2-D3-A3, Am B2-D3-A3, two reps
   { id: 'fade-to-black', title: 'Fade to Black (Intro)', artist: 'Metallica', difficulty: 'advanced', bpm: 100,
     notes: [
-      n(5,2),n(4,2),n(2,0),n(4,2),n(5,2),n(4,2),n(2,0),n(4,2),n(5,2),n(4,2),n(2,0),n(4,2),n(5,2),n(4,0),n(3,2),n(4,0),n(5,2),n(4,0),n(3,2),n(4,0),n(5,2),n(4,0),n(3,2),n(4,0),n(5,0),n(4,2),n(3,2),n(4,2),n(5,0),n(4,2),n(3,2),n(4,2),n(5,2),n(4,2),n(2,0),n(4,2),
+      n(5,2),n(4,4),n(2,0),n(4,4),n(5,2),n(4,4),n(2,0),n(4,4),n(5,2),n(4,4),n(2,0),n(4,4),n(5,2),n(4,0),n(3,2),n(4,0),n(5,2),n(4,0),n(3,2),n(4,0),n(5,2),n(4,0),n(3,2),n(4,0),n(5,0),n(4,2),n(3,2),n(4,2),n(5,0),n(4,2),n(3,2),n(4,2),n(5,2),n(4,4),n(2,0),n(4,4),
     ] },
 
-  // Hotel California Solo: Bm solo notes F#5-E5-F#5-E5-Eb5 on str1, then str2, then str3
+  // Hotel California Solo: Bm pentatonic high on str1 -- B4(f7)-D5(f10)-F#5(f14)-E5(f12), four reps
   { id: 'hotel-california-solo', title: 'Hotel California (Solo)', artist: 'Eagles', difficulty: 'advanced', bpm: 75,
     notes: [
-      n(2,0),n(2,3),n(1,2),n(1,0),n(2,3),n(2,0),n(2,3),n(1,0),n(2,0),n(2,3),n(1,2),n(1,0),n(2,3),n(2,0),n(3,2),n(2,0),n(2,0),n(2,3),n(1,2),n(1,0),n(2,3),n(2,0),n(2,3),n(1,0),n(2,0),n(2,3),n(1,2),n(1,0),n(2,3),n(2,0),n(3,2),n(2,0),
+      n(1,7),n(1,10),n(1,14),n(1,12),n(1,10),n(1,7),n(1,10),n(1,12),
+      n(1,7),n(1,10),n(1,14),n(1,12),n(1,10),n(1,7),n(1,10),n(1,7),
+      n(1,7),n(1,10),n(1,14),n(1,12),n(1,10),n(1,7),n(1,10),n(1,12),
+      n(1,7),n(1,10),n(1,14),n(1,12),n(1,10),n(1,7),n(1,10),n(1,7),
+      n(1,7),n(1,12),n(1,10),n(1,7),
     ] },
 
   // Little Wing: Em chord fragments and single notes (correct pitches preserved)
@@ -563,12 +570,12 @@ export const SONGS: Song[] = [
       n(5,0),n(4,2),n(3,2),n(2,2),n(1,0),n(2,2),n(3,2),n(4,2),n(5,3),n(4,5),n(3,4),n(2,5),n(1,3),n(2,5),n(3,4),n(4,5),
     ] },
 
-  // Voodoo Child: E blues riff on str6/5/4/3 (E-C-E-A-B), two reps
+  // Voodoo Child: E blues riff on str6 (E2-G2-E3-A3-B3), two reps -- G2 on str6f3, not C3
   { id: 'voodoo-child', title: 'Voodoo Child (Slight Return)', artist: 'Jimi Hendrix', difficulty: 'advanced', bpm: 84,
     notes: [
-      n(6,0),n(5,3),n(4,2),n(3,2),n(2,0),n(3,2),n(6,0),n(5,3),n(4,2),n(3,2),n(2,3),n(2,0),
-      n(6,0),n(5,3),n(4,2),n(3,2),n(2,0),n(3,2),n(4,2),n(5,3),
-      n(6,0),n(5,3),n(4,2),n(3,2),n(2,0),n(3,2),n(6,0),n(5,3),n(4,2),n(3,2),n(2,3),n(2,0),n(6,0),n(5,3),n(4,2),n(3,2),
+      n(6,0),n(6,3),n(4,2),n(3,2),n(2,0),n(3,2),n(6,0),n(6,3),n(4,2),n(3,2),n(2,3),n(2,0),
+      n(6,0),n(6,3),n(4,2),n(3,2),n(2,0),n(3,2),n(4,2),n(6,3),
+      n(6,0),n(6,3),n(4,2),n(3,2),n(2,0),n(3,2),n(6,0),n(6,3),n(4,2),n(3,2),n(2,3),n(2,0),n(6,0),n(6,3),n(4,2),n(3,2),
     ] },
 
   // ── EXPERT ───────────────────────────────────────────────────────────────

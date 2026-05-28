@@ -6,11 +6,29 @@ Guitar AI tutor. Hears you play, shows you what to play, gives feedback.
 
 ## Current Focus
 
-**Last shipped: v1.1 (May 28, 2026) — Full quality/hardening audit: a11y, SEO, light/dark parity, per-page metadata, error boundaries, code cleanup. Plus Supabase Pro infra (email templates + pg_cron).**
+**Last shipped: v1.2 (May 28, 2026) — Song accuracy fixes, 6 new beginner songs (83 total), onboarding tour overhaul, progress merge fix.**
 
 Live at: `https://lark.coach`
 Supabase project: `ebsddbpbvjbcdwfldubx` (on **Pro** plan as of May 28)
-Last commit: cd0da0a (Resolve all audit follow-ups: metadata, error boundaries, a11y, copy)
+Last commit: ef5e8ef (v1.2: song fixes, onboarding overhaul, 6 new songs, progress merge fix)
+
+### v1.2 (May 28, 2026) — Song quality + onboarding pass
+
+**Song fixes**
+- `Iron Man` (Black Sabbath): was on str2/str1 (B3/D4/E4 -- one octave too high). Fixed to str5 (B2/D3/E3 -- correct low-string weight).
+- `Every Breath You Take` (The Police): was A3x4+F#3+G#3 loop -- completely wrong, unrecognizable. Replaced with correct A-major arpeggio pattern through A-F#m-D-E progression (36 notes, verified).
+- **6 new verified beginner songs added** (83 total, up from 77): Twinkle Twinkle Little Star, Mary Had a Little Lamb, Happy Birthday to You, Jingle Bells, Eye of the Tiger, Amazing Grace. All notes manually verified against known melodies.
+
+**Onboarding tour overhaul** (`components/OnboardingTour.tsx` + `components/AppShell.tsx`)
+- Added "Tune up first" step (step 2) -- new users need to tune before playing. Spotlights Tuner nav.
+- Added "Learning Path" step (step 3) -- curriculum was never mentioned in tour. Spotlights Learn nav.
+- Fixed steps 2+3 both pointing to same `tour-songs` element (looked like a bug, spotlight didn't move).
+- Removed overlay `onClick={onDone}` -- accidental background click no longer permanently dismisses tour.
+- Updated final step to direct users to Learning Path Stage 1 instead of generic "pick a song."
+- Added `tourId="tour-tuner"` to Tuner nav item in AppShell so the spotlight works.
+
+**Progress persistence fix** (`lib/practice.ts`)
+- `loadSessionsFromSupabase` previously did a full replace, wiping any local-only sessions (e.g. played offline or after a failed Supabase insert). Now merges: local sessions not in Supabase (matched by `completedAt` timestamp) are preserved. Remote wins on conflict so correct Supabase UUID/data is used.
 
 ### v1.1 (May 28, 2026) — Hardening pass
 
