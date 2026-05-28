@@ -6,11 +6,48 @@ Guitar AI tutor. Hears you play, shows you what to play, gives feedback.
 
 ## Current Focus
 
-**Last shipped: v1.0 (May 20, 2026) — Songsterr-style scrolling tab, chord detection, 6-stage curriculum, three-tier tab generation, full security/UX audit.**
+**Last shipped: v1.1 (May 28, 2026) — Full quality/hardening audit: a11y, SEO, light/dark parity, per-page metadata, error boundaries, code cleanup. Plus Supabase Pro infra (email templates + pg_cron).**
 
 Live at: `https://lark.coach`
-Supabase project: `ebsddbpbvjbcdwfldubx`
-Last commit: dd9955f (Fix LarkChat FAB: square rendering + always visible in song mode)
+Supabase project: `ebsddbpbvjbcdwfldubx` (on **Pro** plan as of May 28)
+Last commit: cd0da0a (Resolve all audit follow-ups: metadata, error boundaries, a11y, copy)
+
+### v1.1 (May 28, 2026) — Hardening pass
+
+Shipped across 3 commits (0c4864d, 2646bf5, cd0da0a):
+
+**Bugs fixed**
+- `api/coach/route.ts`: AI coach model was `claude-haiku-4-5`, corrected to `claude-sonnet-4-6`
+- `layout.tsx`: added `metadataBase: new URL('https://lark.coach')` so OG image URLs resolve in prod (were falling back to localhost)
+- `app/songs/page.tsx`: AbortController now stored in a ref and aborted on unmount (was leaking + setState-after-unmount on tab gen)
+- `app/learn/page.tsx`: curriculum progress refreshes when navigating back from a song (newly unlocked stages now appear without reload)
+- **Invalid hex-alpha CSS bug**: `${colorVar}80` produced invalid `var(--accent)80`. Broke SongCover colors + TunerView glow. Fixed everywhere with `rgba(var(--x-rgb), a)` + new `DIFFICULTY_RGB` map in lib/songs.ts
+
+**Audit (2646bf5, 32 files)**
+- Em dashes purged from all source; hardcoded hex → CSS vars (added `--on-accent`, `--danger-rgb`, `--sharp-rgb`, `--flat-rgb`, full `--diff-*` + `-rgb` palette)
+- `console.*` removed from delete-account + bug-report routes
+- A11y: `aria-label` on auth inputs; `role="dialog"` + `aria-modal` + Escape-to-close on LarkChat panel and FeedbackButton modal
+- SEO: created `public/sitemap.xml` (9 public routes) + `public/robots.txt` (blocks /app, /api)
+- Mobile: LarkChat `639px` breakpoint → `768px`; FABs use `env(safe-area-inset-bottom)` for iOS home indicator
+- Contact email `hello@lark.coach` → `the404supply@gmail.com` (privacy, terms, pricing)
+- Verified all 38 CSS vars symmetrical across dark/light
+
+**Audit follow-ups (cd0da0a, 18 files)**
+- **Marketing pages now use server wrapper + client content pattern**: `pricing/`, `faq/`, `changelog/`, `privacy/`, `terms/` each have a server `page.tsx` (exports `metadata` w/ title + description + openGraph) that renders a `*Content.tsx` client component. This is REQUIRED — client components can't export metadata.
+- Error boundaries: `app/error.tsx` ("A string snapped") + `app/app/error.tsx` ("This page hit a wrong note")
+- `VinylLoader`: vinyl disc is theme-fixed via new vars `--vinyl-body`, `--vinyl-groove`, `--vinyl-shine` (defined identically in both themes; grooves were invisible on light cream bg)
+- Mounted guards added to `supabase.auth.getUser().then()` in AppShell, PublicNav, SettingsPanel (prevent setState after unmount)
+- Deleted dead `components/TabView.tsx` (replaced by TabStaff long ago)
+- FAQ copy de-staled (AI coaching + accounts are live, not "coming")
+
+**Visual audit done (not committed)** — Playwright screenshotted all 9 public pages × mobile/desktop × dark/light (36 shots), plus dashboard pages reviewed via Chrome MCP using a logged-in session. No layout bugs found. The only scare (empty/dim Learn + Settings) was just the `Reveal` fade-in caught mid-hydration — correct behavior.
+
+**Still unverified (needs Vinay, can't be done in code):** audio actually working (mic), VinylLoader light-mode by eye (only shows during AI gen), email delivery, auth signup/OAuth/reset flows.
+
+### Supabase Pro decisions (May 28)
+- Upgraded to **Pro**. Skipped **Custom Domain** add-on ($10/mo — not worth it; OAuth screen still shows `*.supabase.co`, decided that's fine). Skipped **Resend custom SMTP** (decided not worth setup; auth emails go through Supabase default, Pro raises limit 3/hr → 30/hr).
+- DONE in dashboard: pasted the 4 branded email templates from `supabase/email-templates/` into Auth > Email Templates; ran the `pg_cron` migration in SQL editor (daily cleanup of lark_gen_history 30d + lark_bug_reports 90d).
+- There's a **test account** for browser testing: display name "Test", email `vinaybatra2010@gmail.com`.
 
 Routes (22 total):
 - `/` — Landing. Auth-aware: "GO TO APP" when signed in, "START PLAYING" -> signup when not.
@@ -131,13 +168,14 @@ lark/
     globals.css             <- all themes + utility classes
     (marketing)/            <- route group: PublicNav + Footer wrap
       layout.tsx
-      page.tsx              <- / (landing, auth-aware hero)
-      pricing/page.tsx      <- /pricing
-      changelog/page.tsx    <- /changelog (horizontal timeline, 6 chapters)
-      faq/page.tsx          <- /faq
+      page.tsx              <- / (landing, auth-aware hero; client)
+      pricing/              <- page.tsx (server, metadata) + PricingContent.tsx (client)
+      changelog/            <- page.tsx (server, metadata) + ChangelogContent.tsx (7 chapters, client)
+      faq/                  <- page.tsx (server, metadata) + FaqContent.tsx (client)
       settings/page.tsx     <- /settings -- renders <SettingsPanel layout="standalone" />
-      privacy/page.tsx      <- /privacy
-      terms/page.tsx        <- /terms
+      privacy/              <- page.tsx (server, metadata) + PrivacyContent.tsx (client)
+      terms/                <- page.tsx (server, metadata) + TermsContent.tsx (client)
+    error.tsx               <- root error boundary ("A string snapped")
     auth/page.tsx           <- /auth (own layout, no nav)
     tuner/page.tsx          <- /tuner (ToolNav)
     chords/page.tsx         <- /chords (ToolNav)
@@ -157,8 +195,9 @@ lark/
       tabs/route.ts         <- AI tab gen note-names-first, claude-sonnet-4-6 (10/hr)
       bug-report/route.ts   <- Bug reports, rate limited, derives userId from token
       delete-account/route.ts <- Delete user via service role key, rate limited
+    app/error.tsx           <- in-app error boundary ("This page hit a wrong note")
   components/
-    AppShell.tsx            <- sidebar + topbar, auth state, UserMenu
+    AppShell.tsx            <- sidebar + topbar, auth state, UserMenu (mounted-guard on getUser)
     PublicNav.tsx           <- auth-aware: avatar pill when signed in
     UserMenu.tsx            <- avatar + name pill + dropdown
     SettingsPanel.tsx       <- all settings UI (deduped), layout prop: standalone | in-app
@@ -186,10 +225,19 @@ lark/
     metronome-scheduler.ts  <- lookahead Web Audio metronome, reusable handle
     chord-detection.ts      <- buildChromagram, detectChordFromChroma, chordMatches
     curriculum.ts           <- STAGES array, getCurriculumProgress, getNextSong
-    version.ts              <- VERSION string (currently v1.0)
+    version.ts              <- VERSION string (currently v1.1)
   proxy.ts                  <- SSR auth refresh (Next.js 16 renamed middleware)
-  supabase/migrations/      <- SQL files to run in Supabase SQL editor
+  supabase/migrations/      <- SQL files to run in Supabase SQL editor (incl. pg_cron)
+  supabase/email-templates/ <- branded auth email HTML (paste into Supabase Auth UI)
+  public/sitemap.xml        <- 9 public routes
+  public/robots.txt         <- blocks /app and /api
 ```
+
+### Critical patterns from v1.1 (do not regress)
+- **Hex-alpha is invalid CSS**: never do `${cssVar}80`. Use `rgba(var(--x-rgb), 0.5)`. RGB-channel vars exist for accent, danger, sharp, flat, and all difficulty colors.
+- **Client components can't export `metadata`**: any marketing page needing SEO metadata must be a server `page.tsx` rendering a client `*Content.tsx`.
+- **Vinyl loader colors are theme-fixed** (`--vinyl-body/groove/shine`), not `var(--bg)` — a vinyl record is black in both themes.
+- Async `supabase.auth.getUser().then(setState)` needs a `mounted` flag + cleanup.
 
 ---
 

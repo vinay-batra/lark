@@ -37,7 +37,7 @@ ANTHROPIC_API_KEY=...              # AI coaching, tab generation, chat
 SUPABASE_SERVICE_ROLE_KEY=...      # delete account endpoint
 ```
 
-Run the SQL files in `supabase/migrations/` in the Supabase SQL editor to set up tables.
+Run the SQL files in `supabase/migrations/` in the Supabase SQL editor to set up tables (incl. `pg_cron` cleanup jobs). Auth email templates live in `supabase/email-templates/` — paste them into Supabase Auth > Email Templates.
 
 ## Routes
 
@@ -45,7 +45,7 @@ Run the SQL files in `supabase/migrations/` in the Supabase SQL editor to set up
 |---|---|
 | `/` | Landing — auth-aware hero |
 | `/pricing` | Free / Pro / Studio tiers |
-| `/changelog` | Six-chapter horizontal timeline |
+| `/changelog` | Seven-chapter horizontal timeline |
 | `/faq` | Accordion FAQ |
 | `/privacy` | Privacy policy |
 | `/terms` | Terms of service |
@@ -69,4 +69,4 @@ Run the SQL files in `supabase/migrations/` in the Supabase SQL editor to set up
 
 ## Version
 
-v1.0
+v1.1

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Reveal } from '@/components/Reveal';
 
 // ── Chapter data ──────────────────────────────────────────────────────────────
-// Lark's v0.1-v0.8 entries grouped into 4 thematic chapters.
+// Lark's v0.1-v1.1 entries grouped into thematic chapters.
 // Each chapter is a coherent arc, not a commit dump.
 const CHAPTERS = [
   {
@@ -102,6 +102,22 @@ const CHAPTERS = [
       'Hero centering fixed, 29 lint errors eliminated, metronome extracted to reusable library module',
     ],
     tags: ['Tab View', 'MIDI', 'Songs', 'Polish'],
+  },
+  {
+    num: '07',
+    name: 'Hardening',
+    versions: 'v1.1',
+    dateRange: 'May 28, 2026',
+    intro: 'A full quality pass. Every page audited for polish, accessibility, and consistency, with a pile of small fixes that add up to a tighter app.',
+    highlights: [
+      'App-wide audit: a unified color system, cleaner code, and consistent spacing across more than fifty files',
+      'Fixed a color-rendering bug that washed out song cover art and the tuner glow in some themes',
+      'Smarter AI coaching: post-session feedback now runs on the stronger Claude Sonnet model',
+      'Accessibility pass: dialog roles, keyboard Escape, and screen-reader labels on the chat and feedback panels',
+      'SEO and sharing: every page now has its own title, description, and social preview image',
+      'Branded sign-in emails, friendly error pages, and automatic database cleanup running behind the scenes',
+    ],
+    tags: ['Audit', 'Accessibility', 'SEO', 'Polish'],
   },
 ];
 
@@ -319,7 +335,7 @@ export default function ChangelogPage() {
                 fontWeight: 600,
               }}
             >
-              Six chapters &middot; scroll
+              Seven chapters &middot; scroll
             </span>
             <svg width="22" height="10" viewBox="0 0 22 10" fill="none">
               <path d="M2 5h17M14 1l4 4-4 4" stroke="var(--text3)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
