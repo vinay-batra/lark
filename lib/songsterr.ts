@@ -51,7 +51,7 @@ export interface SongsterrMeta {
   title: string;
   /** Canonical artist name from Songsterr */
   artist: string;
-  /** Guitar track name (e.g., "Kirk Hammett | Lead Guitar") — gives Claude context */
+  /** Guitar track name (e.g., "Kirk Hammett | Lead Guitar") - gives Claude context */
   trackName: string;
   /** True if the guitar track uses non-standard tuning */
   nonStandardTuning: boolean;

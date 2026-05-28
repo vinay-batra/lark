@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { SONGS, Song, Difficulty, DIFFICULTY_COLORS, DIFFICULTY_DIM, DIFFICULTY_BORDER, DIFFICULTY_ORDER } from '@/lib/songs';
+import { SONGS, Song, Difficulty, DIFFICULTY_COLORS, DIFFICULTY_DIM, DIFFICULTY_BORDER, DIFFICULTY_RGB, DIFFICULTY_ORDER } from '@/lib/songs';
 import { SongFollowView } from '@/components/SongFollowView';
 import { SongCover } from '@/components/SongCover';
 import { VinylLoader } from '@/components/VinylLoader';
@@ -241,14 +241,14 @@ export default function SongsPage() {
                 <div key={diff}>
                   {/* Section header */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: DIFFICULTY_COLORS[diff], boxShadow: `0 0 8px ${DIFFICULTY_COLORS[diff]}80`, flexShrink: 0 }} />
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: DIFFICULTY_COLORS[diff], boxShadow: `0 0 8px rgba(${DIFFICULTY_RGB[diff]}, 0.5)`, flexShrink: 0 }} />
                     <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: DIFFICULTY_COLORS[diff], letterSpacing: '0.16em' }}>
                       {diff.toUpperCase()}
                     </p>
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)' }}>
                       {groupSongs.length} songs
                     </span>
-                    <div style={{ flex: 1, height: '0.5px', background: `linear-gradient(90deg, ${DIFFICULTY_COLORS[diff]}40, transparent)` }} />
+                    <div style={{ flex: 1, height: '0.5px', background: `linear-gradient(90deg, rgba(${DIFFICULTY_RGB[diff]}, 0.25), transparent)` }} />
                   </div>
 
                   {/* Cards grid -- no stagger, simple viewport fade */}

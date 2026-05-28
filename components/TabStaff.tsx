@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * TabStaff — Songsterr-style scrolling guitar tab notation.
+ * TabStaff - Songsterr-style scrolling guitar tab notation.
  *
  * Renders a 6-string staff where notes flow continuously from right to left.
  * A fixed green playhead bar marks the current position. Past notes fade;
@@ -62,7 +62,7 @@ export function TabStaff({ notes, currentIndex, wrongFlash }: Props) {
 
   return (
     <div style={{ position: 'relative', width: '100%' }}>
-      {/* String labels — fixed overlay on left */}
+      {/* String labels - fixed overlay on left */}
       <div style={{
         position: 'absolute',
         left: 0,
@@ -89,7 +89,7 @@ export function TabStaff({ notes, currentIndex, wrongFlash }: Props) {
         ))}
       </div>
 
-      {/* Playhead (green bar — fixed at PLAYHEAD_COL * COL_W from left) */}
+      {/* Playhead (green bar - fixed at PLAYHEAD_COL * COL_W from left) */}
       <div style={{
         position: 'absolute',
         left: 28 + PLAYHEAD_COL * COL_W - 1,
@@ -142,9 +142,9 @@ export function TabStaff({ notes, currentIndex, wrongFlash }: Props) {
               'var(--text-muted)';
 
             const noteBg =
-              isCurrent ? (wrongFlash ? 'rgba(239,68,68,0.14)' : 'var(--accent-dim)') :
+              isCurrent ? (wrongFlash ? 'rgba(var(--danger-rgb), 0.14)' : 'var(--accent-dim)') :
               note.result === 'hit' ? 'var(--accent-dim)' :
-              note.result === 'miss' ? 'rgba(239,68,68,0.1)' :
+              note.result === 'miss' ? 'rgba(var(--danger-rgb), 0.1)' :
               'var(--bg)';
 
             const noteOpacity = isPast ? 0.3 : 1;

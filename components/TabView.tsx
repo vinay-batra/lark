@@ -117,7 +117,7 @@ export function TabView({ notes, currentIndex, wrongFlash }: TabViewProps) {
                           : note.result === 'hit'
                           ? '0 0 0 1px var(--accent-border)'
                           : note.result === 'miss'
-                          ? '0 0 0 1px rgba(239,68,68,0.4)'
+                          ? '0 0 0 1px rgba(var(--danger-rgb), 0.4)'
                           : 'none',
                       }}>
                         {note.fret}

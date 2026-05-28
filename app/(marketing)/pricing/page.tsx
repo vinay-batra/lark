@@ -66,7 +66,7 @@ const PLANS: Plan[] = [
       '1:1 onboarding',
     ],
     cta: 'CONTACT US',
-    href: 'mailto:hello@lark.coach',
+    href: 'mailto:the404supply@gmail.com',
     badge: 'COMING SOON',
   },
 ];

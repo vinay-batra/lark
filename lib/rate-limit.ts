@@ -1,6 +1,6 @@
 /**
  * Simple in-memory rate limiter.
- * Uses a sliding window — stores timestamps of each request per IP.
+ * Uses a sliding window - stores timestamps of each request per IP.
  * Not shared across serverless function instances, but sufficient for
  * Vercel's single-region deployment to block runaway abuse.
  */

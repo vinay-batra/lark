@@ -38,7 +38,7 @@ function readLocal<T>(key: string, fallback: T): T {
 }
 function writeLocal(key: string, val: unknown) {
   if (typeof window === 'undefined') return;
-  try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch { /* localStorage unavailable (private mode/quota); non-critical */ }
 }
 
 // ── Sessions ──────────────────────────────────────────────────────────────────
@@ -255,7 +255,7 @@ export function getGenCount(): number {
 export async function submitBugReport(message: string): Promise<{ ok: boolean; errMsg?: string }> {
   const pageUrl = typeof window !== 'undefined' ? window.location.pathname : null;
   // Send the user's access token; the server resolves user_id from it. We
-  // deliberately do NOT send userId in the body — it would be spoofable.
+  // deliberately do NOT send userId in the body - it would be spoofable.
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (supabase) {
     const { data: { session } } = await supabase.auth.getSession();

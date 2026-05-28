@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
 import { PitchDetector } from 'pitchy';
 import { Song } from '@/lib/songs';
 import { TabStaff } from './TabStaff';
@@ -371,7 +370,7 @@ export function SongFollowView({ song }: { song: Song }) {
     const accuracy = Math.round((hits / finalNotes.length) * 100);
     try {
       saveSession({ songTitle: song.title, artist: song.artist, accuracy, hits, total: finalNotes.length, completedAt: new Date().toISOString() });
-    } catch {}
+    } catch { /* localStorage unavailable (private mode/quota); non-critical */ }
     setIsSaved(getSavedSongs().some(s => s.title === song.title && s.artist === song.artist));
     setLoadingFeedback(true);
     const controller = new AbortController();
@@ -587,9 +586,9 @@ export function SongFollowView({ song }: { song: Song }) {
                   <span style={{
                     fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.18em',
                     padding: '3px 9px', borderRadius: 99,
-                    background: lastTiming === 'on' ? 'var(--accent-dim)' : lastTiming === 'late' ? 'rgba(245,158,11,0.12)' : 'rgba(96,165,250,0.12)',
+                    background: lastTiming === 'on' ? 'var(--accent-dim)' : lastTiming === 'late' ? 'rgba(var(--sharp-rgb), 0.12)' : 'rgba(var(--flat-rgb), 0.12)',
                     color: lastTiming === 'on' ? 'var(--accent)' : lastTiming === 'late' ? 'var(--sharp)' : 'var(--flat)',
-                    border: `0.5px solid ${lastTiming === 'on' ? 'var(--accent-border)' : lastTiming === 'late' ? 'rgba(245,158,11,0.3)' : 'rgba(96,165,250,0.3)'}`,
+                    border: `0.5px solid ${lastTiming === 'on' ? 'var(--accent-border)' : lastTiming === 'late' ? 'rgba(var(--sharp-rgb), 0.3)' : 'rgba(var(--flat-rgb), 0.3)'}`,
                     animation: 'pillIn 0.25s ease-out',
                   }}>
                     {lastTiming === 'on' ? 'ON BEAT' : lastTiming === 'late' ? 'LATE' : 'SLOW'}

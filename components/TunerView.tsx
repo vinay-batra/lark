@@ -95,6 +95,9 @@ export function TunerView() {
   const close = !!detected && Math.abs(cents) < 15;
   const noteColor = !detected ? 'var(--text-muted)'
     : inTune ? 'var(--accent)' : close ? 'var(--sharp)' : 'var(--danger)';
+  // RGB tuple var for building rgba() glows (a hex-alpha suffix on a var()
+  // reference would be invalid CSS).
+  const noteRgb = inTune ? 'var(--accent-rgb)' : close ? 'var(--sharp-rgb)' : 'var(--danger-rgb)';
   const meterPx = Math.max(-48, Math.min(48, cents)) * 3;
   const activeStrings = detected
     ? STRINGS.filter(s => Math.abs(1200 * Math.log2(detected.freq / s.freq)) < 50)
@@ -117,7 +120,7 @@ export function TunerView() {
         <div style={{ position: 'relative', height: 4, background: 'var(--bg3)', borderRadius: 2 }}>
           <div style={{ position: 'absolute', left: '50%', top: -3, transform: 'translateX(-50%)', width: 18, height: 10, background: 'var(--accent-border)', borderRadius: 2 }} />
           {detected && (
-            <div style={{ position: 'absolute', top: '50%', left: `calc(50% + ${meterPx}px)`, transform: 'translate(-50%, -50%)', width: 4, height: 22, background: noteColor, borderRadius: 2, boxShadow: `0 0 10px ${noteColor}80`, transition: 'left 0.07s, background 0.1s' }} />
+            <div style={{ position: 'absolute', top: '50%', left: `calc(50% + ${meterPx}px)`, transform: 'translate(-50%, -50%)', width: 4, height: 22, background: noteColor, borderRadius: 2, boxShadow: `0 0 10px rgba(${noteRgb}, 0.5)`, transition: 'left 0.07s, background 0.1s' }} />
           )}
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, alignItems: 'center' }}>

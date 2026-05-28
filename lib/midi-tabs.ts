@@ -174,7 +174,7 @@ const GUITAR_HIGH = 96;
  *   2. Cluster simultaneous (or near-simultaneous) notes together using a
  *      tick window sized relative to the song's ticks-per-beat. From each
  *      cluster take the HIGHEST note (melody lives in the top voice).
- *   3. Remove consecutive duplicate pitches — these are timing repetitions
+ *   3. Remove consecutive duplicate pitches - these are timing repetitions
  *      (e.g., the iconic double-stops in Smoke on the Water appear as G G Bb Bb
  *      because both strings play the same note at successive ticks) that would
  *      make the riff feel doubled/stuttery in play-along mode.
@@ -185,7 +185,7 @@ function pickMelodyTrack(notes: NoteEvent[], ticksPerBeat: number): NoteEvent[] 
 
   const sorted = [...notes].sort((a, b) => a.tickStart - b.tickStart);
 
-  // Cluster window: 1/16th note's worth of ticks — small enough to group
+  // Cluster window: 1/16th note's worth of ticks - small enough to group
   // simultaneous notes, large enough to survive MIDI quantisation offsets.
   const CLUSTER_TICKS = Math.max(8, Math.floor(ticksPerBeat / 8));
 

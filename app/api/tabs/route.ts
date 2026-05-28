@@ -9,7 +9,7 @@ import { rateLimit, getClientIP } from '@/lib/rate-limit';
 /**
  * POST /api/tabs
  *
- * Three-tier pipeline — each tier falls through to the next on failure:
+ * Three-tier pipeline - each tier falls through to the next on failure:
  *
  * 1. bitmidi.com (free MIDI library, no auth)
  *    Human-submitted MIDI files. Returns exact note pitches with timing.

@@ -89,7 +89,7 @@ export default function AppPage() {
         </p>
       </motion.div>
 
-      {/* Stats — shown first */}
+      {/* Stats - shown first */}
       <Reveal>
         <div style={{ marginBottom: 48, padding: '28px 26px', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 16 }}>
           <p className="eyebrow" style={{ marginBottom: 20 }}>YOUR STATS</p>

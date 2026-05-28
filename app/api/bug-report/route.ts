@@ -58,9 +58,9 @@ export async function POST(req: NextRequest) {
   });
 
   if (error) {
-    // Log server-side; never leak Supabase error details (column names, RLS
-    // policy hints, table existence) to the caller.
-    console.error('[bug-report]', error.message);
+    // Never leak Supabase error details (column names, RLS policy hints, table
+    // existence) to the caller.
+    // silent
     return NextResponse.json({ error: 'Could not submit.' }, { status: 500 });
   }
 

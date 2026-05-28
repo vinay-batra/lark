@@ -47,7 +47,7 @@ export function ToolNav({ active }: { active: 'tuner' | 'chords' }) {
               padding: '6px 14px',
               borderRadius: 6,
               background: active === t.id ? 'var(--accent)' : 'transparent',
-              color: active === t.id ? '#061b0e' : 'var(--text2)',
+              color: active === t.id ? 'var(--on-accent)' : 'var(--text2)',
               fontFamily: 'var(--font-mono)',
               fontSize: 10.5,
               fontWeight: 700,

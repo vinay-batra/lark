@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { submitBugReport } from '@/lib/practice';
 
 type State = 'idle' | 'open' | 'submitting' | 'done' | 'error';
@@ -10,6 +10,14 @@ export function FeedbackButton() {
   const [message, setMessage] = useState('');
 
   const [errMsg, setErrMsg] = useState('');
+
+  // Esc closes the feedback modal (keyboard escape hatch).
+  useEffect(() => {
+    if (state === 'idle') return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { setState('idle'); setMessage(''); } };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [state]);
 
   const submit = async () => {
     if (!message.trim()) return;
@@ -32,11 +40,11 @@ export function FeedbackButton() {
         title="Report a bug"
         aria-label="Report a bug"
         style={{
-          position: 'fixed', bottom: 24, right: 96, zIndex: 200,
+          position: 'fixed', bottom: 'calc(24px + env(safe-area-inset-bottom))', right: 96, zIndex: 200,
           width: 44, height: 44, borderRadius: '50%',
           background: 'var(--card-bg)', border: '0.5px solid var(--border2)',
           color: 'var(--text3)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', transition: 'all 0.15s', boxShadow: '0 2px 12px rgba(0,0,0,0.18)',
+          cursor: 'pointer', transition: 'all 0.15s', boxShadow: 'var(--shadow-md)',
         }}
         onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = 'var(--accent-border)'; el.style.color = 'var(--accent)'; el.style.background = 'var(--accent-dim)'; el.style.transform = 'translateY(-1px)'; }}
         onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = 'var(--border2)'; el.style.color = 'var(--text3)'; el.style.background = 'var(--card-bg)'; el.style.transform = 'translateY(0)'; }}
@@ -53,7 +61,7 @@ export function FeedbackButton() {
           onClick={e => { if (e.target === e.currentTarget) { setState('idle'); setMessage(''); } }}
           style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end', padding: '0 24px 88px' }}
         >
-          <div style={{ width: 'min(100%, 360px)', background: 'var(--card-bg)', border: '0.5px solid var(--border2)', borderRadius: 16, padding: '22px 22px 18px', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
+          <div role="dialog" aria-modal="true" aria-label="Report a bug" style={{ width: 'min(100%, 360px)', background: 'var(--card-bg)', border: '0.5px solid var(--border2)', borderRadius: 16, padding: '22px 22px 18px', boxShadow: 'var(--shadow-lg)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
               <div>
                 <p className="eyebrow" style={{ marginBottom: 4 }}>FEEDBACK</p>

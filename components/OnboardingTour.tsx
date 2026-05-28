@@ -84,7 +84,7 @@ export function OnboardingTour({ onDone }: { onDone: () => void }) {
   }, []);
 
   // Pulsing ring on target element
-  // NOTE: never override `position` — fixed elements (like the chat FAB)
+  // NOTE: never override `position` - fixed elements (like the chat FAB)
   // will jump into document flow if position is changed to 'relative'
   useEffect(() => {
     if (!current.targetId || isMobile) return;
@@ -108,7 +108,7 @@ export function OnboardingTour({ onDone }: { onDone: () => void }) {
     else onDone();
   };
 
-  // Smart tooltip positioning — places the card on whichever side has room
+  // Smart tooltip positioning - places the card on whichever side has room
   const CARD_W = 288;
   const CARD_H = 270; // conservative estimate
   const GAP = 16;

@@ -131,7 +131,7 @@ function AuthInner() {
                 <button key={m} type="button" onClick={() => { setMode(m); reset(); }} style={{
                   flex: 1, padding: '9px 12px', borderRadius: 8, border: 'none',
                   background: mode === m ? 'var(--accent)' : 'transparent',
-                  color: mode === m ? '#061b0e' : 'var(--text3)',
+                  color: mode === m ? 'var(--on-accent)' : 'var(--text3)',
                   fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em',
                   cursor: 'pointer', transition: 'all 0.15s',
                 }}>
@@ -190,7 +190,7 @@ function AuthInner() {
               <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, color: 'var(--text3)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 7 }}>
                 Email
               </label>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="you@example.com" className="input-field" autoComplete="email" />
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="you@example.com" className="input-field" autoComplete="email" aria-label="Email" />
             </div>
 
             {showPassword && (
@@ -205,7 +205,7 @@ function AuthInner() {
                     </button>
                   )}
                 </div>
-                <input type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} placeholder={mode === 'signup' ? 'At least 6 characters' : 'Your password'} className="input-field" autoComplete={mode === 'signin' ? 'current-password' : 'new-password'} />
+                <input type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} placeholder={mode === 'signup' ? 'At least 6 characters' : 'Your password'} className="input-field" autoComplete={mode === 'signin' ? 'current-password' : 'new-password'} aria-label="Password" />
               </div>
             )}
 

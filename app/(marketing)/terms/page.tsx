@@ -18,7 +18,7 @@ const SECTIONS = [
       },
       {
         title: 'Account responsibility',
-        body: 'You are responsible for activity that occurs under your account. Keep your login credentials secure and notify us immediately at hello@lark.coach if you suspect unauthorized access.',
+        body: 'You are responsible for activity that occurs under your account. Keep your login credentials secure and notify us immediately at the404supply@gmail.com if you suspect unauthorized access.',
       },
     ],
   },
@@ -74,7 +74,7 @@ const SECTIONS = [
       },
       {
         title: 'Contact',
-        body: 'For questions about these terms, email us at hello@lark.coach.',
+        body: 'For questions about these terms, email us at the404supply@gmail.com.',
       },
     ],
   },
@@ -203,10 +203,10 @@ export default function TermsPage() {
           <p style={{ fontSize: 14, color: 'var(--text3)', lineHeight: 1.65, marginBottom: 28 }}>
             Questions? Email{' '}
             <a
-              href="mailto:hello@lark.coach"
+              href="mailto:the404supply@gmail.com"
               style={{ color: 'var(--accent)', textDecoration: 'none', fontFamily: 'var(--font-mono)', fontSize: 13 }}
             >
-              hello@lark.coach
+              the404supply@gmail.com
             </a>
             .
           </p>

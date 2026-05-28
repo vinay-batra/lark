@@ -165,7 +165,7 @@ export function SettingsPanel({ layout = 'standalone' }: Props) {
     if (fileRef.current) fileRef.current.value = '';
   };
 
-  const setPref = (key: string, val: string) => { try { localStorage.setItem(key, val); } catch {} };
+  const setPref = (key: string, val: string) => { try { localStorage.setItem(key, val); } catch { /* localStorage unavailable; preference just won't persist */ } };
 
   const deleteAccount = async () => {
     if (!supabase) return;
@@ -303,7 +303,7 @@ export function SettingsPanel({ layout = 'standalone' }: Props) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.42, ease: [0.16, 1, 0.3, 1] }}
-          style={{ background: 'var(--card-bg)', border: '0.5px solid rgba(239,68,68,0.3)', borderRadius: 16, padding: '24px 26px', marginBottom: 18 }}
+          style={{ background: 'var(--card-bg)', border: '0.5px solid rgba(var(--danger-rgb), 0.3)', borderRadius: 16, padding: '24px 26px', marginBottom: 18 }}
         >
           <div style={{ marginBottom: 22 }}>
             <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, letterSpacing: '0.22em', color: 'var(--danger)', textTransform: 'uppercase', marginBottom: 6 }}>DANGER ZONE</p>
@@ -315,14 +315,14 @@ export function SettingsPanel({ layout = 'standalone' }: Props) {
           {!showDeleteConfirm ? (
             <button
               onClick={() => setShowDeleteConfirm(true)}
-              style={{ padding: '10px 20px', borderRadius: 9, background: 'rgba(239,68,68,0.08)', border: '0.5px solid rgba(239,68,68,0.4)', color: 'var(--danger)', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', cursor: 'pointer', transition: 'background 0.15s' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(239,68,68,0.15)'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(239,68,68,0.08)'; }}
+              style={{ padding: '10px 20px', borderRadius: 9, background: 'rgba(var(--danger-rgb), 0.08)', border: '0.5px solid rgba(var(--danger-rgb), 0.4)', color: 'var(--danger)', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', cursor: 'pointer', transition: 'background 0.15s' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(var(--danger-rgb), 0.15)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(var(--danger-rgb), 0.08)'; }}
             >
               DELETE MY ACCOUNT
             </button>
           ) : (
-            <div style={{ background: 'rgba(239,68,68,0.06)', border: '0.5px solid rgba(239,68,68,0.25)', borderRadius: 12, padding: '18px 20px' }}>
+            <div style={{ background: 'rgba(var(--danger-rgb), 0.06)', border: '0.5px solid rgba(var(--danger-rgb), 0.25)', borderRadius: 12, padding: '18px 20px' }}>
               <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 16 }}>
                 Are you sure? This cannot be undone.
               </p>
@@ -331,7 +331,7 @@ export function SettingsPanel({ layout = 'standalone' }: Props) {
                 <button
                   onClick={deleteAccount}
                   disabled={deleting}
-                  style={{ padding: '10px 20px', borderRadius: 9, background: 'var(--danger)', border: 'none', color: '#fff', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', cursor: deleting ? 'not-allowed' : 'pointer', opacity: deleting ? 0.6 : 1 }}
+                  style={{ padding: '10px 20px', borderRadius: 9, background: 'var(--danger)', border: 'none', color: 'var(--on-danger)', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', cursor: deleting ? 'not-allowed' : 'pointer', opacity: deleting ? 0.6 : 1 }}
                 >
                   {deleting ? 'DELETING...' : 'YES, DELETE'}
                 </button>

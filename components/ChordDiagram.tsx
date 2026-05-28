@@ -52,7 +52,7 @@ export function ChordDiagram({ voicing, name, size = 'md' }: ChordDiagramProps) 
   const sx = (i: number) => padL + i * stringGap;
 
   // Helper: y position for a fret number relative to baseFret
-  // fret 0 (open) is above the nut — not drawn as a dot
+  // fret 0 (open) is above the nut - not drawn as a dot
   // fret baseFret => row 0.5 (center of first cell), etc.
   const fy = (fret: number) => padT + (fret - baseFret + 0.5) * fretGap;
 
@@ -139,7 +139,7 @@ export function ChordDiagram({ voicing, name, size = 'md' }: ChordDiagramProps) 
 
       {/* ── Finger dots ── */}
       {voicing.frets.map((fret, si) => {
-        if (fret <= 0) return null; // open or muted — handled separately
+        if (fret <= 0) return null; // open or muted - handled separately
         // Skip if this exact position is covered by the barre line visually
         // (we still render it so isolated barre ends are marked)
         const y = fy(fret);

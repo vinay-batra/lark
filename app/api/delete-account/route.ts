@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
   const adminClient = createClient(url, serviceKey, { auth: { persistSession: false } });
   const { error: deleteErr } = await adminClient.auth.admin.deleteUser(user.id);
   if (deleteErr) {
-    console.error('[delete-account]', deleteErr.message);
+    // silent
     return NextResponse.json({ error: 'Could not delete account. Try again.' }, { status: 500 });
   }
 

@@ -53,10 +53,10 @@ const FEATURES = [
 ];
 
 const DIFFICULTY_LABELS = [
-  { label: 'Beginner', color: '#22c55e', count: 31 },
-  { label: 'Intermediate', color: '#f59e0b', count: 24 },
-  { label: 'Advanced', color: '#f97316', count: 12 },
-  { label: 'Expert', color: '#e11d48', count: 6 },
+  { label: 'Beginner', color: 'var(--accent)', rgb: 'var(--accent-rgb)', count: 31 },
+  { label: 'Intermediate', color: 'var(--diff-intermediate)', rgb: 'var(--diff-intermediate-rgb)', count: 24 },
+  { label: 'Advanced', color: 'var(--diff-advanced)', rgb: 'var(--diff-advanced-rgb)', count: 12 },
+  { label: 'Expert', color: 'var(--diff-expert)', rgb: 'var(--diff-expert-rgb)', count: 6 },
 ];
 
 const AI_FEEDBACK_EXAMPLE = `"Nice run through Seven Nation Army. Your E string is clean and you nailed all 9 notes. Watch your intonation on the C -- you are consistently about 18 cents flat there, which suggests your index finger needs to sit closer to the fret. One tip: slow the tempo down to 60% and focus just on that C note until your muscle memory locks it in."`;
@@ -219,8 +219,8 @@ export default function LandingPage() {
           <Reveal delay={0.1}>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 40 }}>
               {DIFFICULTY_LABELS.map(d => (
-                <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 20px', background: 'var(--card-bg)', border: `0.5px solid ${d.color}40`, borderRadius: 12 }}>
-                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: d.color, boxShadow: `0 0 8px ${d.color}80` }} />
+                <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 20px', background: 'var(--card-bg)', border: `0.5px solid rgba(${d.rgb}, 0.25)`, borderRadius: 12 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: d.color, boxShadow: `0 0 8px rgba(${d.rgb}, 0.5)` }} />
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text2)', fontWeight: 700 }}>{d.label}</span>
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: d.color }}>{d.count}</span>
                 </div>
@@ -290,7 +290,7 @@ export default function LandingPage() {
                 <Link href={f.href} className="hover-lift" style={{
                   display: 'block', padding: '24px 22px', background: 'var(--card-bg)',
                   border: '0.5px solid var(--border)', borderRadius: 14, height: '100%', textDecoration: 'none',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden',
+                  boxShadow: 'var(--shadow)', position: 'relative', overflow: 'hidden',
                 }}>
                   <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(var(--accent-rgb),0.3), transparent)' }} />
                   <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--accent-dim)', color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16, border: '0.5px solid var(--accent-border)' }}>

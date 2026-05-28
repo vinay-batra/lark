@@ -19,23 +19,33 @@ export type Difficulty = 'beginner' | 'intermediate' | 'advanced' | 'expert';
 
 export const DIFFICULTY_COLORS: Record<Difficulty, string> = {
   beginner:     'var(--accent)',
-  intermediate: '#f59e0b',
-  advanced:     '#ef4444',
-  expert:       '#ec4899',
+  intermediate: 'var(--diff-intermediate)',
+  advanced:     'var(--diff-advanced)',
+  expert:       'var(--diff-expert)',
 };
 
 export const DIFFICULTY_DIM: Record<Difficulty, string> = {
   beginner:     'var(--accent-dim)',
-  intermediate: 'rgba(245,158,11,0.1)',
-  advanced:     'rgba(239,68,68,0.1)',
-  expert:       'rgba(236,72,153,0.1)',
+  intermediate: 'rgba(var(--diff-intermediate-rgb), 0.1)',
+  advanced:     'rgba(var(--diff-advanced-rgb), 0.1)',
+  expert:       'rgba(var(--diff-expert-rgb), 0.1)',
 };
 
 export const DIFFICULTY_BORDER: Record<Difficulty, string> = {
   beginner:     'var(--accent-border)',
-  intermediate: 'rgba(245,158,11,0.3)',
-  advanced:     'rgba(239,68,68,0.3)',
-  expert:       'rgba(236,72,153,0.3)',
+  intermediate: 'rgba(var(--diff-intermediate-rgb), 0.3)',
+  advanced:     'rgba(var(--diff-advanced-rgb), 0.3)',
+  expert:       'rgba(var(--diff-expert-rgb), 0.3)',
+};
+
+// RGB-tuple CSS vars (e.g. "34, 197, 94") so callers can build rgba() with any
+// alpha. Use these instead of appending a hex alpha suffix to DIFFICULTY_COLORS,
+// which would be invalid once the value is a var() reference.
+export const DIFFICULTY_RGB: Record<Difficulty, string> = {
+  beginner:     'var(--accent-rgb)',
+  intermediate: 'var(--diff-intermediate-rgb)',
+  advanced:     'var(--diff-advanced-rgb)',
+  expert:       'var(--diff-expert-rgb)',
 };
 
 export const DIFFICULTY_ORDER: Difficulty[] = ['beginner', 'intermediate', 'advanced', 'expert'];

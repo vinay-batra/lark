@@ -165,7 +165,7 @@ export function PublicNav() {
                   <div style={{
                     position: 'absolute', top: 'calc(100% + 8px)', right: 0,
                     background: 'var(--card-bg)', border: '0.5px solid var(--border2)',
-                    borderRadius: 12, minWidth: 160, boxShadow: '0 8px 32px rgba(0,0,0,0.35)',
+                    borderRadius: 12, minWidth: 160, boxShadow: 'var(--shadow-md)',
                     overflow: 'hidden', zIndex: 200,
                   }}>
                     {[

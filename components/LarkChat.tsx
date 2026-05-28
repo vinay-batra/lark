@@ -10,7 +10,7 @@ interface ChatMessage {
 function getToday(): string {
   // Use local date, not UTC. toISOString() gives UTC which means the limit
   // doesn't reset at local midnight for users west of UTC (e.g. US users hit
-  // 11pm, sleep, wake up at 9am — still blocked because it's still the same
+  // 11pm, sleep, wake up at 9am - still blocked because it's still the same
   // UTC date until 5-8am local time).
   const d = new Date();
   const y = d.getFullYear();
@@ -65,6 +65,14 @@ export function LarkChat() {
     window.addEventListener('lark:song-state', handler);
     return () => window.removeEventListener('lark:song-state', handler);
   }, []);
+
+  // Esc closes the chat panel (keyboard escape hatch).
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open]);
 
   // Intentionally no auto-scroll on response -- user scrolls manually
 
@@ -132,7 +140,7 @@ export function LarkChat() {
         aria-label={open ? 'Close Lark chat' : 'Open Lark chat'}
         style={{
           position: 'fixed',
-          bottom: 24,
+          bottom: 'calc(24px + env(safe-area-inset-bottom))',
           right: 24,
           zIndex: 201,
           width: 60,
@@ -180,9 +188,11 @@ export function LarkChat() {
       {open && (
         <div
           onClick={e => e.stopPropagation()}
+          role="dialog"
+          aria-label="Ask Lark chat"
           style={{
             position: 'fixed',
-            bottom: 96,
+            bottom: 'calc(96px + env(safe-area-inset-bottom))',
             right: 24,
             zIndex: 201,
             width: 400,
@@ -191,7 +201,7 @@ export function LarkChat() {
             background: 'var(--card-bg)',
             border: '0.5px solid var(--border2)',
             borderRadius: 16,
-            boxShadow: '0 20px 60px rgba(0,0,0,0.35)',
+            boxShadow: 'var(--shadow-lg)',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
@@ -469,7 +479,7 @@ export function LarkChat() {
           0%, 100% { opacity: 0.3; transform: scale(0.85); }
           50% { opacity: 1; transform: scale(1); }
         }
-        @media (max-width: 639px) {
+        @media (max-width: 768px) {
           .lark-chat-panel {
             bottom: 92px !important;
             right: 0 !important;

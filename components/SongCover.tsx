@@ -1,6 +1,6 @@
 'use client';
 
-import { Song, DIFFICULTY_COLORS } from '@/lib/songs';
+import { Song, DIFFICULTY_COLORS, DIFFICULTY_RGB } from '@/lib/songs';
 
 // Deterministic hash so the same song always gets the same cover.
 function hash(s: string): number {
@@ -25,6 +25,9 @@ export function SongCover({ song, size = 56 }: Props) {
   const h = hash(song.id || song.title);
   const variant = h % 2;
   const accent = DIFFICULTY_COLORS[song.difficulty];
+  // RGB tuple var so alpha variants use rgba() (appending a hex alpha to a
+  // var() reference is invalid CSS and renders nothing).
+  const accentRgb = DIFFICULTY_RGB[song.difficulty];
   const angle = (h % 360);
   const initials = getInitials(song.title);
 
@@ -37,17 +40,17 @@ export function SongCover({ song, size = 56 }: Props) {
         position: 'relative',
         overflow: 'hidden',
         flexShrink: 0,
-        background: `linear-gradient(${angle}deg, ${accent}33, var(--bg3) 60%)`,
-        border: `0.5px solid ${accent}55`,
+        background: `linear-gradient(${angle}deg, rgba(${accentRgb}, 0.2), var(--bg3) 60%)`,
+        border: `0.5px solid rgba(${accentRgb}, 0.33)`,
       }}
       aria-hidden
     >
-      {variant === 0 ? <VinylVariant size={size} accent={accent} initials={initials} /> : <CassetteVariant size={size} accent={accent} initials={initials} />}
+      {variant === 0 ? <VinylVariant size={size} accent={accent} accentRgb={accentRgb} initials={initials} /> : <CassetteVariant size={size} accent={accent} accentRgb={accentRgb} initials={initials} />}
     </div>
   );
 }
 
-function VinylVariant({ size, accent, initials }: { size: number; accent: string; initials: string }) {
+function VinylVariant({ size, accent, accentRgb, initials }: { size: number; accent: string; accentRgb: string; initials: string }) {
   const cx = size / 2;
   const cy = size / 2;
   const outerR = size * 0.42;
@@ -55,11 +58,11 @@ function VinylVariant({ size, accent, initials }: { size: number; accent: string
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ position: 'absolute', inset: 0 }}>
       {/* record body */}
-      <circle cx={cx} cy={cy} r={outerR} fill="var(--bg)" stroke={`${accent}88`} strokeWidth="0.5" />
+      <circle cx={cx} cy={cy} r={outerR} fill="var(--bg)" stroke={`rgba(${accentRgb}, 0.53)`} strokeWidth="0.5" />
       {/* grooves */}
-      <circle cx={cx} cy={cy} r={outerR * 0.85} fill="none" stroke={`${accent}33`} strokeWidth="0.5" />
-      <circle cx={cx} cy={cy} r={outerR * 0.65} fill="none" stroke={`${accent}33`} strokeWidth="0.5" />
-      <circle cx={cx} cy={cy} r={outerR * 0.45} fill="none" stroke={`${accent}33`} strokeWidth="0.5" />
+      <circle cx={cx} cy={cy} r={outerR * 0.85} fill="none" stroke={`rgba(${accentRgb}, 0.2)`} strokeWidth="0.5" />
+      <circle cx={cx} cy={cy} r={outerR * 0.65} fill="none" stroke={`rgba(${accentRgb}, 0.2)`} strokeWidth="0.5" />
+      <circle cx={cx} cy={cy} r={outerR * 0.45} fill="none" stroke={`rgba(${accentRgb}, 0.2)`} strokeWidth="0.5" />
       {/* label */}
       <circle cx={cx} cy={cy} r={labelR} fill={accent} />
       <circle cx={cx} cy={cy} r={size * 0.025} fill="var(--bg)" />
@@ -80,7 +83,7 @@ function VinylVariant({ size, accent, initials }: { size: number; accent: string
   );
 }
 
-function CassetteVariant({ size, accent, initials }: { size: number; accent: string; initials: string }) {
+function CassetteVariant({ size, accent, accentRgb, initials }: { size: number; accent: string; accentRgb: string; initials: string }) {
   const reelR = size * 0.13;
   const leftCx = size * 0.32;
   const rightCx = size * 0.68;
@@ -88,14 +91,14 @@ function CassetteVariant({ size, accent, initials }: { size: number; accent: str
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ position: 'absolute', inset: 0 }}>
       {/* tape window background */}
-      <rect x={size * 0.18} y={size * 0.34} width={size * 0.64} height={size * 0.32} rx={size * 0.04} fill="var(--bg)" stroke={`${accent}55`} strokeWidth="0.5" />
+      <rect x={size * 0.18} y={size * 0.34} width={size * 0.64} height={size * 0.32} rx={size * 0.04} fill="var(--bg)" stroke={`rgba(${accentRgb}, 0.33)`} strokeWidth="0.5" />
       {/* reels */}
       <circle cx={leftCx} cy={cy} r={reelR} fill="none" stroke={accent} strokeWidth="1" />
       <circle cx={leftCx} cy={cy} r={reelR * 0.4} fill={accent} />
       <circle cx={rightCx} cy={cy} r={reelR} fill="none" stroke={accent} strokeWidth="1" />
       <circle cx={rightCx} cy={cy} r={reelR * 0.4} fill={accent} />
       {/* tape line */}
-      <line x1={leftCx + reelR} y1={cy} x2={rightCx - reelR} y2={cy} stroke={`${accent}66`} strokeWidth="0.5" />
+      <line x1={leftCx + reelR} y1={cy} x2={rightCx - reelR} y2={cy} stroke={`rgba(${accentRgb}, 0.4)`} strokeWidth="0.5" />
       {/* initials top-left */}
       <text
         x={size * 0.12}

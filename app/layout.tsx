@@ -34,7 +34,7 @@ const THEME_SCRIPT = `
 (function(){try{
   var t = localStorage.getItem('lark_theme') || 'dark';
   document.documentElement.setAttribute('data-theme', t);
-}catch(e){}})();
+}catch(e){/* localStorage blocked; falls back to the data-theme="dark" on <html> */}})();
 `;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

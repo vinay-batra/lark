@@ -74,11 +74,11 @@ const SECTIONS = [
     items: [
       {
         title: 'Delete your account',
-        body: 'You can request deletion of your account and all associated data by emailing hello@lark.coach. We will confirm and complete the deletion within 7 days.',
+        body: 'You can request deletion of your account and all associated data by emailing the404supply@gmail.com. We will confirm and complete the deletion within 7 days.',
       },
       {
         title: 'Access your data',
-        body: 'You can request a copy of the data we hold about you by emailing hello@lark.coach.',
+        body: 'You can request a copy of the data we hold about you by emailing the404supply@gmail.com.',
       },
     ],
   },
@@ -207,10 +207,10 @@ export default function PrivacyPage() {
           <p style={{ fontSize: 14, color: 'var(--text3)', lineHeight: 1.65, marginBottom: 28 }}>
             Email us at{' '}
             <a
-              href="mailto:hello@lark.coach"
+              href="mailto:the404supply@gmail.com"
               style={{ color: 'var(--accent)', textDecoration: 'none', fontFamily: 'var(--font-mono)', fontSize: 13 }}
             >
-              hello@lark.coach
+              the404supply@gmail.com
             </a>
             {' '}and we will respond within 2 business days.
           </p>
