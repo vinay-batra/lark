@@ -81,7 +81,7 @@ export async function loadSessionsFromSupabase(): Promise<void> {
     .order('completed_at', { ascending: false })
     .limit(500);
   if (!data) return;
-  const sessions: PracticeSession[] = data.map(r => ({
+  const remoteSessions: PracticeSession[] = data.map(r => ({
     id: r.id,
     songTitle: r.song_title,
     artist: r.artist,
@@ -90,7 +90,16 @@ export async function loadSessionsFromSupabase(): Promise<void> {
     total: r.total,
     completedAt: r.completed_at,
   }));
-  writeLocal(SESSIONS_KEY, sessions);
+  // Merge: preserve local-only sessions not yet synced to Supabase (e.g. played
+  // offline or if a Supabase insert failed). Match on completedAt since local IDs
+  // are timestamps while Supabase assigns its own UUIDs. Remote wins on conflict.
+  const localSessions = getSessions();
+  const remoteTimestamps = new Set(remoteSessions.map(s => s.completedAt));
+  const localOnly = localSessions.filter(s => !remoteTimestamps.has(s.completedAt));
+  const merged = [...localOnly, ...remoteSessions]
+    .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
+    .slice(0, 500);
+  writeLocal(SESSIONS_KEY, merged);
 }
 
 // Returns YYYY-MM-DD in the user's local timezone, so streaks don't reset

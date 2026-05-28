@@ -12,7 +12,7 @@ import { loadSessionsFromSupabase, loadSavedSongsFromSupabase } from '@/lib/prac
 const NAV = [
   { href: '/app',              label: 'Home',       tourId: '',               icon: <path d="M3 12L12 3l9 9M5 10v10h14V10"/> },
   { href: '/app/learn',        label: 'Learn',      tourId: 'tour-learn',     icon: <><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></> },
-  { href: '/app/tuner',        label: 'Tuner',      tourId: '',               icon: <path d="M2 12h3l3-9 4 18 3-9 3 5 4-5"/> },
+  { href: '/app/tuner',        label: 'Tuner',      tourId: 'tour-tuner',     icon: <path d="M2 12h3l3-9 4 18 3-9 3 5 4-5"/> },
   { href: '/app/chords',       label: 'Chords',     tourId: '',               icon: <><rect x="3" y="6" width="18" height="12" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="3" y1="14" x2="21" y2="14"/><line x1="8" y1="6" x2="8" y2="18"/><line x1="14" y1="6" x2="14" y2="18"/></> },
   { href: '/app/songs',        label: 'Songs',      tourId: 'tour-songs',     icon: <><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></> },
   { href: '/app/chord-library',label: 'Chord Book', tourId: 'tour-chord-book',icon: <><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></> },

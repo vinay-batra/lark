@@ -17,13 +17,18 @@ const STEPS: Step[] = [
     desc: 'Your AI guitar tutor. It listens while you play and tells you exactly what to fix. Quick tour -- 8 steps.',
   },
   {
-    title: 'Song Mode',
-    desc: '73 songs from Beginner to Expert. Lark listens through your mic and scores each note in real time. Green means hit, red means miss.',
-    targetId: 'tour-songs',
+    title: 'Tune up first',
+    desc: 'Always start here. The tuner uses your mic to detect pitch in real time -- get all 6 strings in tune before you play anything.',
+    targetId: 'tour-tuner',
   },
   {
-    title: 'Save to your library',
-    desc: 'After finishing a song, tap "Save to Library" and it shows up under Your Library. Your sessions, streak, and accuracy are tracked on the home screen.',
+    title: 'Learning Path',
+    desc: '6 stages from First Sounds to Lead Playing. Each stage unlocks when you hit 70% accuracy in the previous one. Start with Stage 1.',
+    targetId: 'tour-learn',
+  },
+  {
+    title: 'Song Mode',
+    desc: '77 songs from Beginner to Expert. Lark listens through your mic and scores each note in real time. Green means hit, red means miss.',
     targetId: 'tour-songs',
   },
   {
@@ -33,7 +38,7 @@ const STEPS: Step[] = [
   },
   {
     title: 'Metronome',
-    desc: 'Precision Web Audio metronome with tap tempo and multiple time signatures. Songs now also show a live beat indicator while you play.',
+    desc: 'Precision Web Audio metronome with tap tempo and multiple time signatures. Songs also show a live beat indicator while you play.',
     targetId: 'tour-metronome',
   },
   {
@@ -42,13 +47,8 @@ const STEPS: Step[] = [
     targetId: 'tour-chat-btn',
   },
   {
-    title: 'Settings and feedback',
-    desc: 'Set your display name and profile picture in Settings. The flag button next to the chat button in the bottom right lets you report a bug anytime.',
-    targetId: 'tour-settings-nav',
-  },
-  {
     title: "You're all set",
-    desc: 'Replay this tour anytime from the top-right dropdown. Now pick a song and start playing.',
+    desc: "Replay this tour anytime from the top-right dropdown. Head to the Learning Path and start Stage 1 -- First Sounds.",
   },
 ];
 
@@ -148,9 +148,8 @@ export function OnboardingTour({ onDone }: { onDone: () => void }) {
 
   return (
     <>
-      {/* Dim overlay -- high z but below card */}
+      {/* Dim overlay -- high z but below card. No onClick: use SKIP button to dismiss. */}
       <div
-        onClick={onDone}
         style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 1000, backdropFilter: 'blur(1px)' }}
       />
 

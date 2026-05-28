@@ -123,9 +123,10 @@ export const SONGS: Song[] = [
     ] },
 
   // Iron Man: str5 (A string) B-D-E riff then G#-F# walkdown (B2-D3-E3-E3-G#3-F#3)
+  // Iron Man: B-D-E riff on str5 (A string) -- B2=fret2, D3=fret5, E3=fret7
   { id: 'iron-man', title: 'Iron Man', artist: 'Black Sabbath', difficulty: 'beginner', bpm: 84,
     notes: [
-      n(2,0),n(2,0),n(2,3),n(2,3),n(1,0),n(1,0),n(2,3),n(2,3),n(2,0),n(2,0),n(2,3),n(2,3),n(1,0),n(1,0),n(2,3),n(2,3),n(2,0),n(2,0),n(2,3),n(2,3),n(1,0),n(1,0),n(2,3),n(2,3),n(2,0),n(2,0),n(2,3),n(2,3),n(1,0),n(1,0),n(2,3),n(2,3),
+      n(5,2),n(5,2),n(5,5),n(5,5),n(5,7),n(5,7),n(5,5),n(5,5),n(5,2),n(5,2),n(5,5),n(5,5),n(5,7),n(5,7),n(5,5),n(5,5),n(5,2),n(5,2),n(5,5),n(5,5),n(5,7),n(5,7),n(5,5),n(5,5),n(5,2),n(5,2),n(5,5),n(5,5),n(5,7),n(5,7),n(5,5),n(5,5),
     ] },
 
   // Paranoid: E-F#-G-F#-E-E-G-F#-E on str6 (all correct), two reps
@@ -189,9 +190,15 @@ export const SONGS: Song[] = [
     ] },
 
   // Every Breath You Take: Ab/G# major Add9 arpeggio (the actual key, not A major)
+  // Every Breath You Take: A-C#-E-C# arpeggio on high strings through A-F#m-D-E progression
+  // A major: A3(str3,2)-C#4(str2,2)-E4(str1,0) | F#m: A3-C#4-F#4(str1,2) | D: A3-D4(str2,3)-F#4 | E: G#3(str3,1)-B3(str2,0)-E4
   { id: 'every-breath-you-take', title: 'Every Breath You Take', artist: 'The Police', difficulty: 'beginner', bpm: 116,
     notes: [
-      n(3,2),n(3,2),n(3,2),n(3,2),n(4,4),n(3,1),n(3,2),n(3,2),n(3,2),n(3,2),n(4,4),n(3,1),n(3,2),n(3,2),n(3,2),n(3,2),n(4,4),n(3,1),n(3,2),n(3,2),n(3,2),n(3,2),n(4,4),n(3,1),
+      n(3,2),n(2,2),n(1,0),n(2,2),n(3,2),n(2,2),n(1,0),n(2,2),
+      n(3,2),n(2,2),n(1,2),n(2,2),n(3,2),n(2,2),n(1,2),n(2,2),
+      n(3,2),n(2,3),n(1,2),n(2,3),n(3,2),n(2,3),n(1,2),n(2,3),
+      n(3,1),n(2,0),n(1,0),n(2,0),n(3,1),n(2,0),n(1,0),n(2,0),
+      n(3,2),n(2,2),n(1,0),n(2,2),
     ] },
 
   // Wonderful Tonight: G-A-B-A-G-E-D lead melody (correct), two phrases
@@ -258,6 +265,75 @@ export const SONGS: Song[] = [
   { id: 'shallow', title: 'Shallow', artist: 'Lady Gaga', difficulty: 'beginner', bpm: 96,
     notes: [
       n(4,0),n(4,2),n(3,0),n(4,2),n(4,0),n(4,2),n(3,0),n(3,2),n(3,0),n(4,2),n(4,0),n(4,2),n(3,0),n(4,2),n(4,0),n(4,2),n(3,0),n(3,2),n(2,0),n(3,2),n(3,0),n(4,0),n(4,2),n(3,0),n(4,2),n(4,0),n(4,2),n(3,0),n(3,2),n(3,0),n(4,2),n(4,0),n(4,2),n(3,0),n(3,2),n(2,0),
+    ] },
+
+  // Twinkle Twinkle Little Star: C-G-A-G-F-E-D-C in C major (high strings), two full verses
+  { id: 'twinkle-twinkle', title: 'Twinkle Twinkle Little Star', artist: 'Traditional', difficulty: 'beginner', bpm: 100,
+    notes: [
+      n(2,1),n(2,1),n(1,3),n(1,3),n(1,5),n(1,5),n(1,3),  // Twinkle twinkle little star
+      n(1,1),n(1,1),n(1,0),n(1,0),n(2,3),n(2,3),n(2,1),  // How I wonder what you are
+      n(1,3),n(1,3),n(1,1),n(1,1),n(1,0),n(1,0),n(2,3),  // Up above the world so high
+      n(1,3),n(1,3),n(1,1),n(1,1),n(1,0),n(1,0),n(2,3),  // Like a diamond in the sky
+      n(2,1),n(2,1),n(1,3),n(1,3),n(1,5),n(1,5),n(1,3),  // Twinkle twinkle little star
+      n(1,1),                                               // How...
+    ] },
+
+  // Mary Had a Little Lamb: E-D-C-D-E-E-E / D-D-D / E-G-G pattern in E position (open strings)
+  { id: 'mary-had-a-little-lamb', title: 'Mary Had a Little Lamb', artist: 'Traditional', difficulty: 'beginner', bpm: 90,
+    notes: [
+      n(1,0),n(2,3),n(2,1),n(2,3),n(1,0),n(1,0),n(1,0),  // Mary had a little lamb
+      n(2,3),n(2,3),n(2,3),                                // little lamb
+      n(1,0),n(1,3),n(1,3),                                // little lamb
+      n(1,0),n(2,3),n(2,1),n(2,3),n(1,0),n(1,0),n(1,0),n(1,0), // Mary had a little lamb
+      n(2,3),n(2,3),n(1,0),n(2,3),n(2,1),                 // whose fleece was white as snow
+      n(1,0),n(2,3),n(2,1),n(2,3),n(1,0),n(1,0),n(1,0),  // repeat verse 1
+      n(2,3),n(2,3),n(2,3),                                // repeat
+    ] },
+
+  // Happy Birthday: G-A-G-C-B / G-A-G-D-C / G-G-E-C-B-A / F#-E-C-D-C in G major
+  { id: 'happy-birthday', title: 'Happy Birthday to You', artist: 'Traditional', difficulty: 'beginner', bpm: 80,
+    notes: [
+      n(3,0),n(3,0),n(3,2),n(3,0),n(2,1),n(2,0),          // Happy birthday to you
+      n(3,0),n(3,0),n(3,2),n(3,0),n(2,3),n(2,1),          // Happy birthday to you
+      n(3,0),n(3,0),n(1,3),n(1,0),n(2,1),n(2,0),n(3,2),  // Happy birthday dear [name]
+      n(1,2),n(1,2),n(1,0),n(2,1),n(2,3),n(2,1),          // Happy birthday to you
+      n(3,0),n(3,0),n(3,2),n(3,0),n(2,1),n(2,0),          // repeat bar 1
+      n(3,0),n(3,0),n(3,2),n(3,0),n(2,3),                 // repeat bar 2 (partial)
+    ] },
+
+  // Jingle Bells: E-E-E / E-G-C-D-E / F#-F#-F#-E-E-E / G-G-F#-D-C-B riff in G major
+  { id: 'jingle-bells', title: 'Jingle Bells', artist: 'Traditional', difficulty: 'beginner', bpm: 112,
+    notes: [
+      n(1,0),n(1,0),n(1,0),                                // Jingle bells
+      n(1,0),n(1,0),n(1,0),                                // Jingle bells
+      n(1,0),n(1,3),n(2,1),n(2,3),n(1,0),                 // Jingle all the way
+      n(1,2),n(1,2),n(1,2),n(1,0),n(1,0),n(1,0),          // Oh what fun it is to ride
+      n(1,3),n(1,3),n(1,2),n(2,3),n(2,1),n(2,0),          // In a one-horse open sleigh
+      n(1,0),n(1,0),n(1,0),                                // Jingle bells
+      n(1,0),n(1,0),n(1,0),                                // Jingle bells
+      n(1,0),n(1,3),n(2,1),n(2,3),n(1,0),                 // Jingle all the way
+      n(1,2),n(1,2),                                       // Oh what...
+    ] },
+
+  // Eye of the Tiger: G-G-G-Bb-C-Bb-G riff on low E + A strings (Cm)
+  // G2=str6 fret3, Bb2=str6 fret6, C3=str5 fret3, Ab2=str6 fret4
+  { id: 'eye-of-the-tiger', title: 'Eye of the Tiger', artist: 'Survivor', difficulty: 'beginner', bpm: 109,
+    notes: [
+      n(6,3),n(6,3),n(6,3),n(6,6),n(5,3),n(6,6),n(6,3),  // main riff x1
+      n(6,3),n(6,3),n(6,3),n(6,6),n(5,3),n(6,6),n(6,3),  // main riff x2
+      n(6,3),n(6,3),n(6,3),n(6,6),n(5,3),n(6,6),n(6,3),  // main riff x3
+      n(6,3),n(6,3),n(6,3),n(6,6),n(5,3),n(6,6),n(6,3),  // main riff x4
+      n(6,6),n(6,4),n(6,3),n(6,6),n(6,4),n(6,3),n(6,3),n(6,3), // descending Bb-Ab-G variation
+    ] },
+
+  // Amazing Grace: G-C-E-C-E-D-C-A-G in G major (open strings)
+  { id: 'amazing-grace', title: 'Amazing Grace', artist: 'Traditional', difficulty: 'beginner', bpm: 80,
+    notes: [
+      n(3,0),n(2,1),n(1,0),n(2,1),n(1,0),n(2,3),n(2,1),n(3,2),n(3,0), // Amazing grace how sweet the sound
+      n(3,0),n(2,1),n(1,0),n(2,1),n(1,0),n(2,3),          // That saved a wretch like me
+      n(2,0),n(1,3),n(1,3),n(1,0),n(2,1),n(1,0),n(2,3),  // I once was lost but now I'm found
+      n(2,0),n(3,0),n(2,1),n(1,0),n(2,1),                 // Was blind but now I see
+      n(3,0),n(2,1),n(1,0),n(2,1),n(1,0),n(2,3),n(2,1),n(3,2),n(3,0), // repeat verse
     ] },
 
   // ── INTERMEDIATE ─────────────────────────────────────────────────────────
