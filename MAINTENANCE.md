@@ -387,3 +387,4 @@ Routine checks, audits, and tests.
 - 2026-05-28 — reviewed error logging
 - 2026-05-28 — reviewed error logging
 - 2026-05-28 — reviewed dependency updates
+- 2026-05-28 — audited dependencies, no advisories
