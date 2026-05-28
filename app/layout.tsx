@@ -28,6 +28,14 @@ export const metadata: Metadata = {
     type: 'website',
     images: [{ url: '/og-image.png', width: 1200, height: 630 }],
   },
+  // PWA meta
+  applicationName: 'Lark',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Lark',
+  },
+  formatDetection: { telephone: false },
 };
 
 const THEME_SCRIPT = `
@@ -37,11 +45,22 @@ const THEME_SCRIPT = `
 }catch(e){/* localStorage blocked; falls back to the data-theme="dark" on <html> */}})();
 `;
 
+const SW_SCRIPT = `
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('/sw.js').catch(function(){/* SW registration optional */});
+  });
+}
+`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={spaceMono.variable} data-theme="dark" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: SW_SCRIPT }} />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="theme-color" content="#080c14" />
       </head>
       <body>
         <ThemeProvider>

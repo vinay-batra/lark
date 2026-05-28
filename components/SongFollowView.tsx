@@ -9,6 +9,7 @@ import { startMetronome, MetronomeHandle } from '@/lib/metronome-scheduler';
 import { buildChromagram, detectChordFromChroma, chordMatches } from '@/lib/chord-detection';
 import { SongCover } from './SongCover';
 import { VinylLoader } from './VinylLoader';
+import { shareScore } from '@/lib/share-card';
 
 import {
   TimingBucket,
@@ -405,6 +406,23 @@ export function SongFollowView({ song }: { song: Song }) {
       controller.abort();
     };
   }, [mode, song.title, song.artist, song.bpm]);
+
+  const [sharing, setSharing] = useState(false);
+
+  const handleShare = async () => {
+    if (sharing) return;
+    setSharing(true);
+    await shareScore({
+      songTitle: song.title,
+      artist: song.artist,
+      accuracy: Math.round((notes.filter(n => n.result === 'hit').length / notes.length) * 100),
+      hits: notes.filter(n => n.result === 'hit').length,
+      total: notes.length,
+      bpm: song.bpm,
+      timingPct,
+    });
+    setSharing(false);
+  };
 
   const hits = notes.filter(n => n.result === 'hit').length;
   const played = notes.filter(n => n.result !== 'pending').length;
@@ -804,6 +822,19 @@ export function SongFollowView({ song }: { song: Song }) {
                 SAVED
               </span>
             )}
+            <button
+              onClick={handleShare}
+              disabled={sharing}
+              className="btn btn-ghost"
+              aria-label="Share your score"
+              style={{ opacity: sharing ? 0.6 : 1 }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}>
+                <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+              </svg>
+              <span className="btn-text">{sharing ? 'SHARING...' : 'SHARE'}</span>
+            </button>
           </div>
         </div>
       )}

@@ -24,10 +24,24 @@ const FEATURES = [
   },
   {
     eyebrow: 'SONG MODE',
-    title: '73 songs to follow along',
+    title: '83 songs to follow along',
     desc: 'Scrolling tab with live pitch detection. Green when you nail it, red when you miss. Every note scored.',
     href: '/app/songs',
     icon: <><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></>,
+  },
+  {
+    eyebrow: 'PRACTICE MODE',
+    title: 'Slow it down, loop it, nail it',
+    desc: 'Speed control at 0.5x, 0.75x, or 1x. Loop any section until it clicks. Next-note hints when you get stuck. On every song.',
+    href: '/app/songs',
+    icon: <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>,
+  },
+  {
+    eyebrow: 'DAILY MISSIONS',
+    title: 'Three missions. Ten levels of XP.',
+    desc: 'New missions every day on your dashboard. Earn XP, climb 10 levels, reset at midnight. A reason to come back and play.',
+    href: '/app',
+    icon: <><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></>,
   },
   {
     eyebrow: 'AI COACH',
@@ -53,7 +67,7 @@ const FEATURES = [
 ];
 
 const DIFFICULTY_LABELS = [
-  { label: 'Beginner', color: 'var(--accent)', rgb: 'var(--accent-rgb)', count: 31 },
+  { label: 'Beginner', color: 'var(--accent)', rgb: 'var(--accent-rgb)', count: 37 },
   { label: 'Intermediate', color: 'var(--diff-intermediate)', rgb: 'var(--diff-intermediate-rgb)', count: 24 },
   { label: 'Advanced', color: 'var(--diff-advanced)', rgb: 'var(--diff-advanced-rgb)', count: 12 },
   { label: 'Expert', color: 'var(--diff-expert)', rgb: 'var(--diff-expert-rgb)', count: 6 },
@@ -96,13 +110,13 @@ export default function LandingPage() {
 
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.18 }}
               style={{ fontSize: 17, color: 'var(--text2)', lineHeight: 1.75, marginBottom: 40, maxWidth: 440 }}>
-              Lark hears every note you play, scores you in real time, and gives you AI coaching when you finish. 73 songs, 4 difficulty levels, free.
+              Lark hears every note you play, scores you in real time, and gives you AI coaching when you finish. 83 songs, 4 difficulty levels, free.
             </motion.p>
 
             {/* Stats row */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.45, delay: 0.26 }}
               style={{ display: 'flex', gap: 28, marginBottom: 44, flexWrap: 'wrap', alignItems: 'baseline' }}>
-              {[['73', 'songs'], ['4', 'levels'], ['7', 'tools'], ['Free', '']].map(([val, label]) => (
+              {[['83', 'songs'], ['4', 'levels'], ['8', 'tools'], ['Free', '']].map(([val, label]) => (
                 <div key={val} style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 26, fontWeight: 700, color: 'var(--accent)', lineHeight: 1 }}>{val}</span>
                   {label && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', letterSpacing: '0.14em' }}>{label.toUpperCase()}</span>}
@@ -207,7 +221,7 @@ export default function LandingPage() {
             <div style={{ textAlign: 'center', marginBottom: 44 }}>
               <p className="eyebrow" style={{ marginBottom: 14 }}>SONG LIBRARY</p>
               <h2 style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(26px, 4.5vw, 44px)', fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 14 }}>
-                73 songs. 4 difficulty levels.
+                83 songs. 4 difficulty levels.
               </h2>
               <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 480, margin: '0 auto' }}>
                 From Twinkle Twinkle to Master of Puppets. Or ask the AI to generate tabs for any song not in the library.
@@ -280,7 +294,7 @@ export default function LandingPage() {
             <div style={{ textAlign: 'center', marginBottom: 52 }}>
               <p className="eyebrow" style={{ marginBottom: 14 }}>EVERYTHING IN ONE PLACE</p>
               <h2 style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(26px, 4.5vw, 44px)', fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-                Six tools. Zero downloads.
+                Eight tools. Zero downloads.
               </h2>
             </div>
           </Reveal>

@@ -8,6 +8,7 @@ import { VinylLoader } from '@/components/VinylLoader';
 import { Reveal } from '@/components/Reveal';
 import { motion } from 'framer-motion';
 import { getSavedSongs, saveSong, deleteSavedSong, renameSavedSong, canGenerate, recordGeneration, GEN_LIMIT, SavedSong } from '@/lib/practice';
+import { supabase } from '@/lib/supabase';
 
 type Tab = 'library' | 'songs';
 type DiffFilter = 'all' | Difficulty;
@@ -27,12 +28,50 @@ export default function SongsPage() {
   const [renameVal, setRenameVal] = useState('');
   const genControllerRef = useRef<AbortController | null>(null);
 
+  // Song request form state
+  const [reqTitle, setReqTitle] = useState('');
+  const [reqArtist, setReqArtist] = useState('');
+  const [reqLoading, setReqLoading] = useState(false);
+  const [reqSent, setReqSent] = useState(false);
+  const [reqError, setReqError] = useState<string | null>(null);
+
   // Abort any in-flight generation request on unmount
   useEffect(() => () => { genControllerRef.current?.abort(); }, []);
 
   const refreshSaved = () => {
     setSavedSongs(getSavedSongs());
     setGenStatus(canGenerate());
+  };
+
+  const handleSongRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reqTitle.trim() || !reqArtist.trim() || reqLoading) return;
+    setReqLoading(true);
+    setReqError(null);
+    try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (supabase) {
+        const { data } = await supabase.auth.getSession();
+        if (data.session?.access_token) headers['Authorization'] = `Bearer ${data.session.access_token}`;
+      }
+      const res = await fetch('/api/song-request', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ songTitle: reqTitle.trim(), artist: reqArtist.trim() }),
+      });
+      if (!res.ok) {
+        const d = await res.json();
+        setReqError(d.error ?? 'Failed to send request.');
+      } else {
+        setReqSent(true);
+        setReqTitle('');
+        setReqArtist('');
+      }
+    } catch {
+      setReqError('Network error. Try again.');
+    } finally {
+      setReqLoading(false);
+    }
   };
 
   const filtered = SONGS.filter(s =>
@@ -329,6 +368,51 @@ export default function SongsPage() {
           )}
         </div>
       )}
+      {/* Song Request section -- always visible, below both tabs */}
+      {!selected && (
+        <div style={{ marginTop: 56, padding: '24px 22px', background: 'var(--card-bg)', border: '0.5px dashed var(--border2)', borderRadius: 14 }}>
+          <p className="eyebrow" style={{ marginBottom: 6 }}>REQUEST A SONG</p>
+          <p style={{ fontSize: 13, color: 'var(--text3)', marginBottom: 18, lineHeight: 1.6 }}>
+            Don't see your song? Submit a request and we'll add it to the library.
+          </p>
+          {reqSent ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--accent)' }}>Got it. We'll look into adding it.</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSongRequest}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10, marginBottom: 12 }}>
+                <input
+                  className="input-field"
+                  placeholder="Song title"
+                  value={reqTitle}
+                  onChange={e => setReqTitle(e.target.value)}
+                  maxLength={120}
+                  required
+                  aria-label="Song title"
+                />
+                <input
+                  className="input-field"
+                  placeholder="Artist"
+                  value={reqArtist}
+                  onChange={e => setReqArtist(e.target.value)}
+                  maxLength={120}
+                  required
+                  aria-label="Artist name"
+                />
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                <button type="submit" className="btn btn-ghost btn-sm" disabled={reqLoading}>
+                  <span className="btn-text">{reqLoading ? 'SENDING...' : 'SUBMIT REQUEST'}</span>
+                </button>
+                {reqError && <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--danger)' }}>{reqError}</p>}
+              </div>
+            </form>
+          )}
+        </div>
+      )}
+
     </div>
   );
 }

@@ -8,6 +8,23 @@ import { Reveal } from '@/components/Reveal';
 // Each chapter is a coherent arc, not a commit dump.
 const CHAPTERS = [
   {
+    num: '08',
+    name: 'Practice & Progress',
+    versions: 'v1.2 - v1.3',
+    dateRange: 'May 28, 2026',
+    intro: 'Practice got a serious upgrade. Slow songs down, loop hard sections, earn XP on daily missions, and play from a fully audited library of 83 verified songs.',
+    highlights: [
+      'Practice Mode on every song: speed control at 0.5x, 0.75x, and 1x -- slow down difficult passages without restarting',
+      'Section looping: mark any range of notes and loop it until the muscle memory locks in',
+      'Next-note hints: opt-in hint system shows the upcoming note when you are stuck',
+      'Daily Missions: 3 new missions per day on the dashboard -- complete them to earn XP and progress through 10 levels',
+      'XP system: 10-level progression tied to daily play habits, missions reset at midnight',
+      '83 songs total -- 6 new verified beginner songs added: Twinkle Twinkle Little Star, Mary Had a Little Lamb, Happy Birthday, Jingle Bells, Eye of the Tiger, Amazing Grace',
+      'Full accuracy audit: all 83 songs manually verified and corrected, including Iron Man and Every Breath You Take which were on the wrong strings entirely',
+    ],
+    tags: ['Practice Mode', 'Daily Missions', 'XP', 'Songs', 'Audit'],
+  },
+  {
     num: '01',
     name: 'First Sounds',
     versions: 'v0.1 - v0.2',
@@ -335,7 +352,7 @@ export default function ChangelogPage() {
                 fontWeight: 600,
               }}
             >
-              Seven chapters &middot; scroll
+              Eight chapters &middot; scroll
             </span>
             <svg width="22" height="10" viewBox="0 0 22 10" fill="none">
               <path d="M2 5h17M14 1l4 4-4 4" stroke="var(--text3)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
