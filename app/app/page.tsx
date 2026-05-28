@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { Reveal } from '@/components/Reveal';
 import { getSessions, getStreak, getAvgAccuracy, getGenCount } from '@/lib/practice';
+import { getDailyMissions, getLevelProgress, type Mission } from '@/lib/missions';
 
 const QUICK_TOOLS = [
   {
@@ -51,6 +52,11 @@ export default function AppPage() {
     accuracy: getAvgAccuracy(),
     generated: getGenCount(),
   }));
+  // Lazy init from localStorage -- same pattern as `stats` above.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  const [missions] = useState<Mission[]>(() => typeof window !== 'undefined' ? getDailyMissions() : []);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  const [levelProgress] = useState(() => getLevelProgress());
 
   useEffect(() => {
     if (supabase) {
@@ -124,6 +130,49 @@ export default function AppPage() {
           )}
         </div>
       </Reveal>
+
+      {/* Daily Missions */}
+      {missions.length > 0 && (
+        <Reveal>
+          <div style={{ marginBottom: 48, padding: '28px 26px', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 16 }}>
+            {/* Header: missions + level */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
+              <div>
+                <p className="eyebrow" style={{ marginBottom: 4 }}>DAILY MISSIONS</p>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)' }}>
+                  Reset at midnight {'·'} {missions.filter(m => m.completed).length}/{missions.length} done
+                </p>
+              </div>
+              {/* XP level badge + bar */}
+              <div style={{ textAlign: 'right', minWidth: 110 }}>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.06em', marginBottom: 6 }}>
+                  LVL {levelProgress.level} {'·'} {levelProgress.xp} XP
+                </p>
+                <div style={{ width: 110, height: 4, background: 'var(--bg3)', borderRadius: 99, overflow: 'hidden' }}>
+                  <div style={{
+                    height: '100%', borderRadius: 99,
+                    width: `${levelProgress.pct}%`,
+                    background: 'var(--accent)',
+                    transition: 'width 0.6s ease',
+                  }} />
+                </div>
+                {!levelProgress.maxed && (
+                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', marginTop: 4 }}>
+                    {levelProgress.xpInLevel}/{levelProgress.xpForNext} to LVL {levelProgress.level + 1}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Mission cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
+              {missions.map(mission => (
+                <MissionCard key={mission.id} mission={mission} />
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      )}
 
       {/* Live tools */}
       <Reveal>
@@ -257,3 +306,64 @@ export default function AppPage() {
     </div>
   );
 }
+
+function MissionCard({ mission }: { mission: Mission }) {
+  const done = mission.completed;
+  const pct = mission.target > 0 ? Math.min(100, Math.round((mission.current / mission.target) * 100)) : 0;
+  const showBar = !done && mission.target > 1;
+
+  return (
+    <div style={{
+      padding: '16px 16px 14px',
+      borderRadius: 12,
+      border: `0.5px solid ${done ? 'var(--accent-border)' : 'var(--border)'}`,
+      background: done ? 'var(--accent-dim)' : 'var(--bg)',
+      position: 'relative',
+      transition: 'border-color 0.2s, background 0.2s',
+    }}>
+      {/* XP badge */}
+      <span style={{
+        position: 'absolute', top: 12, right: 12,
+        fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
+        color: done ? 'var(--accent)' : 'var(--text-muted)',
+        background: done ? 'rgba(var(--accent-rgb), 0.12)' : 'var(--bg3)',
+        padding: '2px 7px', borderRadius: 99,
+        border: `0.5px solid ${done ? 'var(--accent-border)' : 'var(--border)'}`,
+      }}>
+        +{mission.xp} XP
+      </span>
+
+      {/* Title + check */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 6, paddingRight: 52 }}>
+        {done && (
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        )}
+        <p style={{
+          fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700,
+          color: done ? 'var(--accent)' : 'var(--text)',
+          letterSpacing: '-0.01em',
+        }}>
+          {mission.title}
+        </p>
+      </div>
+      <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5, marginBottom: showBar ? 10 : 0 }}>
+        {mission.desc}
+      </p>
+
+      {/* Progress bar for multi-step missions */}
+      {showBar && (
+        <div>
+          <div style={{ height: 3, background: 'var(--bg3)', borderRadius: 99, overflow: 'hidden', marginBottom: 4 }}>
+            <div style={{ height: '100%', width: `${pct}%`, background: 'var(--accent)', borderRadius: 99, transition: 'width 0.4s ease' }} />
+          </div>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)' }}>
+            {mission.current}/{mission.target}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+

@@ -23,10 +23,9 @@ import {
   getCents,
 } from '@/lib/song-session';
 
-
-
 type NoteResult = 'pending' | 'hit' | 'miss';
 type Mode = 'idle' | 'countdown' | 'playing' | 'finished';
+type Speed = 0.5 | 0.75 | 1;
 
 interface SessionNote {
   string: number;
@@ -51,16 +50,33 @@ export function SongFollowView({ song }: { song: Song }) {
   const [isSaved, setIsSaved] = useState(false);
   const [currentBeat, setCurrentBeat] = useState(-1);
 
-  // Pitch detection refs
+  // ── Practice Mode state ───────────────────────────────────────────────────
+  const [practiceOpen, setPracticeOpen] = useState(false);
+  const [speed, setSpeed] = useState<Speed>(1);
+  const [loopEnabled, setLoopEnabled] = useState(false);
+  // 0-indexed note indices; loopEnd is exclusive
+  const [loopStart, setLoopStart] = useState(0);
+  const [loopEnd, setLoopEnd] = useState(Math.min(12, song.notes.length));
+  const [hintsEnabled, setHintsEnabled] = useState(false);
+
+  // Refs used inside RAF / setTimeout callbacks (state snapshots are stale there)
+  const speedRef = useRef<Speed>(1);
+  const loopEnabledRef = useRef(false);
+  const loopStartRef = useRef(0);
+  const loopEndRef = useRef(Math.min(12, song.notes.length));
+
+  useEffect(() => { speedRef.current = speed; }, [speed]);
+  useEffect(() => { loopEnabledRef.current = loopEnabled; }, [loopEnabled]);
+  useEffect(() => { loopStartRef.current = loopStart; }, [loopStart]);
+  useEffect(() => { loopEndRef.current = loopEnd; }, [loopEnd]);
+
+  // ── Pitch detection refs ──────────────────────────────────────────────────
   const rafRef = useRef<number | null>(null);
   const ctxRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const detectorRef = useRef<PitchDetector<Float32Array> | null>(null);
   const inputRef = useRef<Float32Array | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  // Chord-detection ring buffer. Frequency-domain analysis runs alongside
-  // pitch detection on the same analyser; we keep a 10-frame sliding window
-  // of chromagrams for stability.
   const freqDataRef = useRef<Float32Array | null>(null);
   const chordHistoryRef = useRef<number[][]>([]);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -70,26 +86,16 @@ export function SongFollowView({ song }: { song: Song }) {
   const advancedRef = useRef(false);
   const armedRef = useRef(true);
   const releaseFramesRef = useRef(0);
-
-  // Countdown timer ref
   const countdownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Metronome handle from lib/metronome-scheduler. Holding it as a ref lets
-  // stopMetronome / stopAudio tear it down without forcing a re-render.
   const metroRef = useRef<MetronomeHandle | null>(null);
-
-  // Mounted guard. getUserMedia + new AudioContext() can resolve AFTER unmount,
-  // and the post-await assignments would otherwise leak the mic + context.
   const mountedRef = useRef(true);
+
   useEffect(() => {
     mountedRef.current = true;
     return () => { mountedRef.current = false; };
   }, []);
 
-  // Timing ref
   const noteStartTimeRef = useRef(0);
-
-  // Real-time timing pill: classification of the last hit. Resets each note.
   const [lastTiming, setLastTiming] = useState<TimingBucket | null>(null);
 
   const stopMetronome = useCallback(() => {
@@ -103,9 +109,6 @@ export function SongFollowView({ song }: { song: Song }) {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     if (wrongTimerRef.current) clearTimeout(wrongTimerRef.current);
     if (countdownTimerRef.current) clearTimeout(countdownTimerRef.current);
-    // AudioContext.close() rejects (or in some browsers throws synchronously)
-    // when called twice. stopAudio runs from reset() AND from useEffect cleanup
-    // on unmount, so double-close is normal. Guard against it.
     const ctx = ctxRef.current;
     if (ctx && ctx.state !== 'closed') {
       ctx.close().catch(() => {});
@@ -117,9 +120,6 @@ export function SongFollowView({ song }: { song: Song }) {
 
   useEffect(() => () => stopAudio(), [stopAudio]);
 
-  // Broadcast playing state so LarkChat (and any other globals) can hide
-  // their floating UI while a session is active. We use a window event
-  // instead of a context to avoid wiring a provider through the whole app.
   useEffect(() => {
     const playing = mode === 'playing' || mode === 'countdown';
     window.dispatchEvent(new CustomEvent('lark:song-state', { detail: { playing } }));
@@ -134,10 +134,6 @@ export function SongFollowView({ song }: { song: Song }) {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     if (wrongTimerRef.current) clearTimeout(wrongTimerRef.current);
     setWrongFlash(false);
-    // Disarm only on a HIT: a sustained ringing note must release before we
-    // can match the next same-pitch song note. On a miss-by-timeout, there's
-    // no correct sustained note to filter out, so keep armed so the user can
-    // immediately pick up on the next note.
     if (hit) armedRef.current = false;
 
     const idx = noteIndexRef.current;
@@ -150,10 +146,9 @@ export function SongFollowView({ song }: { song: Song }) {
     sessionNotesRef.current = updated;
     setNotes([...updated]);
 
-    // Real-time timing pill: classify the hit and surface it. The pill clears
-    // when the next note advances so each note feels independent.
+    const bpm = song.bpm * speedRef.current;
     if (hit && timingMs !== null && idx > 0) {
-      setLastTiming(classifyTiming(timingMs, song.bpm));
+      setLastTiming(classifyTiming(timingMs, bpm));
     } else {
       setLastTiming(null);
     }
@@ -163,6 +158,25 @@ export function SongFollowView({ song }: { song: Song }) {
     setNoteIndex(next);
     noteStartTimeRef.current = performance.now();
 
+    // ── Loop: reset section and jump back ────────────────────────────────
+    if (loopEnabledRef.current && loopEndRef.current > 0 && next >= loopEndRef.current) {
+      const ls = loopStartRef.current;
+      const le = loopEndRef.current;
+      const looped = [...sessionNotesRef.current];
+      for (let i = ls; i < le; i++) {
+        looped[i] = { ...looped[i], result: 'pending', centsOff: null, timingMs: null };
+      }
+      sessionNotesRef.current = looped;
+      setNotes([...looped]);
+      noteIndexRef.current = ls;
+      setNoteIndex(ls);
+      noteStartTimeRef.current = performance.now();
+      advancedRef.current = false;
+      armedRef.current = true;
+      // eslint-disable-next-line react-hooks/immutability
+      timeoutRef.current = setTimeout(() => advanceNote(false, null), noteTimeoutMs(bpm));
+      return;
+    }
 
     if (next >= updated.length) {
       setMode('finished');
@@ -171,10 +185,8 @@ export function SongFollowView({ song }: { song: Song }) {
     }
 
     advancedRef.current = false;
-    // Recursive self-schedule: the lint rule flags "use before declared" but
-    // this is the standard pattern for scheduling the next miss-timeout.
     // eslint-disable-next-line react-hooks/immutability
-    timeoutRef.current = setTimeout(() => advanceNote(false, null), noteTimeoutMs(song.bpm));
+    timeoutRef.current = setTimeout(() => advanceNote(false, null), noteTimeoutMs(bpm));
   }, [stopAudio, song.bpm]);
 
   const detect = useCallback(() => {
@@ -187,9 +199,6 @@ export function SongFollowView({ song }: { song: Song }) {
     analyser.getFloatTimeDomainData(input as Float32Array<ArrayBuffer>);
     const [pitch, clarity] = detector.findPitch(input, ctx.sampleRate);
 
-    // Track release windows. A "release" is at least RELEASE_FRAMES of
-    // sub-threshold clarity (the attack transient of the next pluck, or silence
-    // between notes). Without a release, the same sustained note won't double-fire.
     if (clarity < CLARITY_THRESHOLD) {
       releaseFramesRef.current++;
       if (releaseFramesRef.current >= RELEASE_FRAMES) {
@@ -202,9 +211,6 @@ export function SongFollowView({ song }: { song: Song }) {
     const idx = noteIndexRef.current;
     const target = sessionNotesRef.current[idx];
 
-    // Chord-strum mode: compute chromagram alongside, match by chord name.
-    // We need a sustained signal (strumming rings out), so chordHistory keeps
-    // ~10 frames for averaging stability.
     if (target?.chord && freqDataRef.current) {
       analyser.getFloatFrequencyData(freqDataRef.current as Float32Array<ArrayBuffer>);
       const frame = buildChromagram(freqDataRef.current, ctx.sampleRate, analyser.fftSize);
@@ -216,13 +222,11 @@ export function SongFollowView({ song }: { song: Song }) {
         );
         const detected = detectChordFromChroma(avg);
         if (detected && chordMatches(detected, target.chord)) {
-          // Clear the chord history so the next chord starts from a clean slate.
           chordHistoryRef.current = [];
           advanceNote(true, 0);
         }
       }
     } else if (clarity > CLARITY_THRESHOLD && pitch > 60 && pitch < 1400) {
-      // Single-note path (existing logic).
       if (target && target.result === 'pending' && !target.chord) {
         const cents = getCents(pitch, target.midi);
         if (Math.abs(cents) <= TOLERANCE_CENTS) {
@@ -238,7 +242,6 @@ export function SongFollowView({ song }: { song: Song }) {
     }
 
     if (ctxRef.current) {
-      // Recursive RAF: standard pattern, lint rule misfires here.
       // eslint-disable-next-line react-hooks/immutability
       rafRef.current = requestAnimationFrame(detect);
     }
@@ -268,8 +271,6 @@ export function SongFollowView({ song }: { song: Song }) {
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-      // If the component unmounted while waiting for the user to grant mic
-      // permission, immediately release the stream instead of leaking it.
       if (!mountedRef.current) {
         stream.getTracks().forEach(t => t.stop());
         return;
@@ -282,9 +283,6 @@ export function SongFollowView({ song }: { song: Song }) {
         return;
       }
       const analyser = ctx.createAnalyser();
-      // Bigger FFT when the song has chord events: chromagram quality
-      // benefits from more freq bins. Single-note songs stay at 2048 to keep
-      // Pitchy's autocorrelation responsive.
       const hasChords = song.notes.some(n => n.chord);
       analyser.fftSize = hasChords ? 4096 : 2048;
       ctx.createMediaStreamSource(stream).connect(analyser);
@@ -298,9 +296,8 @@ export function SongFollowView({ song }: { song: Song }) {
       setMode('countdown');
       setCountdown(3);
 
-      // Play a count-in click at each countdown tick so the beginner has a
-      // tempo to lock onto before the first note arrives. Higher pitch on the
-      // final "go" beat for distinction.
+      const effectiveBpm = song.bpm * speedRef.current;
+
       const playCountInClick = (final: boolean) => {
         const audioCtx = ctxRef.current;
         if (!audioCtx) return;
@@ -323,12 +320,8 @@ export function SongFollowView({ song }: { song: Song }) {
           setMode('playing');
           noteStartTimeRef.current = performance.now();
           rafRef.current = requestAnimationFrame(detect);
-          timeoutRef.current = setTimeout(() => advanceNote(false, null), noteTimeoutMs(song.bpm));
-
-          // Start metronome on the pitch-detection AudioContext via the
-          // shared scheduler. setCurrentBeat is RAF-buffered inside so we
-          // never thrash React from inside the schedule hot path.
-          metroRef.current = startMetronome(ctx, { bpm: song.bpm, onBeat: setCurrentBeat });
+          timeoutRef.current = setTimeout(() => advanceNote(false, null), noteTimeoutMs(effectiveBpm));
+          metroRef.current = startMetronome(ctx, { bpm: effectiveBpm, onBeat: setCurrentBeat });
           return;
         }
         countdownTimerRef.current = setTimeout(() => {
@@ -363,19 +356,15 @@ export function SongFollowView({ song }: { song: Song }) {
   useEffect(() => {
     if (mode !== 'finished') return;
     const finalNotes = sessionNotesRef.current;
-    // Empty notes guard: a corrupted song with zero notes would yield 0/0=NaN
-    // and persist "NaN%" to localStorage. Skip the side effects entirely.
     if (finalNotes.length === 0) return;
     const hits = finalNotes.filter(n => n.result === 'hit').length;
     const accuracy = Math.round((hits / finalNotes.length) * 100);
     try {
       saveSession({ songTitle: song.title, artist: song.artist, accuracy, hits, total: finalNotes.length, completedAt: new Date().toISOString() });
-    } catch { /* localStorage unavailable (private mode/quota); non-critical */ }
+    } catch { /* localStorage unavailable */ }
     setIsSaved(getSavedSongs().some(s => s.title === song.title && s.artist === song.artist));
     setLoadingFeedback(true);
     const controller = new AbortController();
-    // 30s timeout on the coach API. A hung network would otherwise spin the
-    // VinylLoader indefinitely; this surfaces a clear failure.
     const timeoutId = setTimeout(() => controller.abort(), 30_000);
     let cancelled = false;
     fetch('/api/coach', {
@@ -385,7 +374,6 @@ export function SongFollowView({ song }: { song: Song }) {
         song: song.title,
         bpm: song.bpm,
         events: finalNotes.map(n => {
-          // Normalize MIDI modulo into positive range so n.midi < 0 doesn't index undefined.
           const noteName = NOTE_NAMES[((n.midi % 12) + 12) % 12] + (Math.floor(n.midi / 12) - 1);
           return { expected: noteName, hit: n.result === 'hit', centsOff: n.centsOff, timingMs: n.timingMs };
         }),
@@ -422,16 +410,14 @@ export function SongFollowView({ song }: { song: Song }) {
   const played = notes.filter(n => n.result !== 'pending').length;
   const accuracy = played > 0 ? Math.round((hits / played) * 100) : null;
 
-  // Beat-aware timing breakdown. Counts hit notes by bucket:
-  //   on   : played within 1 beat of the previous note (right on tempo)
-  //   late : 1-2 beats (hesitant but in the pocket)
-  //   slow : 2+ beats (off-tempo, but still a hit)
   const hitNotes = notes.filter(n => n.result === 'hit' && n.timingMs !== null);
   const timingCounts: Record<TimingBucket, number> = { on: 0, late: 0, slow: 0 };
   for (const n of hitNotes) timingCounts[classifyTiming(n.timingMs!, song.bpm)]++;
   const timingPct = hitNotes.length > 0 ? Math.round((timingCounts.on / hitNotes.length) * 100) : null;
 
   const currentNote = notes[noteIndex];
+  const nextNote = notes[noteIndex + 1];
+  const effectiveBpm = song.bpm * speed;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 20px', minHeight: '60vh' }}>
@@ -448,7 +434,7 @@ export function SongFollowView({ song }: { song: Song }) {
 
       {/* IDLE */}
       {mode === 'idle' && (
-        <div style={{ textAlign: 'center', maxWidth: 440 }}>
+        <div style={{ textAlign: 'center', maxWidth: 440, width: '100%' }}>
           <p className="eyebrow" style={{ marginBottom: 16 }}>SONG MODE</p>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
             <SongCover song={song} size={120} />
@@ -460,15 +446,126 @@ export function SongFollowView({ song }: { song: Song }) {
             {song.artist} {'·'} {song.notes.length} notes
           </p>
           <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', letterSpacing: '0.12em', marginBottom: 32 }}>
-            {song.bpm} BPM
+            {song.bpm} BPM{speed < 1 ? ` · ${speed}x` : ''}
           </p>
-          <p style={{ fontSize: 14, color: 'var(--text3)', lineHeight: 1.7, marginBottom: 36 }}>
+          <p style={{ fontSize: 14, color: 'var(--text3)', lineHeight: 1.7, marginBottom: 28 }}>
             Play each highlighted note. Lark keeps the beat and gives AI feedback when you finish.
           </p>
           {micError && <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--danger)', marginBottom: 16 }}>{micError}</p>}
-          <button onClick={startSession} className="btn btn-accent btn-lg" aria-label={`Start playing ${song.title}`}>
+
+          <button onClick={startSession} className="btn btn-accent btn-lg" aria-label={`Start playing ${song.title}`} style={{ marginBottom: 16 }}>
             <span className="btn-text">START</span>
           </button>
+
+          {/* Practice Settings panel */}
+          <div style={{ marginTop: 8 }}>
+            <button
+              onClick={() => setPracticeOpen(o => !o)}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.1em',
+                color: practiceOpen ? 'var(--accent)' : 'var(--text-muted)',
+                background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px',
+                transition: 'color 0.15s',
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+              PRACTICE SETTINGS
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                style={{ transform: practiceOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+
+            {practiceOpen && (
+              <div style={{
+                marginTop: 10,
+                background: 'var(--card-bg)',
+                border: '0.5px solid var(--border)',
+                borderRadius: 12,
+                padding: '18px 18px 14px',
+                textAlign: 'left',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 18,
+              }}>
+
+                {/* Speed */}
+                <div>
+                  <p className="eyebrow" style={{ fontSize: 9, marginBottom: 10 }}>SPEED</p>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    {([0.5, 0.75, 1] as Speed[]).map(s => (
+                      <button
+                        key={s}
+                        onClick={() => setSpeed(s)}
+                        style={{
+                          flex: 1,
+                          padding: '8px 0',
+                          borderRadius: 8,
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: 12,
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          transition: 'background 0.15s, color 0.15s, border-color 0.15s',
+                          background: speed === s ? 'var(--accent)' : 'transparent',
+                          color: speed === s ? 'var(--on-accent)' : 'var(--text2)',
+                          border: speed === s ? '0.5px solid var(--accent)' : '0.5px solid var(--border)',
+                        }}
+                      >
+                        {s === 1 ? '1x' : `${s}x`}
+                      </button>
+                    ))}
+                  </div>
+                  {speed < 1 && (
+                    <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', marginTop: 8 }}>
+                      Tempo: {Math.round(effectiveBpm)} BPM (slowed from {song.bpm})
+                    </p>
+                  )}
+                </div>
+
+                {/* Loop section */}
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: loopEnabled ? 12 : 0 }}>
+                    <div>
+                      <p className="eyebrow" style={{ fontSize: 9, marginBottom: 2 }}>LOOP SECTION</p>
+                      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)' }}>Repeat a section until you nail it</p>
+                    </div>
+                    <MiniToggle enabled={loopEnabled} onToggle={() => setLoopEnabled(e => !e)} />
+                  </div>
+                  {loopEnabled && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', minWidth: 36 }}>FROM</p>
+                        <StepButton value={loopStart + 1} min={1} max={loopEnd - 3}
+                          onChange={v => setLoopStart(Math.max(0, v - 1))} />
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', minWidth: 36 }}>TO</p>
+                        <StepButton value={loopEnd} min={loopStart + 4} max={song.notes.length}
+                          onChange={v => setLoopEnd(Math.min(song.notes.length, v))} />
+                      </div>
+                      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--accent)' }}>
+                        {loopEnd - loopStart} notes
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Next note hint */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <p className="eyebrow" style={{ fontSize: 9, marginBottom: 2 }}>SHOW NEXT NOTE</p>
+                    <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)' }}>Preview the upcoming note while you play</p>
+                  </div>
+                  <MiniToggle enabled={hintsEnabled} onToggle={() => setHintsEnabled(e => !e)} />
+                </div>
+
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -479,6 +576,11 @@ export function SongFollowView({ song }: { song: Song }) {
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(80px, 22vw, 140px)', fontWeight: 700, color: 'var(--accent)', lineHeight: 1 }}>
             {countdown || '!'}
           </div>
+          {speed < 1 && (
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', marginTop: 16, letterSpacing: '0.1em' }}>
+              {speed}x SPEED
+            </p>
+          )}
         </div>
       )}
 
@@ -508,7 +610,25 @@ export function SongFollowView({ song }: { song: Song }) {
               </button>
               <p className="eyebrow" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>{song.title.toUpperCase()}</p>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+              {loopEnabled && (
+                <span style={{
+                  fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.08em',
+                  color: 'var(--accent)', background: 'var(--accent-dim)',
+                  padding: '2px 8px', borderRadius: 99, border: '0.5px solid var(--accent-border)',
+                }}>
+                  LOOP {loopStart + 1}-{loopEnd}
+                </span>
+              )}
+              {speed < 1 && (
+                <span style={{
+                  fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.08em',
+                  color: 'var(--text-muted)', background: 'var(--bg3)',
+                  padding: '2px 8px', borderRadius: 99, border: '0.5px solid var(--border)',
+                }}>
+                  {speed}x
+                </span>
+              )}
               {accuracy !== null && (
                 <span style={{
                   fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700,
@@ -529,27 +649,18 @@ export function SongFollowView({ song }: { song: Song }) {
               const isActive = currentBeat === i;
               const isAccent = i === 0;
               return (
-                <div
-                  key={i}
-                  style={{
-                    width: isAccent ? 16 : 12,
-                    height: isAccent ? 16 : 12,
-                    borderRadius: '50%',
-                    flexShrink: 0,
-                    background: isActive
-                      ? (isAccent ? 'var(--accent)' : 'rgba(var(--accent-rgb), 0.55)')
-                      : 'var(--bg3)',
-                    boxShadow: isActive
-                      ? (isAccent ? '0 0 12px rgba(var(--accent-rgb), 0.65)' : '0 0 6px rgba(var(--accent-rgb), 0.3)')
-                      : 'none',
-                    border: `1.5px solid ${isActive ? 'var(--accent-border)' : 'var(--border2)'}`,
-                    transition: 'background 0.05s, box-shadow 0.05s, border-color 0.05s',
-                  }}
-                />
+                <div key={i} style={{
+                  width: isAccent ? 16 : 12, height: isAccent ? 16 : 12,
+                  borderRadius: '50%', flexShrink: 0,
+                  background: isActive ? (isAccent ? 'var(--accent)' : 'rgba(var(--accent-rgb), 0.55)') : 'var(--bg3)',
+                  boxShadow: isActive ? (isAccent ? '0 0 12px rgba(var(--accent-rgb), 0.65)' : '0 0 6px rgba(var(--accent-rgb), 0.3)') : 'none',
+                  border: `1.5px solid ${isActive ? 'var(--accent-border)' : 'var(--border2)'}`,
+                  transition: 'background 0.05s, box-shadow 0.05s, border-color 0.05s',
+                }} />
               );
             })}
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', marginLeft: 6, letterSpacing: '0.1em' }}>
-              {song.bpm} BPM
+              {Math.round(effectiveBpm)} BPM
             </span>
           </div>
 
@@ -579,8 +690,14 @@ export function SongFollowView({ song }: { song: Song }) {
                 </p>
               )}
 
-              {/* Real-time timing pill: shows EARLY / ON / LATE after each
-                  hit so the user can correct tempo on the fly. */}
+              {/* Next note hint */}
+              {hintsEnabled && nextNote && !wrongFlash && (
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', marginTop: 10, letterSpacing: '0.06em' }}>
+                  NEXT: {nextNote.chord ? nextNote.chord : nextNote.fret === 0 ? 'Open' : ordinalFret(nextNote.fret)} -- {nextNote.chord ? 'strum' : STRING_DESCRIPTIONS[nextNote.string - 1]}
+                </p>
+              )}
+
+              {/* Timing pill */}
               {!wrongFlash && lastTiming && (
                 <div style={{ marginTop: 8, display: 'flex', justifyContent: 'center' }}>
                   <span style={{
@@ -604,7 +721,7 @@ export function SongFollowView({ song }: { song: Song }) {
                     height: '100%',
                     background: 'var(--accent)',
                     borderRadius: 99,
-                    animation: `noteCountdown ${noteTimeoutMs(song.bpm)}ms linear forwards`,
+                    animation: `noteCountdown ${noteTimeoutMs(effectiveBpm)}ms linear forwards`,
                   }}
                 />
               </div>
@@ -613,11 +730,7 @@ export function SongFollowView({ song }: { song: Song }) {
 
           {/* Scrolling tab staff */}
           <div style={{ width: '100%', background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 14, padding: '12px 0', overflow: 'hidden' }}>
-            <TabStaff
-              notes={notes}
-              currentIndex={noteIndex}
-              wrongFlash={wrongFlash}
-            />
+            <TabStaff notes={notes} currentIndex={noteIndex} wrongFlash={wrongFlash} />
           </div>
         </div>
       )}
@@ -698,16 +811,58 @@ export function SongFollowView({ song }: { song: Song }) {
   );
 }
 
+// ── Sub-components ────────────────────────────────────────────────────────────
+
 function TimingPill({ label, count, total, color }: { label: string; count: number; total: number; color: string }) {
   const pct = total > 0 ? Math.round((count / total) * 100) : 0;
   return (
     <div style={{ textAlign: 'center', minWidth: 64 }}>
-      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 700, color, lineHeight: 1, marginBottom: 4 }}>
-        {count}
-      </p>
-      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', letterSpacing: '0.12em' }}>
-        {label} {pct}%
-      </p>
+      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 700, color, lineHeight: 1, marginBottom: 4 }}>{count}</p>
+      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', letterSpacing: '0.12em' }}>{label} {pct}%</p>
+    </div>
+  );
+}
+
+/** Small inline toggle switch. */
+function MiniToggle({ enabled, onToggle }: { enabled: boolean; onToggle: () => void }) {
+  return (
+    <button
+      onClick={onToggle}
+      aria-pressed={enabled}
+      style={{
+        width: 40, height: 22, borderRadius: 99, flexShrink: 0,
+        background: enabled ? 'var(--accent)' : 'var(--bg3)',
+        border: `0.5px solid ${enabled ? 'var(--accent)' : 'var(--border)'}`,
+        cursor: 'pointer', position: 'relative', transition: 'background 0.2s, border-color 0.2s',
+        padding: 0,
+      }}
+    >
+      <span style={{
+        position: 'absolute', top: 3, left: enabled ? 20 : 3,
+        width: 14, height: 14, borderRadius: '50%',
+        background: enabled ? 'var(--on-accent)' : 'var(--text-muted)',
+        transition: 'left 0.2s, background 0.2s',
+      }} />
+    </button>
+  );
+}
+
+/** Numeric step control with - / + buttons. */
+function StepButton({ value, min, max, onChange }: { value: number; min: number; max: number; onChange: (v: number) => void }) {
+  const btnStyle = (disabled: boolean): React.CSSProperties => ({
+    width: 26, height: 26, borderRadius: 6,
+    background: 'transparent', border: '0.5px solid var(--border)',
+    color: disabled ? 'var(--border)' : 'var(--text2)',
+    fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700,
+    cursor: disabled ? 'default' : 'pointer',
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+    lineHeight: 1,
+  });
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <button style={btnStyle(value <= min)} onClick={() => onChange(Math.max(min, value - 4))} disabled={value <= min}>-</button>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, color: 'var(--text)', minWidth: 24, textAlign: 'center' }}>{value}</span>
+      <button style={btnStyle(value >= max)} onClick={() => onChange(Math.min(max, value + 4))} disabled={value >= max}>+</button>
     </div>
   );
 }
