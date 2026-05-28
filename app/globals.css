@@ -52,6 +52,10 @@
   --input-bg: #0d1a2d;
   --input-border: rgba(255, 255, 255, 0.1);
   --nav-bg: rgba(7, 9, 15, 0.82);
+  /* Vinyl record is a physical black disc, fixed across both themes */
+  --vinyl-body: #0a0c12;
+  --vinyl-groove: rgba(255, 255, 255, 0.07);
+  --vinyl-shine: rgba(255, 255, 255, 0.2);
 }
 
 /* ── Light theme ── */
@@ -95,6 +99,10 @@
   --input-bg: #ffffff;
   --input-border: rgba(0, 0, 0, 0.12);
   --nav-bg: rgba(250, 249, 246, 0.82);
+  /* Vinyl record is a physical black disc, fixed across both themes */
+  --vinyl-body: #0a0c12;
+  --vinyl-groove: rgba(255, 255, 255, 0.07);
+  --vinyl-shine: rgba(255, 255, 255, 0.2);
 }
 
 :root {

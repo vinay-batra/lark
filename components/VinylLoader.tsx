@@ -38,24 +38,24 @@ export function VinylLoader({ size = 64, label, ticker }: Props) {
           animation: 'spin 2s linear infinite, vinylGlow 2.4s ease-in-out infinite',
         }}
       >
-        {/* outer rim */}
-        <circle cx={cx} cy={cy} r={outerR} fill="var(--bg)" stroke="var(--accent)" strokeWidth="0.5" />
+        {/* outer rim -- vinyl body is a fixed dark disc in both themes */}
+        <circle cx={cx} cy={cy} r={outerR} fill="var(--vinyl-body)" stroke="var(--accent)" strokeWidth="0.5" />
         {/* grooves */}
-        <circle cx={cx} cy={cy} r={outerR * 0.88} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
-        <circle cx={cx} cy={cy} r={outerR * 0.72} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
-        <circle cx={cx} cy={cy} r={outerR * 0.55} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
-        <circle cx={cx} cy={cy} r={outerR * 0.4} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+        <circle cx={cx} cy={cy} r={outerR * 0.88} fill="none" stroke="var(--vinyl-groove)" strokeWidth="0.5" />
+        <circle cx={cx} cy={cy} r={outerR * 0.72} fill="none" stroke="var(--vinyl-groove)" strokeWidth="0.5" />
+        <circle cx={cx} cy={cy} r={outerR * 0.55} fill="none" stroke="var(--vinyl-groove)" strokeWidth="0.5" />
+        <circle cx={cx} cy={cy} r={outerR * 0.4} fill="none" stroke="var(--vinyl-groove)" strokeWidth="0.5" />
         {/* light reflection arc -- adds the sense of motion when spinning */}
         <path
           d={`M ${cx} ${cy - outerR * 0.92} A ${outerR * 0.92} ${outerR * 0.92} 0 0 1 ${cx + outerR * 0.92} ${cy}`}
           fill="none"
-          stroke="rgba(255,255,255,0.18)"
+          stroke="var(--vinyl-shine)"
           strokeWidth="0.5"
         />
         {/* label */}
         <circle cx={cx} cy={cy} r={labelR} fill="var(--accent)" />
         {/* center hole */}
-        <circle cx={cx} cy={cy} r={size * 0.025} fill="var(--bg)" />
+        <circle cx={cx} cy={cy} r={size * 0.025} fill="var(--vinyl-body)" />
       </svg>
 
       {label && (

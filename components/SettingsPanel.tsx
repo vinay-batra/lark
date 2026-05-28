@@ -87,7 +87,9 @@ export function SettingsPanel({ layout = 'standalone' }: Props) {
       else setLoading(false);
       return;
     }
+    let mounted = true;
     supabase.auth.getUser().then(({ data }) => {
+      if (!mounted) return;
       const u = data.user;
       if (!u && layout === 'standalone') { router.replace('/auth?mode=signin'); return; }
       setEmail(u?.email ?? null);
@@ -98,6 +100,7 @@ export function SettingsPanel({ layout = 'standalone' }: Props) {
     setHighSensitivity(localStorage.getItem(PREF_KEYS.highSensitivity) === '1');
     setShowFreq(localStorage.getItem(PREF_KEYS.showFreq) !== '0');
     setDefaultTuning(localStorage.getItem(PREF_KEYS.defaultTuning) ?? 'standard');
+    return () => { mounted = false; };
   }, [router, layout]);
 
   const saveName = async () => {

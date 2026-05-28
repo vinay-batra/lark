@@ -28,7 +28,9 @@ export function PublicNav() {
 
   useEffect(() => {
     if (!supabase) return;
+    let mounted = true;
     supabase.auth.getUser().then(({ data }) => {
+      if (!mounted) return;
       const u = data.user;
       if (u) setUser({ email: u.email ?? '', displayName: u.user_metadata?.display_name ?? null, avatarUrl: u.user_metadata?.avatar_url ?? null });
     });
@@ -37,7 +39,7 @@ export function PublicNav() {
       if (u) setUser({ email: u.email ?? '', displayName: u.user_metadata?.display_name ?? null, avatarUrl: u.user_metadata?.avatar_url ?? null });
       else setUser(null);
     });
-    return () => sub.subscription.unsubscribe();
+    return () => { mounted = false; sub.subscription.unsubscribe(); };
   }, []);
 
   // Close dropdown on outside click or Esc. iOS Safari's tap doesn't always

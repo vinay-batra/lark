@@ -32,7 +32,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!supabase) return;
+    let mounted = true;
     supabase.auth.getUser().then(({ data }) => {
+      if (!mounted) return;
       const u = data.user;
       if (isSupabaseConfigured && !u) { router.push('/auth?mode=signin'); return; }
       setEmail(u?.email ?? null);
@@ -55,7 +57,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       setAvatarUrl(u?.user_metadata?.avatar_url ?? null);
       setSignedIn(!!u);
     });
-    return () => sub.subscription.unsubscribe();
+    return () => { mounted = false; sub.subscription.unsubscribe(); };
   }, [router]);
 
   // Pathname-based close is the right pattern here (no good lazy-init alternative).
