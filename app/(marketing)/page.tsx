@@ -110,13 +110,13 @@ export default function LandingPage() {
 
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.18 }}
               style={{ fontSize: 17, color: 'var(--text2)', lineHeight: 1.75, marginBottom: 40, maxWidth: 440 }}>
-              Lark hears every note you play, scores you in real time, and gives you AI coaching when you finish. 83 songs, 4 difficulty levels, free.
+              Lark hears every note you play, scores you in real time, and gives you AI coaching when you finish. Practice Mode, Daily Missions, and 83 songs -- all free.
             </motion.p>
 
             {/* Stats row */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.45, delay: 0.26 }}
               style={{ display: 'flex', gap: 28, marginBottom: 44, flexWrap: 'wrap', alignItems: 'baseline' }}>
-              {[['83', 'songs'], ['4', 'levels'], ['8', 'tools'], ['Free', '']].map(([val, label]) => (
+              {[['83', 'songs'], ['10', 'XP levels'], ['PWA', 'installable'], ['Free', 'forever']].map(([val, label]) => (
                 <div key={val} style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 26, fontWeight: 700, color: 'var(--accent)', lineHeight: 1 }}>{val}</span>
                   {label && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', letterSpacing: '0.14em' }}>{label.toUpperCase()}</span>}

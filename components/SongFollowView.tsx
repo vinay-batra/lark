@@ -373,6 +373,9 @@ export function SongFollowView({ song }: { song: Song }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         song: song.title,
+        artist: song.artist,
+        difficulty: song.difficulty,
+        isChordSong: finalNotes.some(n => n.chord),
         bpm: song.bpm,
         events: finalNotes.map(n => {
           const noteName = NOTE_NAMES[((n.midi % 12) + 12) % 12] + (Math.floor(n.midi / 12) - 1);

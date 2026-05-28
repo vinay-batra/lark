@@ -373,12 +373,12 @@ export default function SongsPage() {
         <div style={{ marginTop: 56, padding: '24px 22px', background: 'var(--card-bg)', border: '0.5px dashed var(--border2)', borderRadius: 14 }}>
           <p className="eyebrow" style={{ marginBottom: 6 }}>REQUEST A SONG</p>
           <p style={{ fontSize: 13, color: 'var(--text3)', marginBottom: 18, lineHeight: 1.6 }}>
-            Don't see your song? Submit a request and we'll add it to the library.
+            {"Don't see your song? Submit a request and we'll add it to the library."}
           </p>
           {reqSent ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--accent)' }}>Got it. We'll look into adding it.</p>
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--accent)' }}>{"Got it. We'll look into adding it."}</p>
             </div>
           ) : (
             <form onSubmit={handleSongRequest}>
