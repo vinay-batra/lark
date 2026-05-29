@@ -8,6 +8,22 @@ import { Reveal } from '@/components/Reveal';
 // Each chapter is a coherent arc, not a commit dump.
 const CHAPTERS = [
   {
+    num: '09',
+    name: 'Growth & Visibility',
+    versions: 'v1.4 - v1.5',
+    dateRange: 'May 29, 2026',
+    intro: 'Lark got shareable, installable, and self-aware. Post your scores, track your improvement over time, and open the app from your home screen like any native tool.',
+    highlights: [
+      'PWA support: install Lark to your home screen on any device -- it opens full-screen, works offline, and feels native',
+      'Shareable session cards: after every song, generate a card showing your score, song title, and lark.coach for one-tap sharing',
+      'Song requests: submit any song directly from the library and we\'ll add it in a future update',
+      'Progress page: accuracy trend chart, sessions-per-day bar chart, top 5 songs by best score, and recent session history',
+      'AI coach rewritten: now detects pitch bias (sharp vs flat), identifies where you miss notes (start/middle/end), and uses your song difficulty and artist for richer context',
+      'Landing page social proof: stats row now shows "10 XP levels", "PWA installable", and "Free forever" alongside song count',
+    ],
+    tags: ['PWA', 'Sharing', 'Progress', 'Coach', 'Growth'],
+  },
+  {
     num: '08',
     name: 'Practice & Progress',
     versions: 'v1.2 - v1.3',

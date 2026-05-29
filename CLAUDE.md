@@ -6,11 +6,11 @@ Guitar AI tutor. Hears you play, shows you what to play, gives feedback.
 
 ## Current Focus
 
-**Last shipped: v1.2 (May 28, 2026) — Song accuracy fixes, 6 new beginner songs (83 total), onboarding tour overhaul, progress merge fix.**
+**Last shipped: v1.5 (May 29, 2026) — Progress page with SVG charts, improved AI coach with pitch-bias detection, social proof landing, PWA, share cards, song requests.**
 
 Live at: `https://lark.coach`
-Supabase project: `ebsddbpbvjbcdwfldubx` (on **Pro** plan as of May 28)
-Last commit: ef5e8ef (v1.2: song fixes, onboarding overhaul, 6 new songs, progress merge fix)
+Supabase project: `ebsddbpbvjbcdwfldubx` (on **Pro** plan)
+Last commit: f33288f (v1.5: progress page, improved AI coach, social proof landing)
 
 ### v1.2 (May 28, 2026) — Song quality + onboarding pass
 
