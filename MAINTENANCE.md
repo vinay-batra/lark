@@ -395,3 +395,4 @@ Routine checks, audits, and tests.
 - 2026-05-30 — accessibility pass, minor notes
 - 2026-05-30 — audited dependencies, no advisories
 - 2026-05-30 — reviewed dependency updates
+- 2026-05-30 — checked mobile layouts
