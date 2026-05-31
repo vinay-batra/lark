@@ -405,3 +405,4 @@ Routine checks, audits, and tests.
 - 2026-05-30 — general housekeeping
 - 2026-05-30 — checked auth and session handling
 - 2026-05-30 — lint + format clean
+- 2026-05-30 — accessibility pass, minor notes
