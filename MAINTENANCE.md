@@ -408,3 +408,4 @@ Routine checks, audits, and tests.
 - 2026-05-30 — accessibility pass, minor notes
 - 2026-05-30 — ran regression pass, no regressions
 - 2026-05-30 — reviewed dependency updates
+- 2026-05-31 — e2e sanity check passed
