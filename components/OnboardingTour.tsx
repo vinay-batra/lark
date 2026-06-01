@@ -14,7 +14,7 @@ interface Step {
 const STEPS: Step[] = [
   {
     title: 'Welcome to Lark',
-    desc: 'Your AI guitar tutor. It listens while you play and tells you exactly what to fix. Quick tour -- 8 steps.',
+    desc: 'Your AI guitar tutor. It listens while you play and tells you exactly what to fix. Quick tour -- 6 steps.',
   },
   {
     title: 'Tune up first',
@@ -35,11 +35,6 @@ const STEPS: Step[] = [
     title: 'Chord Book',
     desc: '120+ chord diagrams with fingerings -- open chords, barre chords, power chords, sevenths. Tap any card to see alternate voicings.',
     targetId: 'tour-chord-book',
-  },
-  {
-    title: 'Metronome',
-    desc: 'Precision Web Audio metronome with tap tempo and multiple time signatures. Songs also show a live beat indicator while you play.',
-    targetId: 'tour-metronome',
   },
   {
     title: 'Ask Lark anything',
