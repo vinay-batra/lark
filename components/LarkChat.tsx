@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -8,10 +9,6 @@ interface ChatMessage {
 }
 
 function getToday(): string {
-  // Use local date, not UTC. toISOString() gives UTC which means the limit
-  // doesn't reset at local midnight for users west of UTC (e.g. US users hit
-  // 11pm, sleep, wake up at 9am - still blocked because it's still the same
-  // UTC date until 5-8am local time).
   const d = new Date();
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -19,24 +16,26 @@ function getToday(): string {
   return `${y}-${m}-${day}`;
 }
 
-function getStorageKey(): string {
-  return `lark_chat_${getToday()}`;
+// Public pages: 5/day  |  In-app (/app/*): 15/day — separate counters
+function getStorageKey(inApp: boolean): string {
+  return `lark_chat_${inApp ? 'app' : 'pub'}_${getToday()}`;
 }
 
-function getUsedCount(): number {
+function getUsedCount(inApp: boolean): number {
   if (typeof window === 'undefined') return 0;
-  return parseInt(localStorage.getItem(getStorageKey()) ?? '0', 10);
+  return parseInt(localStorage.getItem(getStorageKey(inApp)) ?? '0', 10);
 }
 
-function incrementUsedCount(): number {
-  const next = getUsedCount() + 1;
-  localStorage.setItem(getStorageKey(), String(next));
+function incrementUsedCount(inApp: boolean): number {
+  const next = getUsedCount(inApp) + 1;
+  localStorage.setItem(getStorageKey(inApp), String(next));
   return next;
 }
 
-const DAILY_LIMIT = 5;
-
 export function LarkChat() {
+  const pathname = usePathname();
+  const inApp = pathname?.startsWith('/app') ?? false;
+  const DAILY_LIMIT = inApp ? 15 : 5;
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -45,14 +44,14 @@ export function LarkChat() {
   // Lazy init from localStorage so we don't re-render after first paint just
   // to fill in the count. Re-reads when the chat opens (in the effect below)
   // so cross-tab updates stay accurate.
-  const [usedCount, setUsedCount] = useState(() => getUsedCount());
+  const [usedCount, setUsedCount] = useState(() => getUsedCount(inApp));
 
   const messagesRef = useRef<HTMLDivElement>(null);
 
   // Re-read on open so cross-tab usage shows up. Legitimate setState in effect.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setUsedCount(getUsedCount());
+    setUsedCount(getUsedCount(inApp));
   }, [open]);
 
   useEffect(() => {
@@ -91,7 +90,7 @@ export function LarkChat() {
     setLoading(true);
     setError(null);
 
-    const newCount = incrementUsedCount();
+    const newCount = incrementUsedCount(inApp);
     setUsedCount(newCount);
 
     try {

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { SONGS, Song, Difficulty, DIFFICULTY_COLORS, DIFFICULTY_DIM, DIFFICULTY_BORDER, DIFFICULTY_RGB, DIFFICULTY_ORDER } from '@/lib/songs';
 import { SongFollowView } from '@/components/SongFollowView';
+import { MetronomeWidget } from '@/components/MetronomeWidget';
 import { SongCover } from '@/components/SongCover';
 import { VinylLoader } from '@/components/VinylLoader';
 import { Reveal } from '@/components/Reveal';
@@ -167,6 +168,8 @@ export default function SongsPage() {
   }
 
   return (
+    <>
+    <MetronomeWidget />
     <div style={{ maxWidth: 1100, margin: '0 auto' }}>
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }} style={{ marginBottom: 28 }}>
         <p className="eyebrow" style={{ marginBottom: 12 }}>SONG MODE</p>
@@ -414,6 +417,7 @@ export default function SongsPage() {
       )}
 
     </div>
+    </>
   );
 }
 
