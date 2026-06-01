@@ -225,26 +225,6 @@ export default function FAQPage() {
         </div>
       </section>
 
-      <section style={{ padding: '40px 24px 140px', textAlign: 'center' }}>
-        <Reveal>
-          <p className="eyebrow" style={{ marginBottom: 18 }}>STILL CURIOUS?</p>
-          <h2 style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 'clamp(24px, 4vw, 36px)',
-            fontWeight: 700,
-            color: 'var(--text)',
-            letterSpacing: '-0.02em',
-            lineHeight: 1.1,
-            marginBottom: 26,
-          }}>
-            Just open the tuner and play.
-          </h2>
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/tuner" className="btn btn-accent btn-lg">OPEN TUNER</Link>
-            <Link href="/chords" className="btn btn-outline btn-lg">TRY CHORDS</Link>
-          </div>
-        </Reveal>
-      </section>
     </main>
   );
 }

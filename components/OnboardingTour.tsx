@@ -186,7 +186,7 @@ export function OnboardingTour({ onDone }: { onDone: () => void }) {
             border: '0.5px solid var(--accent-border)',
             borderRadius: 14,
             padding: '20px 20px 16px',
-            boxShadow: '0 24px 60px rgba(0,0,0,0.5), 0 0 0 0.5px var(--border), 0 0 24px rgba(var(--accent-rgb), 0.08)',
+            boxShadow: 'var(--shadow-lg), 0 0 24px rgba(var(--accent-rgb), 0.08)',
           }}
         >
           {/* Top accent line */}

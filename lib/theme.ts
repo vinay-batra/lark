@@ -1,7 +1,7 @@
 export type Theme = 'light' | 'dark';
 
 export const THEME_KEY = 'lark_theme';
-export const DEFAULT_THEME: Theme = 'dark';
+export const DEFAULT_THEME: Theme = 'light';
 
 export function getStoredTheme(): Theme {
   if (typeof window === 'undefined') return DEFAULT_THEME;

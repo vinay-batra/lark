@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 
 const THEME_SCRIPT = `
 (function(){try{
-  var t = localStorage.getItem('lark_theme') || 'dark';
+  var t = localStorage.getItem('lark_theme') || 'light';
   document.documentElement.setAttribute('data-theme', t);
 }catch(e){/* localStorage blocked; falls back to the data-theme="dark" on <html> */}})();
 `;
@@ -55,12 +55,12 @@ if('serviceWorker' in navigator){
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={spaceMono.variable} data-theme="dark" suppressHydrationWarning>
+    <html lang="en" className={spaceMono.variable} data-theme="light" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: SW_SCRIPT }} />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="theme-color" content="#080c14" />
+        <meta name="theme-color" content="#faf9f6" />
       </head>
       <body>
         <ThemeProvider>

@@ -146,7 +146,7 @@ export default function LandingPage() {
             className="hero-demo" style={{ position: 'relative' }}>
             <div style={{
               background: 'var(--card-bg)', border: '0.5px solid var(--border2)',
-              borderRadius: 18, padding: '24px 20px', boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 0 0.5px var(--border)',
+              borderRadius: 18, padding: '24px 20px', boxShadow: 'var(--shadow-lg)',
               position: 'relative', overflow: 'hidden',
             }}>
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(var(--accent-rgb),0.5), transparent)' }} />
@@ -161,38 +161,62 @@ export default function LandingPage() {
               </div>
 
               {/* Current note */}
-              <div style={{ textAlign: 'center', marginBottom: 20, padding: '16px 0', background: 'var(--bg3)', borderRadius: 10 }}>
-                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', letterSpacing: '0.2em', marginBottom: 6 }}>PLAY NOW</p>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 48, fontWeight: 700, color: 'var(--accent)', lineHeight: 1, textShadow: '0 0 24px rgba(var(--accent-rgb),0.5)' }}>G</div>
-                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>e string -- fret 3</p>
+              <div style={{ textAlign: 'center', marginBottom: 16, padding: '14px 0 12px', background: 'var(--bg3)', borderRadius: 10, position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 60% 80% at 50% 55%, rgba(var(--accent-rgb),0.08) 0%, transparent 100%)', pointerEvents: 'none' }} />
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', letterSpacing: '0.2em', marginBottom: 4 }}>PLAY NOW</p>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', gap: 2 }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 52, fontWeight: 700, color: 'var(--accent)', lineHeight: 1, textShadow: '0 0 28px rgba(var(--accent-rgb),0.4)' }}>G</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--accent)', opacity: 0.5, marginTop: 8 }}>4</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 6 }}>
+                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text3)' }}>e string -- fret 3</p>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, fontWeight: 700, color: 'var(--accent)', background: 'rgba(var(--accent-rgb),0.12)', border: '0.5px solid var(--accent-border)', borderRadius: 99, padding: '2px 7px', letterSpacing: '0.08em', animation: 'pulse 2s ease-in-out infinite' }}>ON BEAT</span>
+                </div>
               </div>
 
               {/* Tab ribbon */}
-              <div style={{ background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 10, padding: '12px 14px' }}>
-                {['e','B','G','D','A','E'].map((str, si) => (
-                  <div key={str} style={{ display: 'flex', alignItems: 'center', height: 22 }}>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', width: 14, textAlign: 'right', marginRight: 6 }}>{str}</span>
-                    {[
-                      [true, false, false, false, false, false, false, false, false, false], // e: hit fret 0
-                      [false, false, true, false, false, false, false, false, false, false], // B: current fret 0
-                      [false, false, false, false, false, false, false, false, false, false],
-                      [false, false, false, false, false, false, false, false, false, false],
-                      [false, false, false, false, false, false, false, false, false, false],
-                      [false, false, false, false, false, false, false, false, false, false],
-                    ][si].map((active, ci) => (
-                      <div key={ci} style={{ width: 28, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', flexShrink: 0 }}>
-                        <div style={{ position: 'absolute', left: 0, right: 0, height: '0.5px', background: 'var(--border)' }} />
-                        {active && ci === 0 && (
-                          <span style={{ position: 'relative', zIndex: 1, fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--accent)', background: 'var(--card-bg)', padding: '0 2px', boxShadow: '0 0 0 1.5px var(--accent)' }}>0</span>
-                        )}
-                        {ci === 2 && si === 0 && (
-                          <span style={{ position: 'relative', zIndex: 1, fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--text)', background: 'var(--bg3)', padding: '0 2px', boxShadow: '0 0 0 1.5px var(--accent)', animation: 'pulse 1.4s ease-out infinite' }}>3</span>
-                        )}
+              {(() => {
+                const TAB_STRINGS = ['e','B','G','D','A','E'];
+                const DEMO_NOTES = [
+                  {si:4,ci:0,fret:7,state:'past'},
+                  {si:4,ci:1,fret:7,state:'hit'},
+                  {si:0,ci:2,fret:0,state:'hit'},
+                  {si:0,ci:3,fret:3,state:'current'},
+                  {si:4,ci:4,fret:10,state:'future'},
+                  {si:4,ci:5,fret:7,state:'future'},
+                  {si:4,ci:6,fret:5,state:'far'},
+                  {si:5,ci:7,fret:3,state:'far'},
+                  {si:5,ci:8,fret:2,state:'far'},
+                ];
+                const noteAt = (si: number, ci: number) => DEMO_NOTES.find(n => n.si === si && n.ci === ci);
+                return (
+                  <div style={{ background: 'var(--card-bg)', border: '0.5px solid var(--border)', borderRadius: 10, padding: '10px 12px', position: 'relative' }}>
+                    <div style={{ position: 'absolute', left: 116, top: 8, bottom: 8, width: 1.5, background: 'var(--accent)', borderRadius: 1, opacity: 0.6, boxShadow: '0 0 8px rgba(var(--accent-rgb),0.35)', pointerEvents: 'none' }} />
+                    {TAB_STRINGS.map((str, si) => (
+                      <div key={str} style={{ display: 'flex', alignItems: 'center', height: 20 }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', width: 14, textAlign: 'right', marginRight: 6, flexShrink: 0 }}>{str}</span>
+                        {Array.from({length: 9}).map((_, ci) => {
+                          const note = noteAt(si, ci);
+                          const isPast = note?.state === 'past';
+                          const isHit = note?.state === 'hit';
+                          const isCurrent = note?.state === 'current';
+                          const isFar = note?.state === 'far';
+                          const noteColor = isCurrent ? 'var(--accent)' : isHit ? 'var(--accent)' : isPast ? 'var(--text-muted)' : isFar ? 'var(--text3)' : 'var(--text2)';
+                          const noteBg = isCurrent ? 'var(--accent-dim)' : isHit ? 'rgba(var(--accent-rgb),0.08)' : 'var(--card-bg)';
+                          return (
+                            <div key={ci} style={{ width: 28, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', flexShrink: 0, opacity: isPast ? 0.3 : isFar ? 0.55 : 1 }}>
+                              <div style={{ position: 'absolute', left: 0, right: 0, height: '1px', background: 'var(--border2)' }} />
+                              {note && (
+                                <span style={{ position: 'relative', zIndex: 1, fontFamily: 'var(--font-mono)', fontSize: isCurrent ? 12 : 11, fontWeight: 700, color: noteColor, background: noteBg, padding: '0 2px', borderRadius: 2, boxShadow: `0 0 0 ${isCurrent ? '1.5px' : '1px'} ${noteColor}`, animation: isCurrent ? 'pulse 1.4s ease-out infinite' : undefined }}>{note.fret}</span>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     ))}
                   </div>
-                ))}
-              </div>
+                );
+              })()}
 
               {/* AI coach preview */}
               <div style={{ marginTop: 14, padding: '12px 14px', background: 'var(--bg3)', borderRadius: 10, borderLeft: '2px solid var(--accent)' }}>
@@ -317,33 +341,6 @@ export default function LandingPage() {
               </Reveal>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* HOW IT WORKS */}
-      {/* TRUST */}
-      <section style={{ padding: '80px 24px' }}>
-        <div style={{ maxWidth: 860, margin: '0 auto' }}>
-          <Reveal>
-            <div style={{ padding: 'clamp(36px, 5vw, 56px)', background: 'var(--card-bg)', border: '0.5px solid rgba(var(--accent-rgb),0.25)', borderRadius: 20, textAlign: 'center', position: 'relative', overflow: 'hidden', boxShadow: '0 0 40px rgba(var(--accent-rgb),0.08), 0 8px 32px rgba(0,0,0,0.4)' }}>
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(var(--accent-rgb),0.5), transparent)' }} />
-              <p className="eyebrow" style={{ marginBottom: 16 }}>RUNS IN YOUR BROWSER</p>
-              <h2 style={{ fontSize: 'clamp(22px, 3.5vw, 32px)', fontWeight: 700, color: 'var(--text)', lineHeight: 1.25, marginBottom: 14, letterSpacing: '-0.01em' }}>
-                No app store. No cable. No paywall to try it.
-              </h2>
-              <p style={{ fontSize: 15, color: 'var(--text2)', lineHeight: 1.7, maxWidth: 520, margin: '0 auto 32px' }}>
-                Lark uses Web Audio API. Your mic audio never leaves your device. Works on desktop and mobile.
-              </p>
-              <div style={{ display: 'flex', gap: 28, justifyContent: 'center', flexWrap: 'wrap' }}>
-                {['No download','No credit card','Audio stays on device','Works on any guitar'].map(t => (
-                  <div key={t} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text3)', letterSpacing: '0.04em' }}>{t}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Reveal>
         </div>
       </section>
 

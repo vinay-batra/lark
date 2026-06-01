@@ -8,149 +8,100 @@ import { Reveal } from '@/components/Reveal';
 // Each chapter is a coherent arc, not a commit dump.
 const CHAPTERS = [
   {
-    num: '09',
-    name: 'Growth & Visibility',
-    versions: 'v1.4 - v1.5',
-    dateRange: 'May 29, 2026',
-    intro: 'Lark got shareable, installable, and self-aware. Post your scores, track your improvement over time, and open the app from your home screen like any native tool.',
-    highlights: [
-      'PWA support: install Lark to your home screen on any device -- it opens full-screen, works offline, and feels native',
-      'Shareable session cards: after every song, generate a card showing your score, song title, and lark.coach for one-tap sharing',
-      'Song requests: submit any song directly from the library and we\'ll add it in a future update',
-      'Progress page: accuracy trend chart, sessions-per-day bar chart, top 5 songs by best score, and recent session history',
-      'AI coach rewritten: now detects pitch bias (sharp vs flat), identifies where you miss notes (start/middle/end), and uses your song difficulty and artist for richer context',
-      'Landing page social proof: stats row now shows "10 XP levels", "PWA installable", and "Free forever" alongside song count',
-    ],
-    tags: ['PWA', 'Sharing', 'Progress', 'Coach', 'Growth'],
-  },
-  {
-    num: '08',
-    name: 'Practice & Progress',
-    versions: 'v1.2 - v1.3',
-    dateRange: 'May 28, 2026',
-    intro: 'Practice got a serious upgrade. Slow songs down, loop hard sections, earn XP on daily missions, and play from a fully audited library of 83 verified songs.',
-    highlights: [
-      'Practice Mode on every song: speed control at 0.5x, 0.75x, and 1x -- slow down difficult passages without restarting',
-      'Section looping: mark any range of notes and loop it until the muscle memory locks in',
-      'Next-note hints: opt-in hint system shows the upcoming note when you are stuck',
-      'Daily Missions: 3 new missions per day on the dashboard -- complete them to earn XP and progress through 10 levels',
-      'XP system: 10-level progression tied to daily play habits, missions reset at midnight',
-      '83 songs total -- 6 new verified beginner songs added: Twinkle Twinkle Little Star, Mary Had a Little Lamb, Happy Birthday, Jingle Bells, Eye of the Tiger, Amazing Grace',
-      'Full accuracy audit: all 83 songs manually verified and corrected, including Iron Man and Every Breath You Take which were on the wrong strings entirely',
-    ],
-    tags: ['Practice Mode', 'Daily Missions', 'XP', 'Songs', 'Audit'],
-  },
-  {
     num: '01',
-    name: 'First Sounds',
-    versions: 'v0.1 - v0.2',
+    name: 'Origins',
+    versions: 'v0.1 - v0.4',
     dateRange: 'May 17-18, 2026',
-    intro: 'Lark started as two live audio tools -- hear a note, name it. Hear a chord, name it. No backend, no account, just the mic.',
+    intro: 'Lark launched as two live audio tools and became a guitar teacher in two days.',
     highlights: [
-      'Real-time pitch detection via Web Audio and Pitchy: note, octave, and cents offset displayed live',
-      'Chord detection via chromagram analysis: identifies any chord from mic audio with alternatives listed',
-      'Light and dark theme system with FOUC prevention, CSS variables, and localStorage persistence',
-      'Google and GitHub OAuth, magic link sign-in, and password reset -- all gracefully degraded when unconfigured',
-      'Authenticated app shell with sidebar, topbar, and collapsible mobile drawer',
-      'Marketing site shipped: landing page, pricing, FAQ with accordion, and changelog',
+      'Live tuner: Web Audio and Pitchy show note, octave, and cents offset in real time',
+      'Chord detector: chromagram analysis names any chord from your mic with alternatives listed',
+      '73 songs with tab score-following: green on hit, red on miss, per-note pitch matching',
+      'AI Coach: Claude gives specific post-session feedback on missed notes and intonation',
+      'AI tab generation: type any song name and get playable tabs back in seconds',
+      'Google and GitHub OAuth, magic link sign-in, password reset, and full app shell',
     ],
-    tags: ['Audio', 'Auth', 'Themes', 'Launch'],
+    tags: ['Audio', 'Songs', 'AI Coach', 'Auth'],
   },
   {
     num: '02',
-    name: 'Song Mode',
-    versions: 'v0.3 - v0.4',
-    dateRange: 'May 18, 2026',
-    intro: 'Lark became a teacher. Follow a song note-by-note, see every hit and miss in real time, and get AI coaching when you finish.',
+    name: 'Tools & Polish',
+    versions: 'v0.5 - v0.9',
+    dateRange: 'May 19, 2026',
+    intro: 'Practice became measurable and the app got its first real polish pass.',
     highlights: [
-      '73 songs with live tab score-following: pitch detection on each note, green on hit, red on miss',
-      'AI Coach: after every session Claude gives specific feedback on missed notes and intonation',
-      'AI tab generation: type any song name, get playable tabs back in seconds using Claude',
-      'Score-following loop: per-note pitch matching with 100-cent tolerance and 4-second timeout',
-      'Lark brand system: logo, favicon, og-image, and bird-themed identity across marketing and app',
-      'Per-note hit/miss tracking with RAF loop, advancing on correct pitch with race condition guard',
+      'Session history: accuracy, streak, and tab count synced to Supabase per user account',
+      'Web Audio metronome with lookahead scheduler, tap tempo, and beat accent support',
+      '120+ chord diagrams with SVG fingering charts, searchable by name and category',
+      'Avatar upload: canvas-resized 200x200 JPEG stored in user_metadata, shown in nav everywhere',
+      '8-step spotlight onboarding tour on first sign-in, replayable any time from the menu',
+      'Security hardened: rate limits on all API routes, delete account via service role key',
     ],
-    tags: ['Songs', 'AI Coach', 'Brand', 'Audio'],
+    tags: ['Stats', 'Metronome', 'Chords', 'Security'],
   },
   {
     num: '03',
-    name: 'Practice Tools',
-    versions: 'v0.5 - v0.6',
-    dateRange: 'May 19, 2026',
-    intro: 'Practice became measurable. Sessions, streaks, and accuracy now save to your account. Plus a metronome and 120+ chord diagrams.',
-    highlights: [
-      'Session history: accuracy, streak, and tabs generated all tracked and synced to Supabase per user',
-      'Personal song library: save any song, rename it, and replay from a private collection',
-      'Web Audio metronome: look-ahead scheduler, tap tempo, multiple time signatures, and beat accent',
-      '120+ chord diagrams with SVG fingering charts, searchable by name and filterable by category',
-      'AI tab generation rate limit: 3 free generations per 3-day window with a dot-counter progress UI',
-      'Dashboard with live stats pulled from session history including streak and average accuracy',
-    ],
-    tags: ['Stats', 'Metronome', 'Chords', 'Library'],
-  },
-  {
-    num: '04',
-    name: 'Polish & Profile',
-    versions: 'v0.7 - v0.9',
-    dateRange: 'May 19, 2026',
-    intro: 'Profile pictures, auth-aware nav, a full security audit, 14 corrected songs, and 38 mobile issues fixed in one sprint.',
-    highlights: [
-      'Avatar upload: canvas-resized to 200x200 JPEG stored in Supabase user_metadata, visible everywhere in nav',
-      'Auth-aware nav: signed-in users see their name and avatar pill with Go to App, Settings, Sign Out',
-      '8-step spotlight onboarding tour on first sign-in with smart edge detection, replayable from the menu',
-      'Security hardened: rate limits on all API routes, server-side bug reports, delete account via service role',
-      '14 song pitch errors corrected (Seven Nation Army was on wrong strings entirely) and all songs expanded',
-      'Mobile audit: wrong 880px breakpoints fixed, touch targets enlarged, hero layout corrected for short screens',
-    ],
-    tags: ['Profile', 'Security', 'Onboarding', 'Mobile'],
-  },
-  {
-    num: '05',
     name: 'Intelligence',
     versions: 'v1.0 part 1',
     dateRange: 'May 20, 2026',
-    intro: 'Lark learned to hear chords, suggest a learning path, and show you where you are in time. The audio engine got smarter.',
+    intro: 'Lark learned to hear chords, suggest a learning path, and track you in time.',
     highlights: [
-      'Chord detection in song mode: chromagram analysis identifies strummed chords alongside single notes',
+      'Chord detection in song mode: chromagram identifies strummed chords alongside single notes',
       'Four chord-strum songs added: Knockin\' on Heaven\'s Door, Stand By Me, Let It Be, Three Little Birds',
-      'Six-stage learning curriculum (/app/learn): stages unlock at 70% accuracy and track your session history',
-      'Beat-aware scoring: timeout scales with song BPM, end-of-session shows on-beat/late/slow breakdown',
+      'Six-stage learning curriculum: stages unlock at 70% accuracy, progress tied to session history',
+      'Beat-aware scoring: timeout scales with BPM, end-of-session shows on-beat/late/slow breakdown',
       'Procedural cover art: each song gets a unique vinyl or cassette SVG seeded by title and difficulty',
-      'Count-in clicks before first note, beginner string labels (\"High E, thinnest\"), stop button during play',
+      'Count-in clicks before the first note, beginner string labels, and stop button during play',
     ],
     tags: ['Chords', 'Curriculum', 'Scoring', 'Art'],
   },
   {
-    num: '06',
+    num: '04',
     name: 'Tab Experience',
     versions: 'v1.0 part 2',
     dateRange: 'May 20, 2026',
-    intro: 'The tab view became a proper instrument. Continuous scroll, a green playhead, real MIDI data, and a cleaner pipeline.',
+    intro: 'The tab view became a proper instrument with real MIDI data and a live playhead.',
     highlights: [
-      'Songsterr-style scrolling tab: 6-string staff with a fixed green playhead, notes flow continuously left',
-      'Three-tier tab generation: bitmidi MIDI (real note data) then Songsterr metadata then Claude fallback',
-      'Song regeneration: all 73 note songs rebuilt with note-names-first pipeline for improved accuracy',
-      'Real-time timing pill: ON BEAT / LATE / SLOW flashes after each hit to help you lock to the tempo',
-      'LarkChat fixes: clip-path circle fix for Safari square-button bug, button stays visible during songs',
-      'Hero centering fixed, 29 lint errors eliminated, metronome extracted to reusable library module',
+      'Songsterr-style scrolling tab: 6-string staff with a fixed green playhead, notes flow left',
+      'Three-tier tab generation: real MIDI from bitmidi, Songsterr metadata, then Claude fallback',
+      'All 73 note songs rebuilt with a note-names-first pipeline for improved tab accuracy',
+      'Timing pill: ON BEAT / LATE / SLOW flashes after each hit to help you lock to the tempo',
+      'LarkChat Safari fix: clip-path circle instead of overflow:hidden, stays visible during songs',
+      '29 lint errors cleared, metronome extracted to a reusable module, hero layout corrected',
     ],
     tags: ['Tab View', 'MIDI', 'Songs', 'Polish'],
   },
   {
-    num: '07',
-    name: 'Hardening',
-    versions: 'v1.1',
+    num: '05',
+    name: 'Quality',
+    versions: 'v1.1 - v1.3',
     dateRange: 'May 28, 2026',
-    intro: 'A full quality pass. Every page audited for polish, accessibility, and consistency, with a pile of small fixes that add up to a tighter app.',
+    intro: 'A full hardening pass followed by practice upgrades -- tighter and deeper in one sprint.',
     highlights: [
-      'App-wide audit: a unified color system, cleaner code, and consistent spacing across more than fifty files',
-      'Fixed a color-rendering bug that washed out song cover art and the tuner glow in some themes',
-      'Smarter AI coaching: post-session feedback now runs on the stronger Claude Sonnet model',
-      'Accessibility pass: dialog roles, keyboard Escape, and screen-reader labels on the chat and feedback panels',
-      'SEO and sharing: every page now has its own title, description, and social preview image',
-      'Branded sign-in emails, friendly error pages, and automatic database cleanup running behind the scenes',
+      'App-wide audit: unified CSS variable system and consistent spacing across fifty-plus files',
+      'Accessibility pass: dialog roles, keyboard Escape, and screen-reader labels throughout',
+      'Practice Mode: speed control at 0.5x, 0.75x, and 1x to slow down difficult sections',
+      'Section looping: mark any note range and repeat it on a loop until muscle memory locks in',
+      '83 verified songs after a full accuracy audit -- wrong strings corrected across multiple songs',
+      'Branded sign-in emails, friendly error pages, and nightly database cleanup via pg_cron',
     ],
-    tags: ['Audit', 'Accessibility', 'SEO', 'Polish'],
+    tags: ['Audit', 'Practice Mode', 'Songs', 'Polish'],
+  },
+  {
+    num: '06',
+    name: 'Growth',
+    versions: 'v1.4 - v1.5',
+    dateRange: 'May 29, 2026',
+    intro: 'Lark got shareable, installable, and self-aware.',
+    highlights: [
+      'Daily Missions: 3 new challenges per day, earn XP, and climb through 10 levels',
+      'Next-note hints: opt-in system shows the upcoming note when you are stuck',
+      'PWA support: install Lark to your home screen, opens full-screen and feels native',
+      'Shareable score cards: generate a result card with your score and lark.coach after every song',
+      'Progress page: accuracy trend chart, sessions-per-day bars, top songs, and session history',
+      'AI coach rewritten: detects pitch bias, identifies where in songs you miss, uses artist context',
+    ],
+    tags: ['PWA', 'Missions', 'Progress', 'Coach'],
   },
 ];
 
@@ -368,7 +319,7 @@ export default function ChangelogPage() {
                 fontWeight: 600,
               }}
             >
-              Eight chapters &middot; scroll
+              Six chapters &middot; scroll
             </span>
             <svg width="22" height="10" viewBox="0 0 22 10" fill="none">
               <path d="M2 5h17M14 1l4 4-4 4" stroke="var(--text3)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -582,87 +533,6 @@ export default function ChangelogPage() {
         </div>
       </ScrollReveal>
 
-      {/* ── What's next footer ──────────────────────────────────────────────── */}
-      <div
-        className="lk-footer"
-        style={{ borderTop: '1px solid var(--border)', padding: '80px 56px 120px' }}
-      >
-        <ScrollReveal from="up" delay={0}>
-          <div style={{ maxWidth: 520, margin: '0 auto', textAlign: 'center' }}>
-            <p
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                letterSpacing: '0.3em',
-                color: 'var(--accent)',
-                textTransform: 'uppercase',
-                marginBottom: 14,
-              }}
-            >
-              What&apos;s next
-            </p>
-            <h2
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 'clamp(20px, 3vw, 30px)',
-                fontWeight: 700,
-                color: 'var(--text)',
-                letterSpacing: '-0.03em',
-                marginBottom: 12,
-                lineHeight: 1.2,
-              }}
-            >
-              Still building.
-            </h2>
-            <p
-              style={{
-                fontSize: 14,
-                color: 'var(--text3)',
-                fontWeight: 300,
-                lineHeight: 1.7,
-                maxWidth: 420,
-                margin: '0 auto 32px',
-              }}
-            >
-              Stripe for Pro, session replay, and real licensed tab data are next. Lark is built by one person who also plays guitar.
-            </p>
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 10,
-                padding: '10px 22px',
-                border: '0.5px solid rgba(var(--accent-rgb), 0.3)',
-                borderRadius: 12,
-                background: 'rgba(var(--accent-rgb), 0.05)',
-              }}
-            >
-              <span
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: '50%',
-                  background: 'var(--accent)',
-                  display: 'inline-block',
-                  animation: 'lk-pdot 2s infinite',
-                }}
-              />
-              <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: 'var(--accent)',
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                }}
-              >
-                Active development
-              </span>
-            </div>
-          </div>
-        </ScrollReveal>
-      </div>
     </div>
   );
 }

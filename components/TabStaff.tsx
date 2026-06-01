@@ -171,7 +171,7 @@ export function TabStaff({ notes, currentIndex, wrongFlash }: Props) {
                     top: s * LINE_GAP,
                     height: STRING_STROKE[s],
                     background: 'var(--border2)',
-                    opacity: 0.65,
+                    opacity: 1,
                   }} />
                 ))}
 

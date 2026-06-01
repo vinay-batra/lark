@@ -238,17 +238,6 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* FAQ teaser */}
-      <section style={{ padding: '60px 24px 140px', textAlign: 'center' }}>
-        <Reveal>
-          <p style={{ fontSize: 14, color: 'var(--text3)', marginBottom: 16 }}>
-            Questions?
-          </p>
-          <Link href="/faq" className="btn btn-ghost">
-            READ THE FAQ
-          </Link>
-        </Reveal>
-      </section>
     </main>
   );
 }

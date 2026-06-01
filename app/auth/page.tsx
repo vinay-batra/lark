@@ -95,7 +95,7 @@ function AuthInner() {
           border: '0.5px solid var(--border)',
           borderRadius: 20,
           overflow: 'hidden',
-          boxShadow: '0 0 60px rgba(var(--accent-rgb),0.08), 0 24px 80px rgba(0,0,0,0.6)',
+          boxShadow: '0 0 60px rgba(var(--accent-rgb),0.06), var(--shadow-lg)',
           position: 'relative',
           zIndex: 1,
         }}

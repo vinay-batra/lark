@@ -84,7 +84,7 @@ export function UserMenu({ email, displayName, avatarUrl, onSignOut, onReplayTou
             position: 'absolute', right: 0, top: 'calc(100% + 8px)',
             width: 210, background: 'var(--card-bg)',
             border: '0.5px solid var(--border2)', borderRadius: 12,
-            boxShadow: '0 12px 40px rgba(0,0,0,0.4), 0 0 0 0.5px var(--border)',
+            boxShadow: 'var(--shadow-md)',
             zIndex: 300, overflow: 'hidden',
           }}>
             {/* Identity */}
