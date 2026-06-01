@@ -9,22 +9,6 @@ import { Reveal } from '@/components/Reveal';
 const CHAPTERS = [
   {
     num: '01',
-    name: 'Origins',
-    versions: 'v0.1 - v0.4',
-    dateRange: 'May 17-18, 2026',
-    intro: 'Lark launched as two live audio tools and became a guitar teacher in two days.',
-    highlights: [
-      'Live tuner: Web Audio and Pitchy show note, octave, and cents offset in real time',
-      'Chord detector: chromagram analysis names any chord from your mic with alternatives listed',
-      '73 songs with tab score-following: green on hit, red on miss, per-note pitch matching',
-      'AI Coach: Claude gives specific post-session feedback on missed notes and intonation',
-      'AI tab generation: type any song name and get playable tabs back in seconds',
-      'Google and GitHub OAuth, magic link sign-in, password reset, and full app shell',
-    ],
-    tags: ['Audio', 'Songs', 'AI Coach', 'Auth'],
-  },
-  {
-    num: '02',
     name: 'Tools & Polish',
     versions: 'v0.5 - v0.9',
     dateRange: 'May 19, 2026',
@@ -34,13 +18,13 @@ const CHAPTERS = [
       'Web Audio metronome with lookahead scheduler, tap tempo, and beat accent support',
       '120+ chord diagrams with SVG fingering charts, searchable by name and category',
       'Avatar upload: canvas-resized 200x200 JPEG stored in user_metadata, shown in nav everywhere',
-      '8-step spotlight onboarding tour on first sign-in, replayable any time from the menu',
+      'Spotlight onboarding tour on first sign-in, smart edge detection, replayable from the menu',
       'Security hardened: rate limits on all API routes, delete account via service role key',
     ],
     tags: ['Stats', 'Metronome', 'Chords', 'Security'],
   },
   {
-    num: '03',
+    num: '02',
     name: 'Intelligence',
     versions: 'v1.0 part 1',
     dateRange: 'May 20, 2026',
@@ -56,7 +40,7 @@ const CHAPTERS = [
     tags: ['Chords', 'Curriculum', 'Scoring', 'Art'],
   },
   {
-    num: '04',
+    num: '03',
     name: 'Tab Experience',
     versions: 'v1.0 part 2',
     dateRange: 'May 20, 2026',
@@ -72,7 +56,7 @@ const CHAPTERS = [
     tags: ['Tab View', 'MIDI', 'Songs', 'Polish'],
   },
   {
-    num: '05',
+    num: '04',
     name: 'Quality',
     versions: 'v1.1 - v1.3',
     dateRange: 'May 28, 2026',
@@ -88,7 +72,7 @@ const CHAPTERS = [
     tags: ['Audit', 'Practice Mode', 'Songs', 'Polish'],
   },
   {
-    num: '06',
+    num: '05',
     name: 'Growth',
     versions: 'v1.4 - v1.5',
     dateRange: 'May 29, 2026',
@@ -102,6 +86,22 @@ const CHAPTERS = [
       'AI coach rewritten: detects pitch bias, identifies where in songs you miss, uses artist context',
     ],
     tags: ['PWA', 'Missions', 'Progress', 'Coach'],
+  },
+  {
+    num: '06',
+    name: 'UI & Clarity',
+    versions: 'v1.6',
+    dateRange: 'June 1, 2026',
+    intro: 'A full UI pass -- cleaner defaults, a smarter sidebar, and better in-place tools.',
+    highlights: [
+      'Light mode is now the default; dark mode persists per-user via localStorage',
+      'Settings rebuilt as a Corvo-style sidebar with Profile, Appearance, Detection, and Account tabs',
+      'Metronome moved from sidebar to a floating overlay widget on the Songs page',
+      'Settings and Metronome removed from the nav -- both accessible contextually',
+      'AI chat limits split: public pages get 5 per day, in-app gets 15 per day independently',
+      'Landing hero demo updated: multi-string tab, hit/miss coloring, G4 label, timing badge',
+    ],
+    tags: ['UI', 'Settings', 'Chat', 'Light Mode'],
   },
 ];
 

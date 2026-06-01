@@ -6,11 +6,22 @@ Guitar AI tutor. Hears you play, shows you what to play, gives feedback.
 
 ## Current Focus
 
-**Last shipped: v1.5 (May 29, 2026) — Progress page with SVG charts, improved AI coach with pitch-bias detection, social proof landing, PWA, share cards, song requests.**
+**Last shipped: v1.6 (June 1, 2026) — Light mode default, settings sidebar, metronome overlay, split chat limits, sidebar cleanup.**
 
 Live at: `https://lark.coach`
 Supabase project: `ebsddbpbvjbcdwfldubx` (on **Pro** plan)
-Last commit: f33288f (v1.5: progress page, improved AI coach, social proof landing)
+Last commit: e4eed1a (v1.6: sidebar cleanup, tour update)
+
+### v1.6 (June 1, 2026) — UI & Clarity pass
+
+- **Light mode default**: new/incognito users land on light; dark persists per-user via localStorage. Full light/dark audit -- all hardcoded dark shadows replaced with `var(--shadow-*)` vars, TabStaff string opacity, TunerView button color corrected.
+- **Settings panel rebuilt**: Corvo-style sidebar layout (Profile / Appearance / Detection / Account tabs) with animated tab switching. Works on both `/settings` and `/app/settings`. `minHeight: 44` toggle bug fixed (switches were rendering as circles).
+- **Sidebar simplified**: Metronome and Settings removed from AppShell nav. Settings is in the user menu dropdown. Metronome is a floating widget on Songs page.
+- **MetronomeWidget** (`components/MetronomeWidget.tsx`): compact fixed overlay (bottom-left) on the Songs page. Collapsed = pill showing METRONOME or live BPM. Expanded = beat lights, BPM ±, time sig, tap tempo, start/stop. Independent of song click track.
+- **Chat rate limits split**: public pages `lark_chat_pub_{date}` = 5/day; in-app `lark_chat_app_{date}` = 15/day. Separate counters, separate localStorage keys.
+- **Onboarding tour**: reduced to 6 steps (removed Metronome + Settings steps; count updated in welcome copy).
+- **Landing improvements**: hero demo card shows multi-string tab (A/E strings, hit/miss coloring, green playhead), G4 octave label, ON BEAT badge. Removed "Runs in Your Browser" section. FAQ and Pricing bottom CTAs removed.
+- **Changelog**: condensed 9 chapters to 6 (exactly 6 bullets each, uniform card height). "Still building" footer removed.
 
 ### v1.2 (May 28, 2026) — Song quality + onboarding pass
 

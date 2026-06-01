@@ -45,7 +45,7 @@ Run the SQL files in `supabase/migrations/` in the Supabase SQL editor to set up
 |---|---|
 | `/` | Landing -- auth-aware hero with social proof stats |
 | `/pricing` | Free / Pro / Studio tiers |
-| `/changelog` | Nine-chapter horizontal timeline |
+| `/changelog` | Six-chapter horizontal timeline |
 | `/faq` | Accordion FAQ |
 | `/privacy` | Privacy policy |
 | `/terms` | Terms of service |
@@ -60,8 +60,8 @@ Run the SQL files in `supabase/migrations/` in the Supabase SQL editor to set up
 | `/app/tuner` | Tuner (in app shell, marks daily mission) |
 | `/app/chords` | Chord detector (in app shell) |
 | `/app/chord-library` | 120+ chord diagrams |
-| `/app/metronome` | Web Audio metronome |
-| `/app/settings` | Settings (in app shell) |
+| `/app/metronome` | Web Audio metronome (not in sidebar; floating widget on songs page) |
+| `/app/settings` | Settings (sidebar layout; also accessible via user menu dropdown) |
 | `/api/coach` | Post-session AI feedback, claude-sonnet-4-6, 20 req/hr |
 | `/api/chat` | Guitar Q&A, claude-haiku-4-5, 30 req/hr |
 | `/api/tabs` | Tab generation (MIDI + Songsterr + Claude), 10 req/hr |
@@ -70,12 +70,13 @@ Run the SQL files in `supabase/migrations/` in the Supabase SQL editor to set up
 
 ## Version
 
-v1.5 (May 29, 2026)
+v1.6 (June 1, 2026)
 
 ### Changelog summary
 
 | Version | What shipped |
 |---|---|
+| v1.6 | Light mode default, settings sidebar redesign, metronome overlay, split chat limits, sidebar cleanup |
 | v1.5 | Progress page, improved AI coach (pitch bias + miss pattern), social proof landing |
 | v1.4 | PWA, shareable session cards, song requests, marketing page updates |
 | v1.3 | Practice Mode (speed/loop/hints), Daily Missions, XP system (10 levels) |
@@ -83,5 +84,4 @@ v1.5 (May 29, 2026)
 | v1.2 | 6 new songs (83 total), Iron Man + Every Breath You Take fixed, onboarding overhaul |
 | v1.1 | Full quality audit: a11y, SEO, light/dark, metadata, error boundaries, Supabase Pro |
 | v1.0 | Chord songs, 6-stage curriculum, beat-aware scoring, AI tab gen, 77 songs |
-| v0.9 | Avatar upload, auth-aware nav, 14 song fixes, 38 mobile fixes, security hardening |
-| v0.1-v0.4 | Tuner, chord detector, song mode, AI coach, brand |
+| v0.1-v0.9 | Tuner, chord detector, song mode, AI coach, brand, avatar, security |
