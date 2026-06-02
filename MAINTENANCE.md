@@ -418,3 +418,4 @@ Routine checks, audits, and tests.
 - 2026-06-02 — general housekeeping
 - 2026-06-02 — reviewed env and config
 - 2026-06-02 — audited dependencies, no advisories
+- 2026-06-02 — reviewed env and config
