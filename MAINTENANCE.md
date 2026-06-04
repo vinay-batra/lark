@@ -430,3 +430,4 @@ Routine checks, audits, and tests.
 - 2026-06-03 — reviewed dependency updates
 - 2026-06-03 — reviewed env and config
 - 2026-06-03 — accessibility pass, minor notes
+- 2026-06-04 — audited dependencies, no advisories
