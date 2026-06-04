@@ -446,3 +446,4 @@ Routine checks, audits, and tests.
 - 2026-06-04 — ran regression pass, no regressions
 - 2026-06-04 — reviewed env and config
 - 2026-06-04 — reviewed env and config
+- 2026-06-04 — verified API responses
