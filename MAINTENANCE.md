@@ -453,3 +453,4 @@ Routine checks, audits, and tests.
 - 2026-06-04 — audited dependencies, no advisories
 - 2026-06-04 — lint + format clean
 - 2026-06-04 — ran regression pass, no regressions
+- 2026-06-04 — checked auth and session handling
