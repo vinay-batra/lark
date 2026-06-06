@@ -465,3 +465,4 @@ Routine checks, audits, and tests.
 - 2026-06-05 — verified API responses
 - 2026-06-05 — lint + format clean
 - 2026-06-06 — lint + format clean
+- 2026-06-06 — checked auth and session handling
