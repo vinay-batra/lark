@@ -6,11 +6,22 @@ Guitar AI tutor. Hears you play, shows you what to play, gives feedback.
 
 ## Current Focus
 
-**Last shipped: v1.6 (June 1, 2026) — Light mode default, settings sidebar, metronome overlay, split chat limits, sidebar cleanup.**
+**Last shipped: v1.6.1 (June 9, 2026) -- polish pass: 0 lint warnings, a11y labels, version-string fix.**
 
 Live at: `https://lark.coach`
 Supabase project: `ebsddbpbvjbcdwfldubx` (on **Pro** plan)
-Last commit: e4eed1a (v1.6: sidebar cleanup, tour update)
+Last commit: 422bc8e (v1.6.1: polish -- lint/a11y/version)
+
+### v1.6.1 (June 9, 2026) -- Polish pass
+
+Full polish audit + fix. All verified: lint exit 0, production build exit 0 (26 route entries, TypeScript clean).
+
+- **Lint: 9 warnings -> 0.** Removed unused `Link` import (FaqContent), 3 dead `eslint-disable` directives (app/app/page.tsx x2 on `useState` lazy-init, SongFollowView immutability), 3 unused script vars (`createRequire`/`require`/`noteNameToMidi` in rebuild-songs, `noteStr` in regenerate-songs). Added missing effect deps: `inApp` (LarkChat), `song.difficulty` (SongFollowView coach effect).
+- **a11y**: `aria-label` on MetronomeWidget BPM +/- buttons; `StepButton` gained a `label` prop so SongFollowView loop FROM/TO steppers announce "Decrease/Increase loop start/end"; `aria-modal="true"` on LarkChat dialog.
+- **console cleanup**: removed `console.error` from `api/song-request/route.ts` (now `void error` with comment -- matches the no-console route pattern from v1.1).
+- **version.ts**: `v1.5` -> `v1.6.1`. It had been lagging (v1.6 shipped but the constant was never bumped, so the UI footer/settings showed v1.5).
+- **misc**: removed one em dash from a LarkChat comment (the two remaining em dashes in source are intentional regex replacements in chat/coach routes).
+- **Audited clean (no changes needed)**: theme var symmetry (45 dark / 45 light, identical sets), hardcoded hex (only legit: PWA manifest, Google brand-logo SVG), emojis (none), invalid hex-alpha `var(--x)NN` (none), broken internal links (none), stale "coming soon" copy (Pro/Studio paid tiers are legitimately pending Stripe).
 
 ### v1.6 (June 1, 2026) — UI & Clarity pass
 
@@ -78,7 +89,7 @@ Shipped across 3 commits (0c4864d, 2646bf5, cd0da0a):
 - DONE in dashboard: pasted the 4 branded email templates from `supabase/email-templates/` into Auth > Email Templates; ran the `pg_cron` migration in SQL editor (daily cleanup of lark_gen_history 30d + lark_bug_reports 90d).
 - There's a **test account** for browser testing: display name "Test", email `vinaybatra2010@gmail.com`.
 
-Routes (22 total):
+Routes (25 total -- README has the full table):
 - `/` — Landing. Auth-aware: "GO TO APP" when signed in, "START PLAYING" -> signup when not.
 - `/pricing` — 3-tier (Free / Pro $8 / Studio $24, paid coming soon).
 - `/changelog` — Horizontal scroll-snap chapter timeline (6 chapters).
@@ -87,13 +98,15 @@ Routes (22 total):
 - `/settings` — Standalone auth-gated settings (SettingsPanel layout="standalone").
 - `/privacy`, `/terms` — Policy pages.
 - `/tuner`, `/chords` — Public audio tools (no auth).
-- `/app` — Dashboard: stats, tools, coming soon.
+- `/app` — Dashboard: stats, daily missions, XP level, live tools.
+- `/app/progress` — Progress page: accuracy trend chart, sessions/day, top songs.
 - `/app/learn` — Learning path: 6-stage curriculum (First sounds -> Lead playing).
 - `/app/tuner`, `/app/chords`, `/app/chord-library`, `/app/songs`, `/app/metronome` — Authenticated tools.
 - `/app/settings` — In-app settings (SettingsPanel layout="in-app").
 - `/api/coach` — Claude AI song feedback, 20/hr.
 - `/api/chat` — Guitar Q&A, claude-haiku-4-5, 30/hr.
 - `/api/tabs` — AI tab gen (note-names-first), claude-sonnet-4-6, 10/hr.
+- `/api/song-request` — Song requests, rate limited 5/day, optional userId from Bearer token.
 - `/api/bug-report` — Server-side bug reports, rate limited, derives userId from token.
 - `/api/delete-account` — Delete user via service role key.
 
@@ -254,7 +267,7 @@ lark/
     metronome-scheduler.ts  <- lookahead Web Audio metronome, reusable handle
     chord-detection.ts      <- buildChromagram, detectChordFromChroma, chordMatches
     curriculum.ts           <- STAGES array, getCurriculumProgress, getNextSong
-    version.ts              <- VERSION string (currently v1.1)
+    version.ts              <- VERSION string (currently v1.6.1)
   proxy.ts                  <- SSR auth refresh (Next.js 16 renamed middleware)
   supabase/migrations/      <- SQL files to run in Supabase SQL editor (incl. pg_cron)
   supabase/email-templates/ <- branded auth email HTML (paste into Supabase Auth UI)

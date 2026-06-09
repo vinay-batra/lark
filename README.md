@@ -39,7 +39,7 @@ SUPABASE_SERVICE_ROLE_KEY=...      # delete account endpoint
 
 Run the SQL files in `supabase/migrations/` in the Supabase SQL editor to set up tables (incl. `pg_cron` cleanup jobs). Auth email templates live in `supabase/email-templates/` -- paste them into Supabase Auth > Email Templates.
 
-## Routes (24 total)
+## Routes (25 total)
 
 | Route | Description |
 |---|---|
@@ -65,17 +65,19 @@ Run the SQL files in `supabase/migrations/` in the Supabase SQL editor to set up
 | `/api/coach` | Post-session AI feedback, claude-sonnet-4-6, 20 req/hr |
 | `/api/chat` | Guitar Q&A, claude-haiku-4-5, 30 req/hr |
 | `/api/tabs` | Tab generation (MIDI + Songsterr + Claude), 10 req/hr |
+| `/api/song-request` | Song requests (server-side, rate limited 5/day) |
 | `/api/bug-report` | Bug reports (server-side, rate limited) |
 | `/api/delete-account` | Delete user account (requires service role key) |
 
 ## Version
 
-v1.6 (June 1, 2026)
+v1.6.1 (June 9, 2026)
 
 ### Changelog summary
 
 | Version | What shipped |
 |---|---|
+| v1.6.1 | Polish pass: 0 lint warnings, a11y labels (metronome BPM + loop steppers, chat dialog), version-string fix (was lagging at v1.5), dead-code cleanup |
 | v1.6 | Light mode default, settings sidebar redesign, metronome overlay, split chat limits, sidebar cleanup |
 | v1.5 | Progress page, improved AI coach (pitch bias + miss pattern), social proof landing |
 | v1.4 | PWA, shareable session cards, song requests, marketing page updates |
