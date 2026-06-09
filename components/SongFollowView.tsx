@@ -186,7 +186,6 @@ export function SongFollowView({ song }: { song: Song }) {
     }
 
     advancedRef.current = false;
-    // eslint-disable-next-line react-hooks/immutability
     timeoutRef.current = setTimeout(() => advanceNote(false, null), noteTimeoutMs(bpm));
   }, [stopAudio, song.bpm]);
 
@@ -408,7 +407,7 @@ export function SongFollowView({ song }: { song: Song }) {
       clearTimeout(timeoutId);
       controller.abort();
     };
-  }, [mode, song.title, song.artist, song.bpm]);
+  }, [mode, song.title, song.artist, song.bpm, song.difficulty]);
 
   const [sharing, setSharing] = useState(false);
 
@@ -561,12 +560,12 @@ export function SongFollowView({ song }: { song: Song }) {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', minWidth: 36 }}>FROM</p>
                         <StepButton value={loopStart + 1} min={1} max={loopEnd - 3}
-                          onChange={v => setLoopStart(Math.max(0, v - 1))} />
+                          label="loop start" onChange={v => setLoopStart(Math.max(0, v - 1))} />
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', minWidth: 36 }}>TO</p>
                         <StepButton value={loopEnd} min={loopStart + 4} max={song.notes.length}
-                          onChange={v => setLoopEnd(Math.min(song.notes.length, v))} />
+                          label="loop end" onChange={v => setLoopEnd(Math.min(song.notes.length, v))} />
                       </div>
                       <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--accent)' }}>
                         {loopEnd - loopStart} notes
@@ -882,7 +881,7 @@ function MiniToggle({ enabled, onToggle }: { enabled: boolean; onToggle: () => v
 }
 
 /** Numeric step control with - / + buttons. */
-function StepButton({ value, min, max, onChange }: { value: number; min: number; max: number; onChange: (v: number) => void }) {
+function StepButton({ value, min, max, onChange, label = 'value' }: { value: number; min: number; max: number; onChange: (v: number) => void; label?: string }) {
   const btnStyle = (disabled: boolean): React.CSSProperties => ({
     width: 26, height: 26, borderRadius: 6,
     background: 'transparent', border: '0.5px solid var(--border)',
@@ -894,9 +893,9 @@ function StepButton({ value, min, max, onChange }: { value: number; min: number;
   });
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-      <button style={btnStyle(value <= min)} onClick={() => onChange(Math.max(min, value - 4))} disabled={value <= min}>-</button>
+      <button aria-label={`Decrease ${label}`} style={btnStyle(value <= min)} onClick={() => onChange(Math.max(min, value - 4))} disabled={value <= min}>-</button>
       <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, color: 'var(--text)', minWidth: 24, textAlign: 'center' }}>{value}</span>
-      <button style={btnStyle(value >= max)} onClick={() => onChange(Math.min(max, value + 4))} disabled={value >= max}>+</button>
+      <button aria-label={`Increase ${label}`} style={btnStyle(value >= max)} onClick={() => onChange(Math.min(max, value + 4))} disabled={value >= max}>+</button>
     </div>
   );
 }

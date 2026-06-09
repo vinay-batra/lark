@@ -53,9 +53,7 @@ export default function AppPage() {
     generated: getGenCount(),
   }));
   // Lazy init from localStorage -- same pattern as `stats` above.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   const [missions] = useState<Mission[]>(() => typeof window !== 'undefined' ? getDailyMissions() : []);
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   const [levelProgress] = useState(() => getLevelProgress());
 
   useEffect(() => {

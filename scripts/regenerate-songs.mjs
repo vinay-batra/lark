@@ -163,7 +163,6 @@ for (let i = 0; i < songs.length; i++) {
 
     results.push({ id: song.id, tabs, noteNames: parsed.notes });
 
-    const noteStr = tabs.map(t => `n(${t.string},${t.fret})`).join(',');
     console.log(`✓ ${tabs.length} notes`);
 
     // Small delay to avoid rate limiting

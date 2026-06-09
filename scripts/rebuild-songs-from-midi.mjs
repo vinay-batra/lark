@@ -15,13 +15,11 @@
  */
 
 import { parseMidi } from 'midi-file';
-import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const require = createRequire(import.meta.url);
 
 // ── Load SONGS from lib/songs.ts via the compiled JS or parse directly ──────
 // We read the TS source and extract song metadata without transpiling.
@@ -41,16 +39,6 @@ const OPEN_MIDI = [64, 59, 55, 50, 45, 40]; // strings 1-6 (e B G D A E)
 
 function midiToNoteName(midi) {
   return PITCH_NAMES[((midi % 12) + 12) % 12] + (Math.floor(midi / 12) - 1);
-}
-
-function noteNameToMidi(name) {
-  const SEMITONES = { C:0,'C#':1,Db:1,D:2,'D#':3,Eb:3,E:4,Fb:4,'E#':5,F:5,'F#':6,Gb:6,G:7,'G#':8,Ab:8,A:9,'A#':10,Bb:10,B:11,Cb:11,'B#':0 };
-  const m = name.trim().match(/^([A-G][#b]?)(-?\d+)$/);
-  if (!m) return null;
-  const semi = SEMITONES[m[1]];
-  if (semi === undefined) return null;
-  const octave = parseInt(m[2]);
-  return semi + (octave + 1) * 12;
 }
 
 function midiToTab(midi, prev) {

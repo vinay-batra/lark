@@ -16,7 +16,7 @@ function getToday(): string {
   return `${y}-${m}-${day}`;
 }
 
-// Public pages: 5/day  |  In-app (/app/*): 15/day — separate counters
+// Public pages: 5/day  |  In-app (/app/*): 15/day - separate counters
 function getStorageKey(inApp: boolean): string {
   return `lark_chat_${inApp ? 'app' : 'pub'}_${getToday()}`;
 }
@@ -52,7 +52,7 @@ export function LarkChat() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setUsedCount(getUsedCount(inApp));
-  }, [open]);
+  }, [open, inApp]);
 
   useEffect(() => {
     // Close the chat panel when a song starts playing so it doesn't block the
@@ -188,6 +188,7 @@ export function LarkChat() {
         <div
           onClick={e => e.stopPropagation()}
           role="dialog"
+          aria-modal="true"
           aria-label="Ask Lark chat"
           style={{
             position: 'fixed',

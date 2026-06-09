@@ -186,6 +186,7 @@ export function MetronomeWidget() {
           {/* BPM row */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 12 }}>
             <button
+              aria-label="Decrease BPM"
               onMouseDown={() => { adjustBpm(-1); startHold(-1); }}
               onMouseUp={endHold} onMouseLeave={endHold}
               onTouchStart={e => { e.preventDefault(); adjustBpm(-1); startHold(-1); }} onTouchEnd={endHold}
@@ -196,6 +197,7 @@ export function MetronomeWidget() {
               <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', letterSpacing: '0.2em', marginTop: 2 }}>BPM</p>
             </div>
             <button
+              aria-label="Increase BPM"
               onMouseDown={() => { adjustBpm(1); startHold(1); }}
               onMouseUp={endHold} onMouseLeave={endHold}
               onTouchStart={e => { e.preventDefault(); adjustBpm(1); startHold(1); }} onTouchEnd={endHold}

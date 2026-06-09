@@ -37,11 +37,10 @@ export async function POST(req: NextRequest) {
       artist,
       message: message || null,
     });
-    if (error) {
-      // Table might not exist yet -- return success anyway so UX isn't broken
-      // before the migration is run in Supabase dashboard.
-      console.error('song-request insert error:', error.message);
-    }
+    // If the insert fails (e.g. table not created yet), we intentionally
+    // swallow the error and return success below so the UX isn't broken
+    // before the migration is run in the Supabase dashboard.
+    void error;
   }
 
   return NextResponse.json({ ok: true });
