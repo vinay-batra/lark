@@ -478,3 +478,4 @@ Routine checks, audits, and tests.
 - 2026-06-09 — audited dependencies, no advisories
 - 2026-06-09 — audited dependencies, no advisories
 - 2026-06-09 — lint + format clean
+- 2026-06-09 — checked auth and session handling
