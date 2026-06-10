@@ -491,3 +491,4 @@ Routine checks, audits, and tests.
 - 2026-06-10 — verified API responses
 - 2026-06-10 — reviewed env and config
 - 2026-06-10 — checked mobile layouts
+- 2026-06-10 — reviewed error logging
