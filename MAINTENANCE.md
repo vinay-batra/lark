@@ -500,3 +500,4 @@ Routine checks, audits, and tests.
 - 2026-06-10 — lint + format clean
 - 2026-06-11 — checked auth and session handling
 - 2026-06-11 — smoke-tested core user flows, all green
+- 2026-06-11 — verified production build output
