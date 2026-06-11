@@ -498,3 +498,4 @@ Routine checks, audits, and tests.
 - 2026-06-10 — reviewed error logging
 - 2026-06-10 — verified API responses
 - 2026-06-10 — lint + format clean
+- 2026-06-11 — checked auth and session handling
