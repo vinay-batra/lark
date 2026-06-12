@@ -97,15 +97,10 @@ export default function LandingPage() {
 
           {/* Left: text */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 36 }}>
-              <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 2s ease-in-out infinite', boxShadow: '0 0 8px rgba(var(--accent-rgb),0.8)' }} />
-              <p className="eyebrow">LISTEN-FIRST GUITAR COACHING</p>
-            </motion.div>
-
             <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.06, ease: [0.16, 1, 0.3, 1] }}
-              style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(42px, 6vw, 72px)', fontWeight: 700, color: 'var(--text)', lineHeight: 1.05, letterSpacing: '-0.03em', marginBottom: 32 }}>
-              Practice<br />
-              <span style={{ color: 'var(--accent)', textShadow: '0 0 32px rgba(var(--accent-rgb),0.5)' }}>smarter.</span>
+              style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(32px, 5vw, 54px)', fontWeight: 700, color: 'var(--text)', lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: 32 }}>
+              LISTEN-FIRST<br />
+              <span style={{ color: 'var(--accent)', textShadow: '0 0 32px rgba(var(--accent-rgb),0.5)' }}>GUITAR COACHING</span>
             </motion.h1>
 
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.18 }}
