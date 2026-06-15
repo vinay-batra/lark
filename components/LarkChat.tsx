@@ -135,52 +135,15 @@ export function LarkChat() {
       {/* Toggle button */}
       <button
         id="tour-chat-btn"
+        className="ed-fab ed-fab-chat"
         onClick={() => setOpen(prev => !prev)}
         aria-label={open ? 'Close Lark chat' : 'Open Lark chat'}
-        style={{
-          position: 'fixed',
-          bottom: 'calc(24px + env(safe-area-inset-bottom))',
-          right: 24,
-          zIndex: 201,
-          width: 60,
-          height: 60,
-          borderRadius: '50%',
-          // clip-path:circle() is the reliable cross-browser fix for the
-          // position:fixed + border-radius = square rendering bug in Safari/Chrome.
-          // overflow:hidden alone can fail when a stacking context (e.g. the
-          // onboarding tour overlay) is painted above the element.
-          clipPath: 'circle(50%)',
-          WebkitClipPath: 'circle(50%)',
-          background: 'var(--accent)',
-          border: 'none',
-          color: 'var(--bg)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          transition: 'transform 0.15s, box-shadow 0.15s',
-          boxShadow: '0 4px 16px rgba(var(--accent-rgb), 0.35)',
-          flexShrink: 0,
-        }}
-        onMouseEnter={e => {
-          (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)';
-          (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 6px 22px rgba(var(--accent-rgb), 0.5)';
-        }}
-        onMouseLeave={e => {
-          (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
-          (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 16px rgba(var(--accent-rgb), 0.35)';
-        }}
+        aria-expanded={open}
       >
-        {open ? (
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        ) : (
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
-        )}
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+        Ask Lark
       </button>
 
       {/* Chat panel */}
@@ -192,7 +155,7 @@ export function LarkChat() {
           aria-label="Ask Lark chat"
           style={{
             position: 'fixed',
-            bottom: 'calc(96px + env(safe-area-inset-bottom))',
+            bottom: 'calc(74px + env(safe-area-inset-bottom))',
             right: 24,
             zIndex: 201,
             width: 400,
@@ -481,7 +444,7 @@ export function LarkChat() {
         }
         @media (max-width: 768px) {
           .lark-chat-panel {
-            bottom: 92px !important;
+            bottom: 74px !important;
             right: 0 !important;
             left: 0 !important;
             width: 100% !important;

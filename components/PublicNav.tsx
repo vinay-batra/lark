@@ -14,6 +14,12 @@ const LINKS = [
   { href: '/faq', label: 'FAQ' },
 ];
 
+const ArrowRight = ({ size = 14 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+  </svg>
+);
+
 export function PublicNav() {
   const pathname = usePathname();
   const router = useRouter();
@@ -99,143 +105,79 @@ export function PublicNav() {
 
   return (
     <>
-      <nav className={`public-nav ${hidden && !open ? 'hidden' : ''}`}>
-        <div style={{
-          height: '100%',
-          maxWidth: 'var(--max-content)',
-          margin: '0 auto',
-          padding: '0 28px',
-          display: 'grid',
-          gridTemplateColumns: '1fr auto 1fr',
-          alignItems: 'center',
-          gap: 24,
-        }}>
-          {/* Logo */}
-          <div style={{ justifySelf: 'start' }}>
-            <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 9 }}>
-              <Image src="/lark-logo.png" alt="Lark" width={30} height={30} style={{ display: 'block' }} priority />
-              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 17, color: 'var(--text)', letterSpacing: '0.04em' }}>
-                Lark
-              </span>
-            </Link>
-          </div>
+      <nav className={`ed-nav ${hidden && !open ? 'hidden' : ''}`}>
+        <div className="ed-nav-inner">
+          {/* Wordmark */}
+          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 9 }}>
+            <Image src="/lark-logo.png" alt="Lark" width={28} height={28} style={{ display: 'block' }} priority />
+            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 16, color: 'var(--text)', letterSpacing: '0.06em' }}>Lark</span>
+          </Link>
 
-          {/* Center links */}
-          <div className="nav-center" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            {LINKS.map(l => (
-              <Link key={l.href} href={l.href} className={`nav-link ${pathname === l.href ? 'active' : ''}`}>
-                {l.label}
-              </Link>
-            ))}
-          </div>
+          {/* Desktop cluster */}
+          <div className="ed-nav-desktop">
+            <div className="ed-nav-links">
+              {LINKS.map(l => (
+                <Link key={l.href} href={l.href} className={`ed-nav-link ${pathname === l.href ? 'active' : ''}`}>
+                  {l.label}
+                </Link>
+              ))}
+            </div>
 
-          {/* Right cluster */}
-          <div className="nav-right" style={{ display: 'flex', alignItems: 'center', gap: 8, justifySelf: 'end' }}>
+            <span className="ed-nav-sep" />
             <ThemeToggle />
 
             {user ? (
-              /* Signed-in: avatar + name + dropdown */
               <div ref={dropdownRef} style={{ position: 'relative' }}>
-                <button
-                  onClick={() => setDropdownOpen(v => !v)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 8,
-                    background: 'var(--bg3)', border: '0.5px solid var(--border2)',
-                    borderRadius: 9999, padding: '5px 12px 5px 5px',
-                    cursor: 'pointer', transition: 'border-color 0.15s',
-                  }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent-border)'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border2)'; }}
-                >
-                  <div style={{ width: 26, height: 26, borderRadius: '50%', overflow: 'hidden', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <button className="ed-avatar-btn" onClick={() => setDropdownOpen(v => !v)} aria-haspopup="menu" aria-expanded={dropdownOpen} aria-label="Account menu">
+                  <span className="ed-avatar">
                     {user?.avatarUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element -- base64 data URL, next/image adds no value
                       <img src={user.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--bg)' }}>{initial}</span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--on-accent)' }}>{initial}</span>
                     )}
-                  </div>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text)', fontWeight: 600, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {name}
                   </span>
+                  <span className="ed-avatar-name">{name}</span>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" strokeWidth="2.5" strokeLinecap="round" style={{ transform: dropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>
                     <polyline points="6 9 12 15 18 9" />
                   </svg>
                 </button>
 
                 {dropdownOpen && (
-                  <div style={{
-                    position: 'absolute', top: 'calc(100% + 8px)', right: 0,
-                    background: 'var(--card-bg)', border: '0.5px solid var(--border2)',
-                    borderRadius: 12, minWidth: 160, boxShadow: 'var(--shadow-md)',
-                    overflow: 'hidden', zIndex: 200,
-                  }}>
-                    {[
-                      { label: 'Go to App', href: '/app' },
-                      { label: 'Settings', href: '/settings' },
-                    ].map(item => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setDropdownOpen(false)}
-                        style={{
-                          display: 'block', padding: '11px 16px',
-                          fontSize: 13, color: 'var(--text)', textDecoration: 'none',
-                          transition: 'background 0.12s',
-                          fontFamily: '-apple-system, BlinkMacSystemFont, Inter, sans-serif',
-                        }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--bg3)'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
-                      >
+                  <div className="ed-menu" role="menu">
+                    {[{ label: 'Go to app', href: '/app' }, { label: 'Settings', href: '/settings' }].map(item => (
+                      <Link key={item.href} href={item.href} role="menuitem" className="ed-menu-item" onClick={() => setDropdownOpen(false)}>
                         {item.label}
+                        <ArrowRight size={13} />
                       </Link>
                     ))}
-                    <div style={{ height: '0.5px', background: 'var(--border)' }} />
-                    <button
-                      onClick={signOut}
-                      style={{
-                        display: 'block', width: '100%', textAlign: 'left',
-                        padding: '11px 16px', fontSize: 13, color: 'var(--danger)',
-                        background: 'none', border: 'none', cursor: 'pointer',
-                        transition: 'background 0.12s',
-                        fontFamily: '-apple-system, BlinkMacSystemFont, Inter, sans-serif',
-                      }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--bg3)'; }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
-                    >
-                      Sign out
-                    </button>
+                    <button onClick={signOut} role="menuitem" className="ed-menu-item danger">Sign out</button>
                   </div>
                 )}
               </div>
             ) : (
-              /* Signed-out: sign in + get started */
               <>
-                <Link href="/auth?mode=signin" className="nav-link" style={{ display: 'inline-flex' }}>Sign in</Link>
-                <Link href="/auth?mode=signup" className="btn btn-accent btn-sm" style={{ padding: '8px 18px' }}>Get Started</Link>
+                <Link href="/auth?mode=signin" className="ed-nav-link">Sign in</Link>
+                <Link href="/auth?mode=signup" className="ed-nav-cta">
+                  Start playing
+                  <ArrowRight />
+                </Link>
               </>
             )}
           </div>
 
           {/* Mobile trigger */}
           <button
-            className="nav-mobile-trigger"
+            className="ed-nav-trigger"
             aria-label={open ? 'Close menu' : 'Open menu'}
             aria-expanded={open}
             aria-controls="public-nav-mobile"
             onClick={() => setOpen(v => !v)}
-            style={{
-              display: 'none', width: 44, height: 44,
-              border: '1px solid var(--border)', borderRadius: 10,
-              background: 'transparent', color: 'var(--text)',
-              alignItems: 'center', justifyContent: 'center',
-              justifySelf: 'end', gridColumn: '3 / 4',
-            }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               {open
-                ? <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>
-                : <><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></>
+                ? <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
+                : <><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></>
               }
             </svg>
           </button>
@@ -249,42 +191,31 @@ export function PublicNav() {
           role="dialog"
           aria-modal="true"
           aria-label="Navigation"
-          style={{
-            position: 'fixed', inset: '56px 0 0 0',
-            background: 'var(--bg)', zIndex: 99,
-            padding: '24px 24px 48px',
-            display: 'flex', flexDirection: 'column', gap: 4,
-          }}
+          style={{ position: 'fixed', inset: '56px 0 0 0', background: 'var(--bg)', zIndex: 99, padding: '24px 24px 48px', display: 'flex', flexDirection: 'column' }}
         >
-          {LINKS.map(l => (
-            <Link key={l.href} href={l.href} className={`nav-link ${pathname === l.href ? 'active' : ''}`}
-              style={{ padding: '14px 14px', fontSize: 14, letterSpacing: '0.04em', textTransform: 'none' }}>
+          {LINKS.map((l, i) => (
+            <Link key={l.href} href={l.href} className={`ed-nav-link ${pathname === l.href ? 'active' : ''}`}
+              style={{ display: 'flex', alignItems: 'baseline', gap: 14, padding: '16px 0', borderBottom: '0.5px solid var(--border)', fontSize: 13 }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>{String(i + 1).padStart(2, '0')}</span>
               {l.label}
             </Link>
           ))}
-          <div style={{ height: 1, background: 'var(--border)', margin: '14px 0' }} />
-          {user ? (
-            <>
-              <Link href="/app" className="btn btn-accent" style={{ marginBottom: 8 }}>Go to App</Link>
-              <Link href="/settings" className="btn btn-ghost">Settings</Link>
-              <button onClick={signOut} className="btn btn-ghost" style={{ color: 'var(--danger)', marginTop: 8 }}>Sign out</button>
-            </>
-          ) : (
-            <>
-              <Link href="/auth?mode=signin" className="nav-link" style={{ padding: '14px', fontSize: 14, textTransform: 'none' }}>Sign in</Link>
-              <Link href="/auth?mode=signup" className="btn btn-accent" style={{ marginTop: 10 }}>Get Started</Link>
-            </>
-          )}
+          <div style={{ marginTop: 30, display: 'flex', flexDirection: 'column', gap: 22, alignItems: 'flex-start' }}>
+            {user ? (
+              <>
+                <Link href="/app" className="ed-nav-cta">Go to app<ArrowRight /></Link>
+                <Link href="/settings" className="ed-nav-link">Settings</Link>
+                <button onClick={signOut} className="ed-nav-link danger" style={{ color: 'var(--danger)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Sign out</button>
+              </>
+            ) : (
+              <>
+                <Link href="/auth?mode=signin" className="ed-nav-link">Sign in</Link>
+                <Link href="/auth?mode=signup" className="ed-nav-cta">Start playing<ArrowRight /></Link>
+              </>
+            )}
+          </div>
         </div>
       )}
-
-      <style jsx>{`
-        @media (max-width: 768px) {
-          :global(.nav-center) { display: none !important; }
-          :global(.nav-right) { display: none !important; }
-          .nav-mobile-trigger { display: inline-flex !important; }
-        }
-      `}</style>
     </>
   );
 }

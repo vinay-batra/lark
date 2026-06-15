@@ -39,15 +39,7 @@ export function FeedbackButton() {
         onClick={() => setState('open')}
         title="Report a bug"
         aria-label="Report a bug"
-        style={{
-          position: 'fixed', bottom: 'calc(24px + env(safe-area-inset-bottom))', right: 96, zIndex: 200,
-          width: 44, height: 44, borderRadius: '50%',
-          background: 'var(--card-bg)', border: '0.5px solid var(--border2)',
-          color: 'var(--text3)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', transition: 'all 0.15s', boxShadow: 'var(--shadow-md)',
-        }}
-        onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = 'var(--accent-border)'; el.style.color = 'var(--accent)'; el.style.background = 'var(--accent-dim)'; el.style.transform = 'translateY(-1px)'; }}
-        onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = 'var(--border2)'; el.style.color = 'var(--text3)'; el.style.background = 'var(--card-bg)'; el.style.transform = 'translateY(0)'; }}
+        className="ed-fab ed-fab-flag"
       >
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
