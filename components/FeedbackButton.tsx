@@ -1,11 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { submitBugReport } from '@/lib/practice';
 
 type State = 'idle' | 'open' | 'submitting' | 'done' | 'error';
 
 export function FeedbackButton() {
+  const pathname = usePathname();
+  const inApp = pathname?.startsWith('/app') ?? false;
   const [state, setState] = useState<State>('idle');
   const [message, setMessage] = useState('');
 
@@ -39,19 +42,20 @@ export function FeedbackButton() {
         onClick={() => setState('open')}
         title="Report a bug"
         aria-label="Report a bug"
-        className="ed-fab ed-fab-flag"
+        className={inApp ? 'ed-fab ed-fab-flag' : 'ed-rail-fab ed-rail-flag'}
       >
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
           <line x1="4" y1="22" x2="4" y2="15"/>
         </svg>
+        {!inApp && <span className="rail-tip">Feedback</span>}
       </button>
 
       {/* Modal */}
       {state !== 'idle' && (
         <div
           onClick={e => { if (e.target === e.currentTarget) { setState('idle'); setMessage(''); } }}
-          style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end', padding: '0 24px 88px' }}
+          style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', ...(inApp ? { alignItems: 'flex-end', justifyContent: 'flex-end', padding: '0 24px 88px' } : { alignItems: 'center', justifyContent: 'flex-start', padding: '0 24px 0 74px' }) }}
         >
           <div role="dialog" aria-modal="true" aria-label="Report a bug" style={{ width: 'min(100%, 360px)', background: 'var(--card-bg)', border: '0.5px solid var(--border2)', borderRadius: 16, padding: '22px 22px 18px', boxShadow: 'var(--shadow-lg)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>

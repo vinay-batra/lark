@@ -308,6 +308,7 @@ export default function LandingPage() {
           max-width: 1120px;
           margin: 0 auto;
           padding: clamp(40px, 8vh, 92px) 24px clamp(64px, 9vh, 104px);
+          padding-left: clamp(24px, calc(64px - (100vw - 1120px) / 2), 76px);
         }
         .ed-hero-title {
           font-family: var(--font-mono);
@@ -382,7 +383,7 @@ export default function LandingPage() {
           .ed-hero-plate { display: none; }
         }
         @media (max-width: 768px) {
-          .ed-hero { padding: 36px 20px 60px; }
+          .ed-hero { padding: 36px 20px 60px; padding-left: 54px; }
           .ed-section { padding: 64px 20px 0; }
           .ed-lib { grid-template-columns: 1fr; gap: 32px; align-items: start; }
           .ed-row { grid-template-columns: 30px minmax(0, 1fr); row-gap: 8px; column-gap: 14px; }

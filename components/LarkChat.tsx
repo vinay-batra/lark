@@ -135,15 +135,15 @@ export function LarkChat() {
       {/* Toggle button */}
       <button
         id="tour-chat-btn"
-        className="ed-fab ed-fab-chat"
+        className={inApp ? 'ed-fab ed-fab-chat' : 'ed-rail-fab ed-rail-chat'}
         onClick={() => setOpen(prev => !prev)}
         aria-label={open ? 'Close Lark chat' : 'Open Lark chat'}
         aria-expanded={open}
       >
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
-        Ask Lark
+        {inApp ? 'Ask Lark' : <span className="rail-tip">Ask Lark</span>}
       </button>
 
       {/* Chat panel */}
@@ -155,11 +155,12 @@ export function LarkChat() {
           aria-label="Ask Lark chat"
           style={{
             position: 'fixed',
-            bottom: 'calc(74px + env(safe-area-inset-bottom))',
-            right: 24,
+            ...(inApp
+              ? { bottom: 'calc(74px + env(safe-area-inset-bottom))', right: 24 }
+              : { left: 74, top: '50%', transform: 'translateY(-50%)' }),
             zIndex: 201,
             width: 400,
-            maxWidth: 'calc(100vw - 48px)',
+            maxWidth: 'calc(100vw - 90px)',
             maxHeight: 560,
             background: 'var(--card-bg)',
             border: '0.5px solid var(--border2)',
@@ -444,6 +445,8 @@ export function LarkChat() {
         }
         @media (max-width: 768px) {
           .lark-chat-panel {
+            top: auto !important;
+            transform: none !important;
             bottom: 74px !important;
             right: 0 !important;
             left: 0 !important;

@@ -107,27 +107,15 @@ export function PublicNav() {
     <>
       <nav className={`ed-nav ${hidden && !open ? 'hidden' : ''}`}>
         <div className="ed-nav-inner">
-          {/* Wordmark */}
-          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 9 }}>
-            <Image src="/lark-logo.png" alt="Lark" width={28} height={28} style={{ display: 'block' }} priority />
-            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 16, color: 'var(--text)', letterSpacing: '0.06em' }}>Lark</span>
-          </Link>
+          {/* Left: wordmark + account (signed in) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+            <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 9 }}>
+              <Image src="/lark-logo.png" alt="Lark" width={28} height={28} style={{ display: 'block' }} priority />
+              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 16, color: 'var(--text)', letterSpacing: '0.06em' }}>Lark</span>
+            </Link>
 
-          {/* Desktop cluster */}
-          <div className="ed-nav-desktop">
-            <div className="ed-nav-links">
-              {LINKS.map(l => (
-                <Link key={l.href} href={l.href} className={`ed-nav-link ${pathname === l.href ? 'active' : ''}`}>
-                  {l.label}
-                </Link>
-              ))}
-            </div>
-
-            <span className="ed-nav-sep" />
-            <ThemeToggle />
-
-            {user ? (
-              <div ref={dropdownRef} style={{ position: 'relative' }}>
+            {user && (
+              <div ref={dropdownRef} className="ed-nav-acct" style={{ position: 'relative' }}>
                 <button className="ed-avatar-btn" onClick={() => setDropdownOpen(v => !v)} aria-haspopup="menu" aria-expanded={dropdownOpen} aria-label="Account menu">
                   <span className="ed-avatar">
                     {user?.avatarUrl ? (
@@ -144,7 +132,7 @@ export function PublicNav() {
                 </button>
 
                 {dropdownOpen && (
-                  <div className="ed-menu" role="menu">
+                  <div className="ed-menu" role="menu" style={{ left: 0, right: 'auto' }}>
                     {[{ label: 'Go to app', href: '/app' }, { label: 'Settings', href: '/settings' }].map(item => (
                       <Link key={item.href} href={item.href} role="menuitem" className="ed-menu-item" onClick={() => setDropdownOpen(false)}>
                         {item.label}
@@ -155,7 +143,23 @@ export function PublicNav() {
                   </div>
                 )}
               </div>
-            ) : (
+            )}
+          </div>
+
+          {/* Desktop cluster */}
+          <div className="ed-nav-desktop">
+            <div className="ed-nav-links">
+              {LINKS.map(l => (
+                <Link key={l.href} href={l.href} className={`ed-nav-link ${pathname === l.href ? 'active' : ''}`}>
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+
+            <span className="ed-nav-sep" />
+            <ThemeToggle />
+
+            {!user && (
               <>
                 <Link href="/auth?mode=signin" className="ed-nav-link">Sign in</Link>
                 <Link href="/auth?mode=signup" className="ed-nav-cta">
