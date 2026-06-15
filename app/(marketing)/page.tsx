@@ -94,13 +94,6 @@ export default function LandingPage() {
 
       {/* HERO */}
       <section className="ed-hero">
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="ed-hero-meta">
-          <span className="ed-hero-mark">LARK</span>
-          <span className="ed-hero-meta-sep" />
-          <span>LISTEN-FIRST GUITAR COACHING</span>
-          <span className="ed-hero-cat">No. 01</span>
-        </motion.div>
-
         <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.05, ease: [0.16, 1, 0.3, 1] }} className="ed-hero-title">
           LISTEN-FIRST<br />
           <span className="ed-accent">GUITAR COACHING</span>
@@ -116,7 +109,6 @@ export default function LandingPage() {
               <Link href={signedIn ? '/app' : '/auth?mode=signup'} className="btn btn-accent btn-lg" style={{ boxShadow: '0 0 24px rgba(var(--accent-rgb),0.3)' }}>
                 {signedIn ? 'GO TO APP' : 'START PLAYING'}
               </Link>
-              <span className="ed-hero-fine">NO CREDIT CARD / NO DOWNLOAD / IN YOUR BROWSER</span>
             </div>
 
             <div className="ed-hero-stats">
@@ -317,23 +309,9 @@ export default function LandingPage() {
           margin: 0 auto;
           padding: clamp(40px, 8vh, 92px) 24px clamp(64px, 9vh, 104px);
         }
-        .ed-hero-meta {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          margin-bottom: clamp(28px, 4vw, 46px);
-          font-family: var(--font-mono);
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.2em;
-          color: var(--text-muted);
-        }
-        .ed-hero-mark { color: var(--accent); }
-        .ed-hero-meta-sep { width: 26px; height: 1px; background: var(--border2); }
-        .ed-hero-cat { margin-left: auto; }
         .ed-hero-title {
           font-family: var(--font-mono);
-          font-size: clamp(38px, 8vw, 90px);
+          font-size: clamp(34px, 7vw, 78px);
           font-weight: 700;
           color: var(--text);
           line-height: 1.02;
@@ -355,12 +333,6 @@ export default function LandingPage() {
           max-width: 440px;
         }
         .ed-hero-actions { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
-        .ed-hero-fine {
-          font-family: var(--font-mono);
-          font-size: 10px;
-          color: var(--text-muted);
-          letter-spacing: 0.12em;
-        }
         .ed-hero-stats { display: flex; gap: clamp(22px, 3vw, 34px); flex-wrap: wrap; align-items: baseline; }
         .ed-stat { display: flex; flex-direction: column; gap: 4px; }
         .ed-stat-val { font-family: var(--font-mono); font-size: 26px; font-weight: 700; color: var(--accent); line-height: 1; }
