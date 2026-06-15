@@ -71,12 +71,13 @@ Run the SQL files in `supabase/migrations/` in the Supabase SQL editor to set up
 
 ## Version
 
-v1.6.1 (June 9, 2026)
+v1.7 (June 14, 2026)
 
 ### Changelog summary
 
 | Version | What shipped |
 |---|---|
+| v1.7 | Editorial redesign of the marketing site: liner-notes landing (numbered chapters, oversized type, toolkit tracklist), left-wordmark nav, left-edge rail for chat/feedback, pricing/faq/changelog/privacy/terms restyled, sharp buttons, footer polish |
 | v1.6.1 | Polish pass: 0 lint warnings, a11y labels (metronome BPM + loop steppers, chat dialog), version-string fix (was lagging at v1.5), dead-code cleanup |
 | v1.6 | Light mode default, settings sidebar redesign, metronome overlay, split chat limits, sidebar cleanup |
 | v1.5 | Progress page, improved AI coach (pitch bias + miss pattern), social proof landing |

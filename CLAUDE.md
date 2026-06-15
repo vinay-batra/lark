@@ -6,11 +6,24 @@ Guitar AI tutor. Hears you play, shows you what to play, gives feedback.
 
 ## Current Focus
 
-**Last shipped: v1.6.1 (June 9, 2026) -- polish pass: 0 lint warnings, a11y labels, version-string fix.**
+**Last shipped: v1.7 (June 14, 2026) -- editorial redesign of the entire marketing site + chrome.**
 
 Live at: `https://lark.coach`
 Supabase project: `ebsddbpbvjbcdwfldubx` (on **Pro** plan)
-Last commit: 422bc8e (v1.6.1: polish -- lint/a11y/version)
+Last commit: a53ea3e (v1.7: left-edge rail, nav logo alignment, footer polish)
+
+### v1.7 (June 14, 2026) -- Editorial redesign
+
+Took the whole marketing surface off the inherited Corvo skeleton (split hero + centered card stacks + pill buttons) onto a left-aligned editorial / liner-notes system. Shared primitives live in `app/globals.css` as an `.ed-*` layer: `ed-section / ed-rule / ed-head / ed-num / ed-label / ed-title(+lg/sm) / ed-lead / ed-index / ed-row*` plus nav (`ed-nav*`, `ed-avatar*`, `ed-menu*`), dock (`ed-fab*`), rail (`ed-rail*`), and buttons (`ed-btn*`). Lint clean across all of it.
+
+- **Landing (`app/(marketing)/page.tsx`)**: hero headline `LISTEN-FIRST GUITAR COACHING` (mono, oversized clamp(34px,7vw,78px), accent second line; the pulsing eyebrow pill removed). Offset tab-demo plate bleeding right. Four numbered chapters on hairline rules: 01 The library (difficulty ledger + song tracklist), 02 The coach (pull-quote), 03 The toolkit (8 tools as a numbered tracklist index, NOT a card grid), 04 Get started. Landing keeps its OWN `<style jsx global>` for hero/section-specific rules; globals `.ed-*` have identical values so the duplication is harmless (landing's win there).
+- **Marketing pages**: pricing (flat hairline plan columns, accent top-rule on featured Pro, no glowing cards), faq (numbered chapters wrapping the accordions), changelog (was a horizontal scroll-snap card timeline -> vertical numbered chapters, now 01-07), privacy + terms (numbered legal sections + left CTA). All on `.ed-section` etc.
+- **Chrome (PublicNav)**: left-wordmark masthead -- mono underline-on-active links (no pills), hairline divider, `Start playing ->` arrow CTA, sharp hairline-ruled account menu. `.ed-nav-inner` max-width 1240 -> **1120 to match page content** so the wordmark lines up with the headings (was Vinay's complaint).
+- **Floating dock -> left rail (marketing only)**: Ask Lark + Feedback moved off the bottom-right into a left-edge vertical rail (two flat squares, vertically centered, hover labels). Chat panel + feedback modal open to the RIGHT of the rail. A **smooth left gutter** `clamp(24px, calc(64px - (100vw - 1120px) / 2), 76px)` on `.ed-section` / `.ed-nav-inner` / `.ed-hero` / footer keeps the rail clear of content with no breakpoint jump and preserves alignment (content still centers on wide screens; mobile gutter 54px, rail 40px). `LarkChat` + `FeedbackButton` branch on `inApp` (usePathname). **The dashboard (AppShell) keeps its bottom-right buttons -- intentionally untouched ("dashboard is fine").**
+- **Account dropdown**: moved out of the nav top-right to the nav **top-left** (next to wordmark, `.ed-nav-acct`, hidden on mobile -- drawer covers it) when signed in. OPEN THREAD: Vinay picked the "rail" for it too; pragmatically put it in nav top-left (cross-component + signed-in-only made the rail fiddly). Offered to move it into the rail -- not yet done.
+- **Footer**: aligned to the 1120 column + gutter, muted `.ed-label`s, replaced the big centered watermark with a clean baseline row (`© 2026 Lark`).
+- Commits this session: 38c50a9 (hero headline) -> 907c698 (hero trim) -> b10589b (editorial landing) -> 2afbd2b (editorial chrome) -> bc25e0f (editorial pages) -> a53ea3e (rail + nav alignment + footer).
+- Pre-existing dev-only warning (not from this work): the theme + service-worker inline `<script>` tags in `app/layout.tsx` trip a React "script tag while rendering" console warning. Intentional infra (FOUC + SW); leave it.
 
 ### v1.6.1 (June 9, 2026) -- Polish pass
 

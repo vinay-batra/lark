@@ -102,6 +102,22 @@ const CHAPTERS = [
     ],
     tags: ['UI', 'Settings', 'Chat', 'Light Mode'],
   },
+  {
+    num: '07',
+    name: 'Editorial',
+    versions: 'v1.7',
+    dateRange: 'June 14, 2026',
+    intro: 'The whole marketing site moved to a new visual language: left-aligned, numbered, typographic.',
+    highlights: [
+      'Liner-notes landing: oversized LISTEN-FIRST GUITAR COACHING headline, numbered chapters on hairline rules',
+      'The toolkit is now a numbered tracklist index with hover arrows instead of a card grid',
+      'Pricing, FAQ, changelog, privacy, and terms all rebuilt on one shared editorial system',
+      'Nav became a left-wordmark masthead with underline links and an arrow CTA, no pills',
+      'Ask Lark and Feedback moved to a left-edge vertical rail, off the bottom corner',
+      'Sharp flat buttons replace the rounded pills site-wide',
+    ],
+    tags: ['Landing', 'Nav', 'Pages', 'Editorial'],
+  },
 ];
 
 export default function ChangelogPage() {
@@ -112,7 +128,7 @@ export default function ChangelogPage() {
           <div className="ed-rule" />
           <div className="ed-head"><span className="ed-label">Changelog</span></div>
           <h1 className="ed-title ed-title-sm">Every release,<br />in order.</h1>
-          <p className="ed-lead">Lark ships fast. Here is everything built from the first note to now, six chapters deep.</p>
+          <p className="ed-lead">Lark ships fast. Here is everything built from the first note to now, seven chapters deep.</p>
         </motion.div>
       </section>
 
