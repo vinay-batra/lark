@@ -106,7 +106,7 @@ export default function LandingPage() {
             </p>
 
             <div className="ed-hero-actions">
-              <Link href={signedIn ? '/app' : '/auth?mode=signup'} className="btn btn-accent btn-lg" style={{ boxShadow: '0 0 24px rgba(var(--accent-rgb),0.3)' }}>
+              <Link href={signedIn ? '/app' : '/auth?mode=signup'} className="ed-btn ed-btn-accent ed-btn-lg">
                 {signedIn ? 'GO TO APP' : 'START PLAYING'}
               </Link>
             </div>
@@ -293,8 +293,8 @@ export default function LandingPage() {
             Free forever. Create an account to save your progress, library, and stats across devices.
           </p>
           <div className="ed-finale-cta">
-            <Link href="/app" className="btn btn-accent btn-lg" style={{ boxShadow: '0 0 24px rgba(var(--accent-rgb),0.3)' }}>OPEN APP FREE</Link>
-            <Link href="/auth?mode=signup" className="btn btn-ghost btn-lg">CREATE ACCOUNT</Link>
+            <Link href="/app" className="ed-btn ed-btn-accent ed-btn-lg">OPEN APP FREE</Link>
+            <Link href="/auth?mode=signup" className="ed-btn ed-btn-ghost ed-btn-lg">CREATE ACCOUNT</Link>
           </div>
           <div className="ed-waitlist">
             <p className="ed-waitlist-label">PRO FEATURES COMING SOON</p>

@@ -11,7 +11,7 @@ interface QA {
 
 const SECTIONS: { eyebrow: string; items: QA[] }[] = [
   {
-    eyebrow: 'GETTING STARTED',
+    eyebrow: 'Getting started',
     items: [
       {
         q: 'What do I need to use Lark?',
@@ -28,7 +28,7 @@ const SECTIONS: { eyebrow: string; items: QA[] }[] = [
     ],
   },
   {
-    eyebrow: 'PRIVACY',
+    eyebrow: 'Privacy',
     items: [
       {
         q: 'Is my audio sent to a server?',
@@ -41,7 +41,7 @@ const SECTIONS: { eyebrow: string; items: QA[] }[] = [
     ],
   },
   {
-    eyebrow: 'FEATURES',
+    eyebrow: 'Features',
     items: [
       {
         q: 'How accurate is the tuner?',
@@ -58,7 +58,7 @@ const SECTIONS: { eyebrow: string; items: QA[] }[] = [
     ],
   },
   {
-    eyebrow: 'BILLING',
+    eyebrow: 'Billing',
     items: [
       {
         q: 'Is Lark really free forever?',
@@ -74,51 +74,18 @@ const SECTIONS: { eyebrow: string; items: QA[] }[] = [
 
 function AccordionItem({ q, a, open, onClick }: { q: string; a: string; open: boolean; onClick: () => void }) {
   return (
-    <div style={{
-      borderBottom: '0.5px solid var(--border)',
-    }}>
+    <div style={{ borderBottom: '0.5px solid var(--border)' }}>
       <button
         onClick={onClick}
         aria-expanded={open}
-        style={{
-          width: '100%',
-          padding: '20px 0',
-          background: 'none',
-          border: 'none',
-          textAlign: 'left',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 18,
-        }}
+        style={{ width: '100%', padding: '20px 0', background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 18 }}
       >
-        <span style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 15,
-          fontWeight: 700,
-          color: 'var(--text)',
-          letterSpacing: '-0.01em',
-          flex: 1,
-        }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 15, fontWeight: 700, color: open ? 'var(--accent)' : 'var(--text)', letterSpacing: '-0.01em', flex: 1, transition: 'color 0.2s' }}>
           {q}
         </span>
-        <svg
-          width="16" height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{
-            color: open ? 'var(--accent)' : 'var(--text3)',
-            transition: 'transform 0.2s, color 0.2s',
-            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-            flexShrink: 0,
-          }}
-        >
-          <polyline points="6 9 12 15 18 9"/>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+          style={{ color: open ? 'var(--accent)' : 'var(--text3)', transition: 'transform 0.2s, color 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)', flexShrink: 0 }}>
+          <polyline points="6 9 12 15 18 9" />
         </svg>
       </button>
       <AnimatePresence initial={false}>
@@ -130,13 +97,7 @@ function AccordionItem({ q, a, open, onClick }: { q: string; a: string; open: bo
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             style={{ overflow: 'hidden' }}
           >
-            <p style={{
-              fontSize: 14,
-              color: 'var(--text2)',
-              lineHeight: 1.7,
-              paddingBottom: 22,
-              paddingRight: 32,
-            }}>
+            <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.75, paddingBottom: 22, paddingRight: 32, maxWidth: 720 }}>
               {a}
             </p>
           </motion.div>
@@ -151,79 +112,42 @@ export default function FAQPage() {
 
   return (
     <main>
-      <section style={{ padding: '120px 24px 60px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-        <div style={{
-          position: 'absolute',
-          width: 460, height: 460,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(var(--accent-rgb), 0.12) 0%, transparent 70%)',
-          top: '-20%', right: '-15%',
-          animation: 'float 11s ease-in-out infinite',
-          pointerEvents: 'none',
-        }} />
-        <div style={{ maxWidth: 720, margin: '0 auto', position: 'relative' }}>
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="eyebrow"
-            style={{ marginBottom: 24 }}
-          >
-            FAQ
-          </motion.p>
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.06, ease: [0.16, 1, 0.3, 1] }}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 'clamp(34px, 6vw, 56px)',
-              fontWeight: 700,
-              color: 'var(--text)',
-              letterSpacing: '-0.025em',
-              lineHeight: 1.06,
-              marginBottom: 22,
-            }}
-          >
-            Got questions?
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.55, delay: 0.16 }}
-            style={{ fontSize: 16, color: 'var(--text3)', lineHeight: 1.6 }}
-          >
-            Everything you need to know about Lark.
-          </motion.p>
-        </div>
+      <section className="ed-section">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
+          <div className="ed-rule" />
+          <div className="ed-head"><span className="ed-label">FAQ</span></div>
+          <h1 className="ed-title ed-title-sm">Got questions?</h1>
+          <p className="ed-lead">Everything you need to know about Lark, from setup to billing.</p>
+        </motion.div>
       </section>
 
-      <section style={{ padding: '40px 24px 100px' }}>
-        <div style={{ maxWidth: 760, margin: '0 auto' }}>
-          {SECTIONS.map((section, si) => (
-            <Reveal key={section.eyebrow} delay={si * 0.05}>
-              <div style={{ marginBottom: 44 }}>
-                <p className="eyebrow" style={{ marginBottom: 14 }}>{section.eyebrow}</p>
-                <div>
-                  {section.items.map((qa, qi) => {
-                    const id = `${si}-${qi}`;
-                    return (
-                      <AccordionItem
-                        key={id}
-                        q={qa.q}
-                        a={qa.a}
-                        open={open === id}
-                        onClick={() => setOpen(open === id ? null : id)}
-                      />
-                    );
-                  })}
-                </div>
+      <section className="ed-section ed-section-pb" style={{ paddingTop: 'clamp(32px, 4vh, 48px)' }}>
+        {SECTIONS.map((section, si) => (
+          <Reveal key={section.eyebrow} delay={0.04}>
+            <div style={{ marginTop: si === 0 ? 0 : 'clamp(48px, 7vh, 80px)' }}>
+              <div className="ed-rule" />
+              <div className="ed-head" style={{ marginBottom: 10 }}>
+                <span className="ed-num">{String(si + 1).padStart(2, '0')}</span>
+                <span className="ed-label">{section.eyebrow}</span>
               </div>
-            </Reveal>
-          ))}
-        </div>
+              <div style={{ maxWidth: 860 }}>
+                {section.items.map((qa, qi) => {
+                  const id = `${si}-${qi}`;
+                  return (
+                    <AccordionItem
+                      key={id}
+                      q={qa.q}
+                      a={qa.a}
+                      open={open === id}
+                      onClick={() => setOpen(open === id ? null : id)}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          </Reveal>
+        ))}
       </section>
-
     </main>
   );
 }

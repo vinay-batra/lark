@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import { Reveal } from '@/components/Reveal';
 
-// ── Chapter data ──────────────────────────────────────────────────────────────
-// Lark's v0.1-v1.1 entries grouped into thematic chapters.
+// Lark's v0.1-v1.6 entries grouped into thematic chapters.
 // Each chapter is a coherent arc, not a commit dump.
 const CHAPTERS = [
   {
@@ -60,13 +59,13 @@ const CHAPTERS = [
     name: 'Quality',
     versions: 'v1.1 - v1.3',
     dateRange: 'May 28, 2026',
-    intro: 'A full hardening pass followed by practice upgrades -- tighter and deeper in one sprint.',
+    intro: 'A full hardening pass followed by practice upgrades, tighter and deeper in one sprint.',
     highlights: [
       'App-wide audit: unified CSS variable system and consistent spacing across fifty-plus files',
       'Accessibility pass: dialog roles, keyboard Escape, and screen-reader labels throughout',
       'Practice Mode: speed control at 0.5x, 0.75x, and 1x to slow down difficult sections',
       'Section looping: mark any note range and repeat it on a loop until muscle memory locks in',
-      '83 verified songs after a full accuracy audit -- wrong strings corrected across multiple songs',
+      '83 verified songs after a full accuracy audit, wrong strings corrected across multiple songs',
       'Branded sign-in emails, friendly error pages, and nightly database cleanup via pg_cron',
     ],
     tags: ['Audit', 'Practice Mode', 'Songs', 'Polish'],
@@ -92,12 +91,12 @@ const CHAPTERS = [
     name: 'UI & Clarity',
     versions: 'v1.6',
     dateRange: 'June 1, 2026',
-    intro: 'A full UI pass -- cleaner defaults, a smarter sidebar, and better in-place tools.',
+    intro: 'A full UI pass, cleaner defaults, a smarter sidebar, and better in-place tools.',
     highlights: [
       'Light mode is now the default; dark mode persists per-user via localStorage',
-      'Settings rebuilt as a Corvo-style sidebar with Profile, Appearance, Detection, and Account tabs',
+      'Settings rebuilt as a sidebar with Profile, Appearance, Detection, and Account tabs',
       'Metronome moved from sidebar to a floating overlay widget on the Songs page',
-      'Settings and Metronome removed from the nav -- both accessible contextually',
+      'Settings and Metronome removed from the nav, both accessible contextually',
       'AI chat limits split: public pages get 5 per day, in-app gets 15 per day independently',
       'Landing hero demo updated: multi-string tab, hit/miss coloring, G4 label, timing badge',
     ],
@@ -105,434 +104,55 @@ const CHAPTERS = [
   },
 ];
 
-// ── Inline scroll-reveal (no external dep needed, matches Corvo pattern) ──────
-function useReveal(threshold = 0.15) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const inView = rect.top < window.innerHeight * 0.95 && rect.bottom > 0;
-    if (inView) {
-      let rafA = 0, rafB = 0;
-      rafA = requestAnimationFrame(() => { rafB = requestAnimationFrame(() => setVisible(true)); });
-      return () => { cancelAnimationFrame(rafA); cancelAnimationFrame(rafB); };
-    }
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
-      { threshold }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return { ref, visible };
-}
-
-function ScrollReveal({
-  children,
-  delay = 0,
-  from = 'up',
-  distance = 30,
-  style = {},
-}: {
-  children: React.ReactNode;
-  delay?: number;
-  from?: 'up' | 'left' | 'right';
-  distance?: number;
-  style?: React.CSSProperties;
-}) {
-  const { ref, visible } = useReveal(0.1);
-  const transform =
-    from === 'left'
-      ? `translateX(-${distance}px)`
-      : from === 'right'
-      ? `translateX(${distance}px)`
-      : `translateY(${distance}px)`;
-  return (
-    <div
-      ref={ref}
-      style={{
-        ...style,
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'none' : transform,
-        transition: `opacity 0.7s cubic-bezier(0.16,1,0.3,1) ${delay}s, transform 0.7s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
-// ── Page ──────────────────────────────────────────────────────────────────────
 export default function ChangelogPage() {
   return (
-    <div style={{ minHeight: '100vh', background: 'transparent', color: 'var(--text)' }}>
-      <style>{`
-        * { box-sizing: border-box; }
-        .lk-tag {
-          padding: 3px 10px;
-          background: rgba(var(--accent-rgb), 0.08);
-          border: 1px solid rgba(var(--accent-rgb), 0.3);
-          border-radius: 20px;
-          font-size: 10px;
-          color: var(--accent);
-          letter-spacing: 0.5px;
-          font-family: var(--font-mono);
-        }
-        .lk-eras-scroll {
-          scrollbar-width: thin;
-          scrollbar-color: rgba(var(--accent-rgb), 0.35) transparent;
-        }
-        .lk-eras-scroll::-webkit-scrollbar { height: 6px; }
-        .lk-eras-scroll::-webkit-scrollbar-track {
-          background: transparent;
-          margin: 0 56px;
-        }
-        .lk-eras-scroll::-webkit-scrollbar-thumb {
-          background: rgba(var(--accent-rgb), 0.3);
-          border-radius: 4px;
-        }
-        .lk-eras-scroll::-webkit-scrollbar-thumb:hover {
-          background: rgba(var(--accent-rgb), 0.55);
-        }
-        .lk-chapter-card {
-          transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s cubic-bezier(0.16,1,0.3,1);
-          will-change: transform;
-        }
-        .lk-chapter-card:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 18px 40px rgba(0,0,0,0.18), 0 0 0 0.5px rgba(var(--accent-rgb),0.28) !important;
-        }
-        .lk-era-dot {
-          transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s;
-        }
-        .lk-era:hover .lk-era-dot {
-          transform: translate(-50%, -50%) scale(1.18);
-          box-shadow: 0 0 0 5px rgba(var(--accent-rgb),0.2), 0 0 22px rgba(var(--accent-rgb),0.45) !important;
-        }
-        @keyframes lk-pdot {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0.35; }
-        }
+    <main>
+      <section className="ed-section">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
+          <div className="ed-rule" />
+          <div className="ed-head"><span className="ed-label">Changelog</span></div>
+          <h1 className="ed-title ed-title-sm">Every release,<br />in order.</h1>
+          <p className="ed-lead">Lark ships fast. Here is everything built from the first note to now, six chapters deep.</p>
+        </motion.div>
+      </section>
+
+      <section className="ed-section ed-section-pb" style={{ paddingTop: 'clamp(32px, 4vh, 48px)' }}>
+        {CHAPTERS.map((chapter, i) => (
+          <Reveal key={chapter.num} delay={0.04}>
+            <div style={{ marginTop: i === 0 ? 0 : 'clamp(52px, 8vh, 88px)' }}>
+              <div className="ed-rule" />
+              <div className="cl-head">
+                <div className="ed-head" style={{ marginBottom: 0 }}>
+                  <span className="ed-num">{chapter.num}</span>
+                  <span className="cl-name">{chapter.name}</span>
+                </div>
+                <span className="cl-meta">{chapter.versions} / {chapter.dateRange}</span>
+              </div>
+              <p className="cl-intro">{chapter.intro}</p>
+              <ul className="cl-highlights">
+                {chapter.highlights.map((h, hi) => (
+                  <li key={hi}>{h}</li>
+                ))}
+              </ul>
+              <p className="cl-tags">{chapter.tags.join('   ·   ')}</p>
+            </div>
+          </Reveal>
+        ))}
+      </section>
+
+      <style jsx>{`
+        .cl-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+        .cl-name { font-family: var(--font-mono); font-size: clamp(18px, 2.6vw, 28px); font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+        .cl-meta { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); }
+        .cl-intro { font-size: 16px; color: var(--text2); line-height: 1.6; max-width: 620px; margin-bottom: 24px; }
+        .cl-highlights { list-style: none; padding: 0; margin: 0 0 22px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 40px; max-width: 940px; }
+        .cl-highlights li { font-size: 13.5px; color: var(--text2); line-height: 1.55; position: relative; padding-left: 20px; }
+        .cl-highlights li::before { content: ''; position: absolute; left: 0; top: 9px; width: 10px; height: 1px; background: var(--accent); }
+        .cl-tags { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); }
         @media (max-width: 768px) {
-          .lk-hero { padding: 80px 20px 48px !important; }
-          .lk-eras-wrap { padding: 0 0 80px !important; }
-          .lk-eras-scroll { padding-left: 20px !important; padding-right: 20px !important; }
-          .lk-era { width: min(82vw, 340px) !important; margin-right: 48px !important; }
-          .lk-era:last-child { margin-right: 0 !important; }
-          .lk-footer { padding: 60px 20px 80px !important; }
+          .cl-highlights { grid-template-columns: 1fr; gap: 11px; }
         }
       `}</style>
-
-      {/* ── Hero ──────────────────────────────────────────────────────────── */}
-      <div
-        className="lk-hero"
-        style={{ textAlign: 'center', padding: '120px 56px 72px' }}
-      >
-        <ScrollReveal from="up" delay={0}>
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '6px 16px',
-              border: '1px solid rgba(var(--accent-rgb), 0.35)',
-              borderRadius: 24,
-              marginBottom: 28,
-              background: 'rgba(var(--accent-rgb), 0.07)',
-            }}
-          >
-            <span
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: '50%',
-                background: 'var(--accent)',
-                display: 'inline-block',
-                animation: 'lk-pdot 2s infinite',
-              }}
-            />
-            <span
-              style={{
-                fontSize: 10,
-                letterSpacing: '0.22em',
-                color: 'var(--accent)',
-                textTransform: 'uppercase',
-                fontFamily: 'var(--font-mono)',
-                fontWeight: 700,
-              }}
-            >
-              What&apos;s new
-            </span>
-          </div>
-        </ScrollReveal>
-
-        <Reveal from="up" delay={0.05}>
-          <h1
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 'clamp(30px, 4.2vw, 56px)',
-              fontWeight: 700,
-              color: 'var(--text)',
-              letterSpacing: '-0.03em',
-              lineHeight: 1.1,
-              marginBottom: 16,
-            }}
-          >
-            Every release,{' '}
-            <span style={{ color: 'var(--accent)', textShadow: '0 0 50px rgba(var(--accent-rgb),0.3)' }}>
-              in order.
-            </span>
-          </h1>
-        </Reveal>
-
-        <ScrollReveal from="up" delay={0.1}>
-          <p style={{ fontSize: 15, color: 'var(--text2)', fontWeight: 300, maxWidth: 440, margin: '0 auto', lineHeight: 1.65 }}>
-            Lark ships fast. Here&apos;s everything built from the first note to now.
-          </p>
-        </ScrollReveal>
-      </div>
-
-      {/* ── Horizontal chapter timeline ────────────────────────────────────── */}
-      <ScrollReveal from="up" delay={0.1}>
-        <div className="lk-eras-wrap" style={{ position: 'relative', paddingBottom: 96 }}>
-
-          {/* Scroll hint */}
-          <div
-            style={{
-              textAlign: 'center',
-              marginBottom: 36,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 10,
-            }}
-          >
-            <span
-              style={{
-                fontSize: 10,
-                letterSpacing: '0.22em',
-                color: 'var(--text3)',
-                fontFamily: 'var(--font-mono)',
-                textTransform: 'uppercase',
-                fontWeight: 600,
-              }}
-            >
-              Six chapters &middot; scroll
-            </span>
-            <svg width="22" height="10" viewBox="0 0 22 10" fill="none">
-              <path d="M2 5h17M14 1l4 4-4 4" stroke="var(--text3)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
-
-          {/* Horizontal scroll container */}
-          <div
-            className="lk-eras-scroll"
-            style={{
-              display: 'flex',
-              overflowX: 'auto',
-              overflowY: 'hidden',
-              scrollSnapType: 'x mandatory',
-              paddingLeft: 'max(56px, calc((100vw - 1280px) / 2))',
-              paddingRight: 'max(56px, calc((100vw - 1280px) / 2))',
-              paddingTop: 4,
-              paddingBottom: 32,
-              scrollPaddingLeft: 56,
-              WebkitOverflowScrolling: 'touch',
-            }}
-          >
-            {CHAPTERS.map((chapter, i) => {
-              const isFirst = i === 0;
-              const isLast = i === CHAPTERS.length - 1;
-              return (
-                <div
-                  key={chapter.num}
-                  className="lk-era"
-                  style={{
-                    flexShrink: 0,
-                    scrollSnapAlign: 'center',
-                    width: 390,
-                    marginRight: isLast ? 0 : 52,
-                  }}
-                >
-                  {/* Timeline strip: connecting line + dot above card */}
-                  <div style={{ position: 'relative', height: 36, marginBottom: 22 }}>
-                    {/* Continuous connecting line, extends into margin to meet next card */}
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: isFirst ? '50%' : 0,
-                        right: isLast ? '50%' : -52,
-                        height: 1.5,
-                        background: 'rgba(var(--accent-rgb), 0.38)',
-                        transform: 'translateY(-50%)',
-                      }}
-                    />
-                    {/* Dot marker */}
-                    <div
-                      className="lk-era-dot"
-                      style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: 16,
-                        height: 16,
-                        borderRadius: '50%',
-                        background: 'var(--accent)',
-                        border: '4px solid var(--bg)',
-                        boxShadow: '0 0 0 3px rgba(var(--accent-rgb),0.18), 0 0 14px rgba(var(--accent-rgb),0.32)',
-                      }}
-                    />
-                  </div>
-
-                  {/* Card */}
-                  <div
-                    className="lk-chapter-card"
-                    style={{
-                      width: '100%',
-                      background: 'var(--card-bg)',
-                      border: '0.5px solid var(--border)',
-                      borderRadius: 18,
-                      padding: '28px 28px 24px',
-                      boxShadow: '0 1px 2px rgba(0,0,0,0.06), 0 10px 28px rgba(0,0,0,0.12), 0 0 0 0.5px var(--border)',
-                    }}
-                  >
-                    {/* Chapter meta row */}
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        marginBottom: 16,
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          fontWeight: 700,
-                          color: 'var(--text3)',
-                          letterSpacing: '0.22em',
-                          textTransform: 'uppercase',
-                        }}
-                      >
-                        CHAPTER {chapter.num}
-                      </span>
-                      <span
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          fontWeight: 700,
-                          color: 'var(--accent)',
-                          background: 'rgba(var(--accent-rgb), 0.08)',
-                          border: '1px solid rgba(var(--accent-rgb), 0.25)',
-                          borderRadius: 6,
-                          padding: '3px 9px',
-                          letterSpacing: 0.4,
-                        }}
-                      >
-                        {chapter.versions}
-                      </span>
-                    </div>
-
-                    {/* Chapter name */}
-                    <h3
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 22,
-                        fontWeight: 700,
-                        color: 'var(--text)',
-                        letterSpacing: '-0.04em',
-                        lineHeight: 1.12,
-                        marginBottom: 8,
-                      }}
-                    >
-                      {chapter.name}
-                    </h3>
-
-                    {/* Date range */}
-                    <p
-                      style={{
-                        fontSize: 11,
-                        color: 'var(--text3)',
-                        fontFamily: 'var(--font-mono)',
-                        marginBottom: 16,
-                        letterSpacing: 0.3,
-                      }}
-                    >
-                      {chapter.dateRange}
-                    </p>
-
-                    {/* Intro sentence */}
-                    <p
-                      style={{
-                        fontSize: 13,
-                        color: 'var(--text2)',
-                        lineHeight: 1.65,
-                        marginBottom: 18,
-                        fontStyle: 'italic',
-                      }}
-                    >
-                      {chapter.intro}
-                    </p>
-
-                    {/* Highlights */}
-                    <ul
-                      style={{
-                        listStyle: 'none',
-                        padding: 0,
-                        margin: '0 0 18px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 10,
-                      }}
-                    >
-                      {chapter.highlights.map((h, hi) => (
-                        <li
-                          key={hi}
-                          style={{
-                            fontSize: 12.5,
-                            color: 'var(--text2)',
-                            lineHeight: 1.55,
-                            paddingLeft: 16,
-                            position: 'relative',
-                          }}
-                        >
-                          <span
-                            style={{
-                              position: 'absolute',
-                              left: 0,
-                              top: 7,
-                              width: 5,
-                              height: 5,
-                              borderRadius: '50%',
-                              background: 'var(--accent)',
-                            }}
-                          />
-                          {h}
-                        </li>
-                      ))}
-                    </ul>
-
-                    {/* Tags */}
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                      {chapter.tags.map((tag) => (
-                        <span key={tag} className="lk-tag">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </ScrollReveal>
-
-    </div>
+    </main>
   );
 }

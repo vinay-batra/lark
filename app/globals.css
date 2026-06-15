@@ -351,6 +351,17 @@ button, a, [role="button"] { touch-action: pan-y; }
 .ed-fab-flag { right: 166px; width: 42px; height: 42px; justify-content: center; background: var(--card-bg); color: var(--text3); border: 0.5px solid var(--border2); box-shadow: var(--shadow-md); }
 .ed-fab-flag:hover { transform: translateY(-2px); color: var(--accent); border-color: var(--accent-border); background: var(--accent-dim); }
 
+/* Editorial buttons (sharp, flat -- not pills) */
+.ed-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 24px; border-radius: 2px; border: 1px solid transparent; cursor: pointer; white-space: nowrap; text-decoration: none; transition: background 0.16s, color 0.16s, border-color 0.16s, filter 0.16s, transform 0.1s; }
+.ed-btn:active { transform: scale(0.98); }
+.ed-btn-lg { padding: 15px 30px; font-size: 13px; }
+.ed-btn-accent { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.ed-btn-accent:hover { filter: brightness(1.06); }
+.ed-btn-outline { background: transparent; color: var(--text); border-color: var(--border2); }
+.ed-btn-outline:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.ed-btn-ghost { background: transparent; color: var(--text2); border-color: var(--border2); }
+.ed-btn-ghost:hover { background: var(--bg3); color: var(--text); border-color: var(--accent-border); }
+
 /* ── Mobile ── */
 @media (max-width: 768px) {
   .public-nav { height: 56px; }
